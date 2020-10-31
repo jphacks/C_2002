@@ -11,6 +11,8 @@ npm install
 # serve with hot reload at localhost:9080
 npm run dev
 
+#↑はnode.jsのver.が11.XX.XX以降だと動かないため，10.XX.XXにして実行すること
+
 # build electron application for production
 npm run build
 
