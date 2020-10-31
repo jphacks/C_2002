@@ -20,7 +20,7 @@ export default {
         cwd: pwd, // 子プロセスの現在の作業ディレクトリ（デフォルト：null）
         shell: true // コマンドを実行するシェル（デフォルト： [Unix]/bin/sh [Windows]process.env.ComSpec）
       })
-
+      // てすとあああ
       return child
     },
     gitAdd (file = '.', pwd = HOMEDIR) {
@@ -60,7 +60,7 @@ export default {
       })
     },
     gitDiff (prevID, pwd) {
-      const child = this.exe('git diff ' + prevID, pwd) // 230eb67
+      const child = this.exe('git diff ' + prevID, pwd)
 
       // 標準出力受け取り
       child.stdout.on('data', data => {
