@@ -46,9 +46,8 @@
     },
     methods: {
       userMouseOver () {
-        console.log('over')
-        this.userColumn.width = 200
         this.userColumn.openFlg = true
+        this.userColumn.width = 220
       },
       userMouseLeave () {
         console.log('leave')
@@ -60,14 +59,22 @@
 </script>
 
 <style lang="scss">
+  // ユーザ一覧カラム
   $icon-size: 40px;
   $usercolumn__size: 60px;
   #column__user{
     width: $usercolumn__size;
     height: 100vh;
     background: #cccccc;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all  0.2s ease;
   }
   .user_content{
+    display: inline-block;
+    width: 200px;
+    height: auto;
     cursor: pointer;
     .user_icon{
       display: inline-block;
@@ -85,7 +92,12 @@
     .user_info{
       display: inline-block;
       vertical-align: center;
+      margin-left: 5px;
       color: #ffffff;
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all  0.3s ease;
     }
   }
 
