@@ -26,6 +26,9 @@ npm run lint
 app
 |- log.txt
 |- /drafts
+
+home
+|- goateat/userInfomation.json
 ```
 
 ---

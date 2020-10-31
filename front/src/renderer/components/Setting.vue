@@ -2,6 +2,7 @@
   <div>
     <div id="chat">
     </div>
+    
     <div id="mail">
 
     </div>
@@ -10,7 +11,7 @@
 
 <script>
   export default {
-    name: 'Tray'
+    name: 'Setting'
   }
 </script>
 
