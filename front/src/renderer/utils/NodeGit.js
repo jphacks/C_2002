@@ -20,7 +20,7 @@ export default {
         cwd: pwd, // 子プロセスの現在の作業ディレクトリ（デフォルト：null）
         shell: true // コマンドを実行するシェル（デフォルト： [Unix]/bin/sh [Windows]process.env.ComSpec）
       })
-      // てすとあああ
+      // てすとaiu
       return child
     },
     gitAdd (file = '.', pwd = HOMEDIR) {
