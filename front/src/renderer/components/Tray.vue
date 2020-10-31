@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="chat">
-
+      <div></div>
     </div>
     <div id="mail">
 
