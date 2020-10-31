@@ -6,7 +6,8 @@
         <input type="email" v-model="userInformation.email">
         <span>パスワード</span>
         <input type="password" v-model="userInformation.password">
-        <button @click="settingModalDispOff">決定</button>
+        <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/)  && userInformation.password" @click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
+        <button v-else style="background: #919191; cursor: not-allowed;">登録</button>
       </div>
     </div>
     <div id="column__user"
@@ -29,6 +30,11 @@
 </template>
 
 <script>
+  const fs = require('fs')
+  // ディレクトリを生成
+  const homedir = require('os').homedir() // ホームディレクトリ
+  const targetdir = require('path').join(homedir, 'goateat') // ホーム/アプリディレクトリ
+  const generateFiledir = require('path').join(targetdir, 'userInfomation.json') // userInfomation.jsonパス
   export default {
     name: 'c2002',
     data () {
@@ -72,28 +78,27 @@
       },
       settingModalDispOn () {
         console.log('modal ON')
+        if (fs.existsSync(generateFiledir)) {
+          console.log(generateFiledir + 'は存在します。')
+          let jsonObject = JSON.parse(fs.readFileSync(generateFiledir, 'utf8'))
+          this.userInformation.email = jsonObject['email']
+          this.userInformation.password = jsonObject['password']
+        } else {
+          console.log(generateFiledir + 'は存在しません。')
+        }
         this.displayFlag.settingModal = true
       },
       settingModalDispOff () {
         console.log('modal OFF')
-        console.log(this.userInformation.email)
-        console.log(this.userInformation.password)
-        // json生成コード
-        const fs = require('fs')
+        // json生成
         const jsonData = {
           email: this.userInformation.email,
           password: this.userInformation.password
         }
-        // ホームディレクトリを生成
-        const homedir = require('os').homedir()
-        const targetdir = require('path').join(homedir, 'goateat')
-        const generateFiledir = require('path').join(targetdir, 'userInfomation.json')
-        console.log(require('path').join(homedir, 'goateat'))
-        // `homedir()` returns absolute path so we use `join` here
-        if (fs.existsSync(generateFiledir)) {
-          console.log(generateFiledir + 'は存在します。')
+        if (fs.existsSync(targetdir)) {
+          console.log(targetdir + 'は存在します。')
         } else {
-          console.log(generateFiledir + 'は存在しません。')
+          console.log(targetdir + 'は存在しません。')
           fs.mkdir(targetdir)
         }
         fs.writeFile(generateFiledir, JSON.stringify(jsonData, null, '    '), (err) => {
@@ -133,10 +138,41 @@
       min-width: 400px;
       width:50%;
       height:50%;
+      border-radius: 10px;
       background-color:rgba(255,255,255,1);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      span{
+        margin: 5px 0px 5px 0px;
+        font-size: 25px;
+        font-weight: 700;
+      }
+      input{
+        margin: 5px 0px 10px 0px;
+        padding: 2.5px 12.5px 2.5px 12.5px;
+        min-height: 25px;
+        min-width: 200px;
+        max-width: 400px;
+        width:50%;
+        font-size: 25px;
+        border-radius: 20px;
+        border: solid 3px;
+        border-color: #aaaaaa;
+      }
+      button{
+        margin: 5px 0px 10px 0px;
+        min-height: 40px;
+        min-width: 70px;
+        max-width: 100px;
+        width:30%;
+        font-size: 20px;
+        font-weight: 500;
+        border-radius: 10px;
+        border: solid 2px;
+        border-color: #aaaaaa;
+      }
     }
   }
   #column__user{
