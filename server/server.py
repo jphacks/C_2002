@@ -55,7 +55,7 @@ def post_test():
     return 'Success'
 
 @app.route('/getdata', methods=['POST'])
-def post_test():
+def post_getdata():
     # Node.jsからのPOST
     json_file = request.get_json()
     print(json_file['people_name'])
