@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <div v-if="displayFlag.settingModal" id="settign_modal">
+    <div v-if="displayFlag.settingModal" id="setting_modal">
       <div class="form_frame">
         <span>メールアドレス</span>
         <input type="email" placeholder="example@example.com" v-model="userInformation.email">
         <span>パスワード</span>
         <input type="password" v-model="userInformation.password">
-        <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/)  && userInformation.password" @click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
+        <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/)  && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
         <button v-else style="background: #919191; cursor: not-allowed;">登録</button>
       </div>
     </div>
@@ -23,20 +23,29 @@
           <p>{{ user.mail }}</p>
         </div>
       </div>
-      <div class="rounded-test-btn" @click="settingModalDispOn">set</div>
+      <div id="setting_icon" v-on:click="settingModalDispOn">
+        <setting-icon></setting-icon>
+      </div>
     </div>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+  // アイコンインポート
+  import SettingIcon from './components/icons/setting.vue'
+  // fsモジュールをインポート
   const fs = require('fs')
   // ディレクトリを生成
   const homedir = require('os').homedir() // ホームディレクトリ
   const targetdir = require('path').join(homedir, 'goateat') // ホーム/アプリディレクトリ
-  const generateFiledir = require('path').join(targetdir, 'userInfomation.json') // userInfomation.jsonパス
+  const generateFiledir = require('path').join(targetdir, 'userInformation.json') // userInfomation.jsonパス
   export default {
     name: 'c2002',
+    components: {
+      // 設定アイコンのコンポーネント
+      SettingIcon
+    },
     data () {
       return {
         displayFlag: {
@@ -122,8 +131,8 @@
   // ユーザ一覧カラム
   $icon-size: 40px;
   $usercolumn__size: 60px;
-  #settign_modal{
-    z-index:100;
+  #setting_modal{
+    z-index:200;
     position:fixed;
     top:0;
     left:0;
@@ -213,12 +222,25 @@
       transition: all  0.3s ease;
     }
   }
-  .rounded-test-btn{
-    height: 50px;
-    width: 50px;
-    border-radius: 10px;
-    border: solid 3px;
-    background-color: #cccccc;
+  #setting_icon{
+    z-index:200;
+    position: absolute;       // 絶対位置指定することを定義
+    bottom: 0px;              // 絶対位置指定(左0px,下0px)
+    margin: 8px 8px 8px 8px;
+    width: $icon-size;
+    height: $icon-size;
+    border-radius: $icon-size;
+    border: solid 2px;
+    border-color: #aaaaaa;
+    background-color: #ffffff;
+    cursor: pointer;
+    &:hover{ // 歯車アイコン回転アニメーション
+      animation: r1 1s cubic-bezier(0, 0, 1.0, 1.0) infinite;
+      @keyframes r1 {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(135deg); }
+      }
+    }
   }
 
   // RESET
