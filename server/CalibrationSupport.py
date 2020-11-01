@@ -15,13 +15,9 @@ config.read(APP_ROOT + '/config_local.ini')
 YAHOO_API_CLIENT_ID = config.get("Yahoo_API", "ClientId")
 YAHOO_API_CALIBRATION_SUPPORT_URL = config.get("Yahoo_API", "CalibrationSupportURL")
 
-sentence = "私はその人の記憶を呼び起すごとに、すぐ「先生」といいたくなる"
+sentence = "私はその人の記憶を呼び起すごとに、すぐ「先生」といいたくなる".replace('、', '')
 
-data = {
-    "appid": YAHOO_API_CLIENT_ID,
-    "sentence": sentence
-}
-sentence = '遙か彼方に小形飛行機が見える'
+# sentence = '遙か彼方に小形飛行機が見える'
 
 response = requests.get(str(YAHOO_API_CALIBRATION_SUPPORT_URL) + '?appid=' + YAHOO_API_CLIENT_ID + '&sentence=' + sentence)
 
