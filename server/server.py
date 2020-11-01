@@ -102,6 +102,7 @@ def post_postdata():
     people_name_json, companies_name_json = get_json_people_companies(sentence)
     # 校正支援をJSON形式で取得
     result_calibration_json = get_json_roofreading(sentence)
+    
     # 全て結果をJSON形式にまとめて返す
     result = {
         'people_name': people_name_json,
