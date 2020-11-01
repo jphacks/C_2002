@@ -3,10 +3,7 @@
 import os
 import configparser
 import requests
-import xmljson
-from lxml.etree import parse
 import json
-import xmltodict
 import xml.etree.ElementTree as ET
 
 # ソースファイルの場所取得
@@ -37,7 +34,7 @@ for results_calibration in response_calibration_xml:
         # print(index_calibration.tag, index_calibration.text)
         result_calibration[index_calibration.tag.split('}')[1]] = index_calibration.text
     list_calibration.append(result_calibration)
-print(json.dumps(list_calibration))
+print(json.dumps(list_calibration, ensure_ascii=False))
 result_calibration_json = {
     'calibration': json.dumps(list_calibration, ensure_ascii=False)
 }
