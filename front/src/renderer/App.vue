@@ -292,7 +292,7 @@
     }
     #resize_bar{
       height: 100%;
-      width: 10px;
+      width: 4px;
       background-color: gray;
       cursor: col-resize;
       transition-delay: 0.2s;

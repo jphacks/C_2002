@@ -149,6 +149,8 @@
           width: calc(100% - 10%);
           height: auto;
           .receive{
+            margin-top: 1px;
+            margin-bottom: 1px;
             padding: 3px;
             width: 50%;
             height: auto;
@@ -164,6 +166,8 @@
             }
           }
           .thread{
+            margin-top: 1px;
+            margin-bottom: 1px;
             padding: 3px;
             margin-left: calc(10%);
             width: 50%;
@@ -180,6 +184,8 @@
             }
           }
           .reply{
+            margin-top: 1px;
+            margin-bottom: 1px;
             padding: 3px;
             margin-left: calc(50%);
             width: 50%;
