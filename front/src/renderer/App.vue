@@ -27,18 +27,20 @@
         </div>
       </div>
       <div id="setting_icon" v-on:click="settingModalDispOn">
-        <setting-icon></setting-icon>
+        <SettingIcon/>
       </div>
     </div>
     <!-- 右側メニュー -->
     <div id="tray_frame">
       <!-- 左側 -->
       <div id="main_left">
-
+        <ChatTree/>
       </div>
+      <!-- リサイズバー -->
+      <div id="resize_bar"></div>
       <!-- 右側 -->
       <div id="main_right">
-
+        <Preview/>
       </div>
     </div>
     <router-view></router-view>
@@ -48,6 +50,9 @@
 <script>
   // アイコンインポート
   import SettingIcon from './components/icons/setting.vue'
+  // コンポーネントインポート
+  import ChatTree from './components/ChatTree.vue'
+  import Preview from './components/Preview.vue'
   // fsモジュールをインポート
   const fs = require('fs')
   // ディレクトリを生成
@@ -58,7 +63,9 @@
     name: 'c2002',
     components: {
       // 設定アイコンのコンポーネント
-      SettingIcon
+      SettingIcon,
+      ChatTree,
+      Preview
     },
     data () {
       return {
@@ -84,38 +91,6 @@
           },
           '3': {
             name: 'Test3',
-            mail: 'test@example.com'
-          },
-          '4': {
-            name: 'Test4',
-            mail: 'test@example.com'
-          },
-          '5': {
-            name: 'Test5',
-            mail: 'test@example.com'
-          },
-          '6': {
-            name: 'Test6',
-            mail: 'test@example.com'
-          },
-          '7': {
-            name: 'Test7',
-            mail: 'test@example.com'
-          },
-          '8': {
-            name: 'Test8',
-            mail: 'test@example.com'
-          },
-          '9': {
-            name: 'Test9',
-            mail: 'test@example.com'
-          },
-          '10': {
-            name: 'Test10',
-            mail: 'test@example.com'
-          },
-          '11': {
-            name: 'Test11',
             mail: 'test@example.com'
           }
         }
@@ -303,24 +278,33 @@
   }
   // 右側メニュー
   #tray_frame{
-    background-color: aqua;
+    // background-color: aqua;
     height: 100vh;
     width: 100%;
     display: flex;
     flex-direction: row;
     #main_left{
       padding-left: 60px;
-      background-color:seagreen;
+      // background-color:seagreen;
       height: 100%;
-      min-width: 300px;
-      width: 50%;
-      resize: horizontal;
-      overflow: hidden;
+      width: 40%;
+      min-width: 200px;
+    }
+    #resize_bar{
+      height: 100%;
+      width: 10px;
+      background-color: gray;
+      cursor: col-resize;
+      transition-delay: 0.2s;
+      transition: 0.5s ;
+      &:hover{
+        background-color: mediumturquoise;
+      }
     }
     #main_right{
-      background-color:tomato;
+      // background-color:tomato;
       height: 100%;
-      width: 100%;
+      width: 60%;
     }
   }
 
