@@ -12,10 +12,24 @@ config.read(APP_ROOT + '/config_local.ini')
 RECRUITE_API_PROOFREADING_API_KEY = config.get("RECRUITE_API", "ProofreadingAPIKey")
 RECRUITE_API_PROOFREADING_URL = config.get("RECRUITE_API", "ProofreadingURL")
 
+# JSON送信用のヘッダー
+headers= {
+    "Content-type": "application/json"
+}
+
+# 校正支援をJSON形式で取得する関数
+def run_roofreading(sentence):
+    # Proofreading APIへのGET通信
+    response_proofreading = requests.get(RECRUITE_API_PROOFREADING_URL + '?apikey=' + RECRUITE_API_PROOFREADING_API_KEY + '&sentence=' + sentence)
+    return response_proofreading.text
+
 sentence = "システムの企画から開発・運用まで幅広く関われまs。"
 # sentence = "システムの規格から開発・運用まで幅広く関われます。"
 
-# Proofreading APIへのGET通信
-response_proofreading = requests.get(RECRUITE_API_PROOFREADING_URL + '?apikey=' + RECRUITE_API_PROOFREADING_API_KEY + '&sentence=' + sentence)
-
-print(response_proofreading.text)
+# 校正支援をJSON形式で取得
+result_calibration_json = run_roofreading(sentence)
+result_calibration_json = {
+    'calibration': result_calibration_json
+}
+res = requests.post('http://localhost:5000/test', result_calibration_json, headers)
+print(res)

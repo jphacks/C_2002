@@ -15,28 +15,33 @@ config.read(APP_ROOT + '/config_local.ini')
 YAHOO_API_CLIENT_ID = config.get("Yahoo_API", "ClientId")
 YAHOO_API_CALIBRATION_SUPPORT_URL = config.get("Yahoo_API", "CalibrationSupportURL")
 
+# JSON送信用のヘッダー
 headers= {
     "Content-type": "application/json"
 }
 
+# 校正支援をJSON形式で取得する関数
+def get_json_calibration_support(sentence):
+    # YahooAPI校正支援へのGET通信
+    response = requests.get(str(YAHOO_API_CALIBRATION_SUPPORT_URL) + '?appid=' + YAHOO_API_CLIENT_ID + '&sentence=' + sentence)
+    # responseをXML形式へ変換
+    response_xml = ET.fromstring(response.text)
+    # XML形式をJSON形式へ変換
+    list_result = []
+    for results in response_xml:
+        result={}
+        for index in results:
+            result[index.tag.split('}')[1]] = index.text
+        list_result.append(result)
+    return json.dumps(list_result, ensure_ascii=False)
+
 # 校正支援テスト用の文
 sentence = '遙か彼方に小形飛行機が見えた'
 
-# YahooAPI校正支援へのGET通信
-response_calibration = requests.get(str(YAHOO_API_CALIBRATION_SUPPORT_URL) + '?appid=' + YAHOO_API_CLIENT_ID + '&sentence=' + sentence)
-# responseをXML形式へ変換
-response_calibration_xml = ET.fromstring(response_calibration.text)
-# XML形式をJSON形式へ変換
-list_calibration = []
-for results_calibration in response_calibration_xml:
-    result_calibration={}
-    for index_calibration in results_calibration:
-        # print(index_calibration.tag, index_calibration.text)
-        result_calibration[index_calibration.tag.split('}')[1]] = index_calibration.text
-    list_calibration.append(result_calibration)
-print(json.dumps(list_calibration, ensure_ascii=False))
+# 校正支援をJSON形式で取得
+result_calibration_json = get_json_calibration_support(sentence)
 result_calibration_json = {
-    'calibration': json.dumps(list_calibration, ensure_ascii=False)
+    'calibration': result_calibration_json
 }
 res = requests.post('http://localhost:5000/test', result_calibration_json, headers)
-print(res)
+print(res.text)
