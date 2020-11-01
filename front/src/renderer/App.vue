@@ -14,13 +14,15 @@
          v-on:mouseover="userMouseOver"
          v-on:mouseleave="userMouseLeave"
          :style="'width: ' + userColumn.width + 'px'">
-      <div class="user_content" v-for="user in users">
-        <span class="user_icon">
-          {{ user.name.charAt(0) }}
-        </span>
-        <div v-if="userColumn.openFlg" class="user_info">
-          <h3>{{ user.name }}</h3>
-          <p>{{ user.mail }}</p>
+      <div class="scroll-frame">
+        <div class="user_content" v-for="user in users">
+          <span class="user_icon">
+            {{ user.name.charAt(0) }}
+          </span>
+          <div v-if="userColumn.openFlg" class="user_info">
+            <h3>{{ user.name }}</h3>
+            <p>{{ user.mail }}</p>
+          </div>
         </div>
       </div>
       <div id="setting_icon" v-on:click="settingModalDispOn">
@@ -65,11 +67,43 @@
             mail: 'test@example.com'
           },
           '2': {
-            name: 'Test1',
+            name: 'Test2',
             mail: 'test@example.com'
           },
           '3': {
-            name: 'Test1',
+            name: 'Test3',
+            mail: 'test@example.com'
+          },
+          '4': {
+            name: 'Test4',
+            mail: 'test@example.com'
+          },
+          '5': {
+            name: 'Test5',
+            mail: 'test@example.com'
+          },
+          '6': {
+            name: 'Test6',
+            mail: 'test@example.com'
+          },
+          '7': {
+            name: 'Test7',
+            mail: 'test@example.com'
+          },
+          '8': {
+            name: 'Test8',
+            mail: 'test@example.com'
+          },
+          '9': {
+            name: 'Test9',
+            mail: 'test@example.com'
+          },
+          '10': {
+            name: 'Test10',
+            mail: 'test@example.com'
+          },
+          '11': {
+            name: 'Test11',
             mail: 'test@example.com'
           }
         }
@@ -192,6 +226,11 @@
     -moz-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all  0.2s ease;
+    .scroll-frame{
+      height: calc(100% - 60px);
+      width: auto;
+      overflow-y: scroll;
+    }
   }
   .user_content{
     display: inline-block;
