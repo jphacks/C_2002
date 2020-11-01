@@ -3,7 +3,7 @@
 import os
 import configparser
 import requests
-import xml.etree.ElementTree as et
+import urllib.parse
 
 
 # ソースファイルの場所取得
@@ -21,7 +21,9 @@ data = {
     "appid": YAHOO_API_CLIENT_ID,
     "sentence": sentence
 }
+sentence = '遙か彼方に小形飛行機が見える'
 
-response = requests.post(YAHOO_API_CALIBRATION_SUPPORT_URL, data=data)
+response = requests.get(str(YAHOO_API_CALIBRATION_SUPPORT_URL) + '?appid=' + YAHOO_API_CLIENT_ID + '&sentence=' + sentence)
 
+# print(urllib.parse.quote(sentence))
 print(response.text)
