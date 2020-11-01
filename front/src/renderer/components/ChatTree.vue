@@ -1,8 +1,8 @@
 <template>
   <div id="chat_tree">
     <div id="tree_frame">
-      <div id="content_frame" v-for="messages in contents">
-        <div id="content" v-for="message in messages">
+      <div id="content_frame" v-for="messages in contents" :key="messages">
+        <div id="content" v-for="message in messages" :key="message">
           <div v-if="message.type=='receive'" class="receive">
             <h5>名前</h5>
             <span>{{ message.name }}</span>

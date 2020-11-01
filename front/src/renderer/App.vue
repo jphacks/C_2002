@@ -16,7 +16,7 @@
          v-on:mouseleave="userMouseLeave"
          :style="'width: ' + userColumn.width + 'px'">
       <div class="scroll-frame">
-        <div class="user_content" v-for="user in users">
+        <div class="user_content" v-for="user in users" :key="user">
           <span class="user_icon">
             {{ user.name.charAt(0) }}
           </span>
