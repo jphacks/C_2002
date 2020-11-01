@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <!-- 左側メニュー -->
     <div v-if="displayFlag.settingModal" id="setting_modal">
       <div class="form_frame">
         <span>メールアドレス</span>
@@ -27,6 +28,17 @@
       </div>
       <div id="setting_icon" v-on:click="settingModalDispOn">
         <setting-icon></setting-icon>
+      </div>
+    </div>
+    <!-- 右側メニュー -->
+    <div id="tray_frame">
+      <!-- 左側 -->
+      <div id="main_left">
+
+      </div>
+      <!-- 右側 -->
+      <div id="main_right">
+
       </div>
     </div>
     <router-view></router-view>
@@ -165,9 +177,13 @@
   // ユーザ一覧カラム
   $icon-size: 40px;
   $usercolumn__size: 60px;
+  #app{
+    display: flex;
+    flex-direction: row;
+  }
   #setting_modal{
-    z-index:200;
-    position:fixed;
+    z-index:1000;
+    position: absolute;
     top:0;
     left:0;
     width:100%;
@@ -218,7 +234,11 @@
       }
     }
   }
+  // 左側メニュー
   #column__user{
+    z-index: 900;
+    position: absolute;
+    flex-direction: column;
     width: $usercolumn__size;
     height: 100vh;
     background: #cccccc;
@@ -262,9 +282,9 @@
     }
   }
   #setting_icon{
-    z-index:200;
-    position: absolute;       // 絶対位置指定することを定義
-    bottom: 0px;              // 絶対位置指定(左0px,下0px)
+    z-index: 900;
+    position: absolute; // 絶対位置指定することを定義
+    bottom: 0px; // 絶対位置指定(左0px,下0px)
     margin: 8px 8px 8px 8px;
     width: $icon-size;
     height: $icon-size;
@@ -279,6 +299,28 @@
         0%   { transform: rotate(0deg); }
         100% { transform: rotate(135deg); }
       }
+    }
+  }
+  // 右側メニュー
+  #tray_frame{
+    background-color: aqua;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    #main_left{
+      padding-left: 60px;
+      background-color:seagreen;
+      height: 100%;
+      min-width: 300px;
+      width: 50%;
+      resize: horizontal;
+      overflow: hidden;
+    }
+    #main_right{
+      background-color:tomato;
+      height: 100%;
+      width: 100%;
     }
   }
 
