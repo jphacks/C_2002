@@ -3,7 +3,7 @@
     <div v-if="displayFlag.settingModal" id="settign_modal">
       <div class="form_frame">
         <span>メールアドレス</span>
-        <input type="email" v-model="userInformation.email">
+        <input type="email" placeholder="example@example.com" v-model="userInformation.email">
         <span>パスワード</span>
         <input type="password" v-model="userInformation.password">
         <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/)  && userInformation.password" @click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
