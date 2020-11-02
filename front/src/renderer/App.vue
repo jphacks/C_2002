@@ -149,13 +149,26 @@
 </script>
 
 <style lang="scss">
-  // ユーザ一覧カラム
-  $icon-size: 40px;
-  $usercolumn__size: 60px;
-  #app{
+  #app {
     display: flex;
     flex-direction: row;
+
+    // スクロールバーのスタイル
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: none;
+      border-radius: 6px;
+      box-shadow: none;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: #cbcbcb;
+      border-radius: 6px;
+    }
   }
+
+  // 設定モーダル
   #setting_modal{
     z-index:1000;
     position: absolute;
@@ -192,8 +205,7 @@
         width:50%;
         font-size: 25px;
         border-radius: 20px;
-        border: solid 3px;
-        border-color: #aaaaaa;
+        border: solid 3px #aaaaaa;
       }
       button{
         margin: 5px 0px 10px 0px;
@@ -204,12 +216,14 @@
         font-size: 20px;
         font-weight: 500;
         border-radius: 10px;
-        border: solid 2px;
-        border-color: #aaaaaa;
+        border: solid 2px #aaaaaa;
       }
     }
   }
-  // 左側メニュー
+
+  // ユーザ一覧カラム
+  $icon-size: 40px;
+  $usercolumn__size: 60px;
   #column__user{
     z-index: 900;
     position: absolute;
@@ -221,10 +235,10 @@
     -moz-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all  0.2s ease;
-    .scroll-frame{
-      height: calc(100% - 60px);
-      width: auto;
-      overflow-y: scroll;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
   .user_content{
@@ -264,8 +278,7 @@
     width: $icon-size;
     height: $icon-size;
     border-radius: $icon-size;
-    border: solid 2px;
-    border-color: #aaaaaa;
+    border: solid 2px #aaaaaa;
     background-color: #ffffff;
     cursor: pointer;
     &:hover{ // 歯車アイコン回転アニメーション
