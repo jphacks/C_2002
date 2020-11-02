@@ -4,22 +4,16 @@
       <div id="content_frame" v-for="messages in contents" :key="messages">
         <div id="content" v-for="message in messages" :key="message">
           <div v-if="message.type=='receive'" class="receive">
-            <h5>名前</h5>
-            <span>{{ message.name }}</span>
-            <h5>件名</h5>
-            <span>{{ message.subject }}</span>
+            <h5 class="name">{{ message.name }}</h5>
+            <p class="title">{{ message.subject }}</p>
           </div>
           <div v-else-if="message.type=='thread'" class="thread">
-            <h5>名前</h5>
-            <span>{{ message.name }}</span>
-            <h5>件名</h5>
-            <span>{{ message.subject }}</span>
+            <h5 class="name">{{ message.name }}</h5>
+            <p class="title">{{ message.subject }}</p>
           </div>
           <div v-else-if="message.type=='reply'" class="reply">
-            <h5>名前</h5>
-            <span>{{ message.name }}</span>
-            <h5>件名</h5>
-            <span>{{ message.subject }}</span>
+            <h5 class="name">{{ message.name }}</h5>
+            <p class="title">{{ message.subject }}</p>
           </div>
         </div>
       </div>
@@ -156,7 +150,6 @@
             height: auto;
             border-radius: 10px;
             background-color:#ffcccc;
-            box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
             cursor: pointer;
             h4{
               padding: 3px
@@ -174,7 +167,6 @@
             height: auto;
             border-radius: 10px;
             background-color: #ccffcc;
-            box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
             cursor: pointer;
             h4{
               padding: 3px
@@ -192,7 +184,6 @@
             height: auto;
             border-radius: 10px;
             background-color: #ccccff;
-            box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
             cursor: pointer;
             h4{
               padding: 3px

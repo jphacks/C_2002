@@ -149,9 +149,15 @@
 </script>
 
 <style lang="scss">
+  // フォントの読み込み
+  @font-face {
+    font-family: 'JapaneseFont';
+    src: url('~@/assets/font/KosugiMaru-Regular.ttf') format('truetype');
+  }
   #app {
     display: flex;
     flex-direction: row;
+    font-family: 'JapaneseFont';
 
     // スクロールバーのスタイル
     ::-webkit-scrollbar {
