@@ -2,6 +2,7 @@
   <div id="MailEditor">
     <div id="editor__menu">
       <button v-on:click="convertHonorific">save</button>
+      <button v-on:click="draftInit">init</button>
     </div>
     <input
       class="editor__input"
@@ -23,21 +24,34 @@
 
 <script>
   // import GitCommand from '../utils/NodeGit'
+  import FileAction from '../utils/FileAction'
   // import DiffParser from '../utils/DiffParser'
+
+  // デフォルトの実行ディレクトリの確認
+  const HOMEDIR =
+    process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME']
 
   export default {
     name: 'MailEditer',
     data () {
       return {
+        draftDirectory: '\\aaplication-name\\draft\\',
         mailData: {
           subject: '',
           destination: '',
-          body: ''
+          body: '',
+          draftID: ''
         }
       }
     },
     methods: {
+      draftInit () {
+        this.draftID = Date.now()
+        FileAction.mkdir(HOMEDIR + this.draftDirectory + this.draftID)
+        // GitCommand.gitInit(HOMEDIR + this.draftDirectory + this.draftID)
+      },
       convertHonorific () {
+        console.log(HOMEDIR)
       }
     },
     watch: {
