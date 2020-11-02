@@ -34,15 +34,15 @@
     <div id="tray_frame">
       <!-- 左側 -->
       <div id="main_left">
-        <!-- <ChatTree/> -->
-        <Preview/>
+        <ChatTree/>
+        <!-- <Preview/> -->
       </div>
       <!-- リサイズバー -->
       <div id="resize_bar"></div>
       <!-- 右側 -->
       <div id="main_right">
-        <!-- <Preview/> -->
-        <ChatTree/>
+        <Preview/>
+        <!-- <ChatTree/> -->
       </div>
     </div>
     <router-view></router-view>
