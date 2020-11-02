@@ -1,21 +1,15 @@
 <template>
   <div id="chat_tree">
     <div id="tree_frame">
-      <div id="content_frame" v-for="messages in contents" :key="messages">
-        <div id="content" v-for="message in messages" :key="message">
-          <div v-if="message.type=='receive'" class="receive">
-            <h5 class="name">{{ message.name }}</h5>
-            <p class="title">{{ message.subject }}</p>
-          </div>
-          <div v-else-if="message.type=='thread'" class="thread">
-            <h5 class="name">{{ message.name }}</h5>
-            <p class="title">{{ message.subject }}</p>
-          </div>
-          <div v-else-if="message.type=='reply'" class="reply">
-            <h5 class="name">{{ message.name }}</h5>
-            <p class="title">{{ message.subject }}</p>
-          </div>
+      <div
+        class="chat"
+        v-for="message in messages"
+        :key="message">
+        <div :class="[userData.mail === message.mail ? 'chat__send_me' : '', 'chat__frame ' + message.type]">
+          <h5 class="chat__name">{{ message.name }}</h5>
+          <p class="chat__title">{{ message.subject }}</p>
         </div>
+        <span class="chat__time">{{ message.time }}</span><!-- 時間に関してはメールサーバからの情報によって変更 -->
       </div>
     </div>
   </div>
@@ -26,94 +20,82 @@
     name: 'Chattree',
     data () {
       return {
-        contents: {
+        userData: {
+          name: 'TestUser',
+          mail: 'user@test.com'
+        },
+        messages: { // テスト用データ
           '1': {
-            '1': {
-              subject: 'Testsubject1',
-              name: 'testName1',
-              type: 'receive'
-            },
-            '2': {
-              subject: 'Testsubject2',
-              name: 'testName2',
-              type: 'thread'
-            },
-            '3': {
-              subject: 'Testsubject3',
-              name: 'testName3',
-              type: 'reply'
-            },
-            '4': {
-              subject: 'Testsubject4',
-              name: 'testName4',
-              type: 'thread'
-            }
+            subject: 'Testsubject1',
+            name: 'testName1',
+            mail: 'test@test.com',
+            type: 'receive',
+            mailID: '0001',
+            time: '2020/11/02\n12:00'
           },
           '2': {
-            '1': {
-              subject: 'Testsubject1',
-              name: 'testName1',
-              type: 'receive'
-            },
-            '2': {
-              subject: 'Testsubject2',
-              name: 'testName2',
-              type: 'reply'
-            },
-            '3': {
-              subject: 'Testsubject3',
-              name: 'testName3',
-              type: 'reply'
-            },
-            '4': {
-              subject: 'Testsubject4',
-              name: 'testName4',
-              type: 'thread'
-            }
+            subject: 'Testsubject1',
+            name: 'TestUser',
+            mail: 'user@test.com',
+            type: 'thread',
+            mailID: '0002',
+            time: '2020/11/02\n12:00'
           },
           '3': {
-            '1': {
-              subject: 'Testsubject1',
-              name: 'testName1',
-              type: 'receive'
-            },
-            '2': {
-              subject: 'Testsubject2',
-              name: 'testName2',
-              type: 'reply'
-            },
-            '3': {
-              subject: 'Testsubject3',
-              name: 'testName3',
-              type: 'reply'
-            },
-            '4': {
-              subject: 'Testsubject4',
-              name: 'testName4',
-              type: 'thread'
-            }
+            subject: 'Testsubject1',
+            name: 'testName1',
+            mail: 'test@test.com',
+            type: 'thread',
+            mailID: '0001',
+            time: '2020/11/02\n12:00'
           },
           '4': {
-            '1': {
-              subject: 'Testsubject1',
-              name: 'testName1',
-              type: 'receive'
-            },
-            '2': {
-              subject: 'Testsubject2',
-              name: 'testName2',
-              type: 'reply'
-            },
-            '3': {
-              subject: 'Testsubject3',
-              name: 'testName3',
-              type: 'reply'
-            },
-            '4': {
-              subject: 'Testsubject4',
-              name: 'testName4',
-              type: 'thread'
-            }
+            subject: 'Testsubject1',
+            name: 'TestUser',
+            mail: 'user@test.com',
+            type: 'thread',
+            mailID: '0002',
+            time: '2020/11/02\n12:00'
+          },
+          '5': {
+            subject: 'Testsubject1',
+            name: 'testName1',
+            mail: 'test@test.com',
+            type: 'thread',
+            mailID: '0001',
+            time: '2020/11/02\n12:00'
+          },
+          '6': {
+            subject: 'Testsubject1',
+            name: 'testName1',
+            mail: 'test@test.com',
+            type: 'receive',
+            mailID: '0001',
+            time: '2020/11/02\n12:00'
+          },
+          '7': {
+            subject: 'Testsubject1',
+            name: 'TestUser',
+            mail: 'user@test.com',
+            type: 'receive',
+            mailID: '0002',
+            time: '2020/11/02\n12:00'
+          },
+          '8': {
+            subject: 'Testsubject1',
+            name: 'testName1',
+            mail: 'test@test.com',
+            type: 'thread',
+            mailID: '0001',
+            time: '2020/11/02\n12:00'
+          },
+          '9': {
+            subject: 'Testsubject1',
+            name: 'TestUser',
+            mail: 'user@test.com',
+            type: 'thread',
+            mailID: '0002',
+            time: '2020/11/02\n12:00'
           }
         }
       }
@@ -122,73 +104,66 @@
 </script>
 
 <style scoped lang="scss">
-  #chat_tree{
+  #chat_tree {
     display: flex;
     flex-direction: column;
     background-color: #eeeeee;
     width: 100%;
     height: 100vh;
     overflow-y: scroll;
-    #tree_frame{
-      width: 100%;
-      height: 100vh;
-      #content_frame{
-        margin: 20px 0 10px 0;
-        width: 100%;
-        height: auto;
-        #content{
-          margin-left: calc(5%);
-          width: calc(100% - 10%);
-          height: auto;
-          .receive{
-            margin: 1px 0 1px 0;
-            padding: 3px;
-            width: 50%;
-            height: auto;
-            border-radius: 10px;
-            background-color:#ffcccc;
-            cursor: pointer;
-            h4{
-              padding: 3px
-            }
-            span{
-              padding-left: 10px;
-            }
-          }
-          .thread{
-            margin: 1px 0 1px 0;
-            padding: 3px;
-            margin-left: calc(10%);
-            width: 50%;
-            height: auto;
-            border-radius: 10px;
-            background-color: #ccffcc;
-            cursor: pointer;
-            h4{
-              padding: 3px
-            }
-            span{
-              padding-left: 10px;
-            }
-          }
-          .reply{
-            margin: 1px 0 1px 0;
-            padding: 3px;
-            margin-left: calc(50%);
-            width: 50%;
-            height: auto;
-            border-radius: 10px;
-            background-color: #ccccff;
-            cursor: pointer;
-            h4{
-              padding: 3px
-            }
-            span{
-              padding-left: 10px;
-            }
-          }
-        }
+  }
+  #tree_frame {
+    width: 90%;
+    height: 100vh;
+    margin-left: 5%;
+  }
+
+  $chat__time-fontsize: 10px;
+  // チャット風UI
+  .chat{
+    // 送受信時間表記
+    .chat__time{
+      display: inline-block;
+      width: 60px;
+      height: $chat__time-fontsize;
+      line-height: $chat__time-fontsize;
+      font-size: $chat__time-fontsize;
+      vertical-align: middle;
+      word-wrap:break-word;
+    }
+    // 吹き出し風ボックス
+    .chat__frame {
+      display: inline-block;
+      margin: 1px 1px 0 10px;
+      padding: 6px 20px;
+      width: 250px;
+      height: auto;
+      background-color: #ffffff;
+      color: #262626;
+      border-radius: 10px 10px 10px 0;
+      cursor: pointer;
+      vertical-align: middle;
+      .chat__name{
+        font-weight: bold;
+      }
+      .chat__title{
+
+      }
+      // 自身の送信したメールスタイル
+      &.chat__send_me{
+        background-color: #5645ff;
+        color: #ffffff;
+        border-radius: 10px 10px 0 10px;
+      }
+      // 通常メールスタイル
+      &.receive{
+        margin: 20px 40px 0 0;
+      }
+      // 返信メール（スレッド）スタイル
+      &.thread{
+        margin: 0 10px 0 30px;
       }
     }
   }
+
 </style>
