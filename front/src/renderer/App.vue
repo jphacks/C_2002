@@ -104,7 +104,6 @@
         this.userColumn.width = 220
       },
       userMouseLeave () {
-        console.log('leave')
         this.userColumn.width = 60
         this.userColumn.openFlg = false
       },
@@ -278,6 +277,7 @@
       transition: all  0.3s ease;
     }
   }
+  // 設定アイコン
   #setting_icon{
     z-index: 900;
     position: absolute; // 絶対位置指定することを定義
@@ -300,16 +300,14 @@
 
   // 右側メニュー
   #tray_frame{
-    // background-color: aqua;
     height: 100vh;
     width: 100%;
     display: flex;
     flex-direction: row;
     #main_left{
       padding-left: 60px;
-      // background-color:seagreen;
       height: 100%;
-      width: 450px;
+      min-width: 450px;
     }
     #resize_bar{
       height: 100%;
@@ -323,7 +321,6 @@
       }
     }
     #main_right{
-      // background-color:tomato;
       height: 100%;
       width: 60%;
     }

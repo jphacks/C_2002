@@ -108,7 +108,7 @@
     display: flex;
     flex-direction: column;
     background-color: #eeeeee;
-    width: 100%;
+    width: 450px;
     height: 100vh;
     overflow-y: scroll;
   }
