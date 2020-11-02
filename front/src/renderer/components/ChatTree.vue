@@ -133,18 +133,15 @@
       width: 100%;
       height: 100vh;
       #content_frame{
-        margin-top: 20px;
-        margin-bottom: 10px;
+        margin: 20px 0 10px 0;
         width: 100%;
         height: auto;
-        // background-color: rgb(205, 255, 205);
         #content{
           margin-left: calc(5%);
           width: calc(100% - 10%);
           height: auto;
           .receive{
-            margin-top: 1px;
-            margin-bottom: 1px;
+            margin: 1px 0 1px 0;
             padding: 3px;
             width: 50%;
             height: auto;
@@ -159,8 +156,7 @@
             }
           }
           .thread{
-            margin-top: 1px;
-            margin-bottom: 1px;
+            margin: 1px 0 1px 0;
             padding: 3px;
             margin-left: calc(10%);
             width: 50%;
@@ -176,8 +172,7 @@
             }
           }
           .reply{
-            margin-top: 1px;
-            margin-bottom: 1px;
+            margin: 1px 0 1px 0;
             padding: 3px;
             margin-left: calc(50%);
             width: 50%;
