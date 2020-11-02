@@ -7,7 +7,7 @@
         <input type="email" placeholder="example@example.com" v-model="userInformation.email">
         <span>パスワード</span>
         <input type="password" v-model="userInformation.password">
-        <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/)  && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
+        <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/) && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
         <button v-else style="background: #919191; cursor: not-allowed;">登録</button>
       </div>
     </div>
@@ -34,15 +34,14 @@
     <div id="tray_frame">
       <!-- 左側 -->
       <div id="main_left">
-        <ChatTree/>
-        <!-- <Preview/> -->
+        <!-- <ChatTree/> -->
+        <MailEditer/>
       </div>
       <!-- リサイズバー -->
       <div id="resize_bar"></div>
       <!-- 右側 -->
       <div id="main_right">
         <Preview/>
-        <!-- <ChatTree/> -->
       </div>
     </div>
     <router-view></router-view>
@@ -52,18 +51,24 @@
 <script>
   // アイコンインポート
   import SettingIcon from './components/icons/setting.vue'
+
   // コンポーネントインポート
   import ChatTree from './components/ChatTree.vue'
   import Preview from './components/Preview.vue'
+  import MailEditer from './components/MailEditer'
+
   // fsモジュールをインポート
   const fs = require('fs')
+
   // ディレクトリを生成
   const homedir = require('os').homedir() // ホームディレクトリ
   const targetdir = require('path').join(homedir, 'goateat') // ホーム/アプリディレクトリ
   const generateFiledir = require('path').join(targetdir, 'userInformation.json') // userInfomation.jsonパス
+
   export default {
     name: 'c2002',
     components: {
+      MailEditer,
       // 設定アイコンのコンポーネント
       SettingIcon,
       ChatTree,
@@ -307,7 +312,6 @@
     #main_left{
       padding-left: 60px;
       height: 100%;
-      min-width: 450px;
     }
     #resize_bar{
       height: 100%;
