@@ -35,12 +35,14 @@
       <!-- 左側 -->
       <div id="main_left">
         <ChatTree/>
+        <!-- <Preview/> -->
       </div>
       <!-- リサイズバー -->
       <div id="resize_bar"></div>
       <!-- 右側 -->
       <div id="main_right">
         <Preview/>
+        <!-- <ChatTree/> -->
       </div>
     </div>
     <router-view></router-view>
@@ -295,6 +297,7 @@
       }
     }
   }
+
   // 右側メニュー
   #tray_frame{
     // background-color: aqua;
@@ -306,8 +309,7 @@
       padding-left: 60px;
       // background-color:seagreen;
       height: 100%;
-      width: 40%;
-      min-width: 200px;
+      width: 450px;
     }
     #resize_bar{
       height: 100%;
