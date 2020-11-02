@@ -1,14 +1,17 @@
 // POST送信テスト
 const request = require('request');
-
+var message = '株式会社名城へ\nJPHACKS優勝したい！スマホ欲しい。佐藤より'
 var options = {
-    uri: "http://localhost:5000/test",
+    uri: "http://0.0.0.0:5000/postdata",
     headers: {
         "Content-type": "application/json",
     },
     json: {
-        'people_name': 'test',
-        'companies_name': 'test'
+        'sentence': message
     }
 };
-request.post(options, function(error, response, body){});
+console.log('Send { sentence: ' + message + ' }')
+request.post(options, function(error, response, body){
+    console.log(body)
+    console.log(body.calibration[0].alerts)
+});
