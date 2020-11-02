@@ -17,6 +17,24 @@ function exe (command, pwd = HOMEDIR) { // コマンド実行関数
   return child
 }
 
+// git init
+function gitInit (pwd) {
+  return new Promise(resolve => {
+    const child = exe('git init', pwd)
+
+    // 標準出力受け取り
+    child.stdout.on('data', data => {
+      return resolve(0)
+    })
+
+    // 標準エラー受け取り
+    child.stderr.on('data', data => {
+      return resolve(data)
+    })
+  })
+}
+
+// git add
 function gitAdd (file = '.', pwd = HOMEDIR) {
   return new Promise(resolve => {
     // コマンド実行
@@ -34,6 +52,7 @@ function gitAdd (file = '.', pwd = HOMEDIR) {
   })
 }
 
+// git commit
 function gitCommit (message, pwd = HOMEDIR) {
   return new Promise(resolve => {
     // コマンド実行
@@ -51,6 +70,7 @@ function gitCommit (message, pwd = HOMEDIR) {
   })
 }
 
+// git rev-parse --short HEAD
 function getCommitID (pwd) {
   return new Promise(resolve => {
     // 短縮CommitID取得
@@ -68,6 +88,7 @@ function getCommitID (pwd) {
   })
 }
 
+// git diff
 function gitDiff (prevID, pwd) {
   return new Promise(resolve => {
     let command
@@ -92,4 +113,4 @@ function gitDiff (prevID, pwd) {
   })
 }
 
-export default {gitAdd, gitCommit, gitDiff, getCommitID}
+export default {gitInit, gitAdd, gitCommit, gitDiff, getCommitID}

@@ -1,7 +1,7 @@
 <template>
   <div id="MailEditor">
     <div id="editor__menu">
-
+      <button v-on:click="convertHonorific">save</button>
     </div>
     <input
       class="editor__input"
@@ -22,6 +22,9 @@
 </template>
 
 <script>
+  // import GitCommand from '../utils/NodeGit'
+  // import DiffParser from '../utils/DiffParser'
+
   export default {
     name: 'MailEditer',
     data () {
@@ -31,6 +34,10 @@
           destination: '',
           body: ''
         }
+      }
+    },
+    methods: {
+      convertHonorific () {
       }
     },
     watch: {
