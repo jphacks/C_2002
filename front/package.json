@@ -53,8 +53,10 @@
     }
   },
   "dependencies": {
-    "vue": "^2.5.16",
     "axios": "^0.18.0",
+    "iconv": "^3.0.0",
+    "inbox": "^1.1.59",
+    "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-router": "^3.0.1"
   },
