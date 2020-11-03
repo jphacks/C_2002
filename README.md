@@ -49,6 +49,7 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
 * JavaScript
 * Python
 * Git
+* AWS EC2
 
 #### API・データ
 * スポンサー様の提供API
