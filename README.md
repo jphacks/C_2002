@@ -1,10 +1,10 @@
-# サンプル（プロダクト名）
+# Frank Furt
 
 [![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2020/09/JPHACKS2020_ogp.jpg)](https://www.youtube.com/watch?v=G5rULR53uMk)
 
 ## 製品概要
 
-### ビジネスマナー × Teck
+### ビジネスマナー × Tech
 
 ### 背景(製品開発のきっかけ、課題等）
 COVID-19(コロナウイルス)の影響により世の中で様々なことがオンライン形態へと変化した．
