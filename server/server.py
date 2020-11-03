@@ -118,6 +118,7 @@ def post_getdata():
     # テキストファイルの読み込み
     f = open(APP_ROOT + "/before.txt", "r", encoding="utf-8")
     sentence = f.read()
+    commit_id = '1c40b98'
 
     # 人名と会社名をリストで取得
     people_name_list, companies_name_list = get_list_people_companies(sentence)
@@ -130,6 +131,7 @@ def post_getdata():
 
     # 全て結果をJSON形式にまとめて返す
     result = {
+        'commit_id': commit_id,
         'before_sentence': sentence,
         'people_name_list': people_name_list,
         'companies_name_list': companies_name_list,
@@ -143,8 +145,10 @@ def post_getdata():
 @app.route('/postdata', methods=['POST'])
 def post_postdata():
     json_post = request.get_json()
+    print(json_post)
+    commit_id = json_post['commit_id']
     sentence = json_post['sentence']
-
+    
     # 人名と会社名をリストで取得
     people_name_list, companies_name_list = get_list_people_companies(sentence)
     # 校正支援をリストで取得
@@ -156,6 +160,7 @@ def post_postdata():
     
     # 全て結果をJSON形式にまとめて返す
     result = {
+        'commit_id': commit_id,
         'before_sentence': sentence,
         'people_name_list': people_name_list,
         'companies_name_list': companies_name_list,
