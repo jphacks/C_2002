@@ -1,5 +1,6 @@
 // 読み込み
 const childProcess = require('child_process')
+
 // デフォルトの実行ディレクトリの確認
 const HOMEDIR =
   process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME']
@@ -23,12 +24,14 @@ function gitInit (pwd) {
     const child = exe('git init', pwd)
 
     // 標準出力受け取り
-    child.stdout.on('data', data => {
+    child.stdout.on('close', data => {
+      console.log(data)
       return resolve(0)
     })
 
     // 標準エラー受け取り
-    child.stderr.on('data', data => {
+    child.stderr.on('close', data => {
+      console.log(data)
       return resolve(data)
     })
   })
@@ -41,12 +44,14 @@ function gitAdd (file = '.', pwd = HOMEDIR) {
     const child = exe('git add ' + file, pwd)
 
     // 標準出力受け取り
-    child.stdout.on('data', data => {
+    child.stdout.on('close', data => {
+      console.log(data)
       return resolve(0)
     })
 
     // 標準エラー受け取り
-    child.stderr.on('data', data => {
+    child.stderr.on('close', data => {
+      console.log(data)
       return resolve(data)
     })
   })
@@ -56,15 +61,17 @@ function gitAdd (file = '.', pwd = HOMEDIR) {
 function gitCommit (message, pwd = HOMEDIR) {
   return new Promise(resolve => {
     // コマンド実行
-    const child = exe('git commit -m "' + message + '"', pwd)
+    const child = exe('git commit -m"' + message + '"', pwd)
 
     // 標準出力受け取り
-    child.stderr.on('data', data => {
+    child.stderr.on('close', data => {
+      console.log(data)
       return resolve(data)
     })
 
     // 標準エラー受け取り
-    child.stderr.on('data', data => {
+    child.stderr.on('close', data => {
+      console.log(data)
       return resolve(data)
     })
   })
@@ -78,11 +85,13 @@ function getCommitID (pwd) {
 
     // 標準出力受け取り
     childGetID.stdout.on('data', data => {
+      console.log(data)
       return resolve(data)
     })
 
     // 標準エラー受け取り
     childGetID.stderr.on('data', data => {
+      console.log(data)
       return resolve(data)
     })
   })
@@ -100,13 +109,13 @@ function gitDiff (prevID, pwd) {
     const child = exe(command, pwd)
 
     // 標準出力受け取り
-    child.stdout.on('data', data => {
+    child.stdout.on('close', data => {
       // 差分を抜き出す
       return resolve(data)
     })
 
     // 標準エラー受け取り
-    child.stderr.on('data', data => {
+    child.stderr.on('close', data => {
       console.log(data)
       return resolve(data)
     })
