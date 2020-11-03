@@ -1,12 +1,27 @@
+import os
+import configparser
 from goolabs import GoolabsAPI
 import json
 
-# api取得
-app_id = "9707a9ca41154956524fe5ef01ba774b4305ccc701adfb6be574a87ba4a5687b"
-api = GoolabsAPI(app_id)
+# ソースファイルの場所取得
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+# 設定ファイルの読み込み
+config = configparser.ConfigParser()
+config.read(APP_ROOT + '/config_local.ini')
+# 設定ファイルからgooラボAPIに関する情報を取得
+Goo_API_APPLICATION_ID = config.get("Goo_API", "ApplicationId")
+
+# JSON送信用のヘッダー
+headers= {
+    "Content-type": "application/json"
+}
+
+# gooラボAPIのAPIクライアント設定
+gooAPI = GoolabsAPI(Goo_API_APPLICATION_ID)
+
 
 # 元のテキストデータ
-f = open('before.txt', 'r', encoding='UTF-8')
+f = open(APP_ROOT + '/before.txt', 'r', encoding='UTF-8')
 data = f.read()
 OriginalText = data
 
@@ -30,9 +45,8 @@ def ChangeWord(text, HitWordList):
 
 # 敬語変換関数
 def ChangeToHonorific(text):
-
        # 辞書データ取得
-       json_open = open('sample.json', 'r')
+       json_open = open(APP_ROOT + '/sample.json', 'r')
        global HumbleLangDict
        HumbleLangDict = json.load(json_open)
        print(json.dumps(HumbleLangDict, indent=2).encode().decode('unicode-escape'))
@@ -41,7 +55,7 @@ def ChangeToHonorific(text):
        HitWordList = []
 
        # See sample response below.
-       response = api.morph(sentence = text)
+       response = gooAPI.morph(sentence = text)
        # 文章ごとに変換
        for sentence in response['word_list']:
              SearchForWords(sentence)
@@ -56,7 +70,7 @@ print(OriginalText)
 f.close()
 
 # 結果をファイルに書き出す
-path_w = 'result.txt'
+path_w = APP_ROOT + '/result.txt'
 with open(path_w, mode='w') as f:
     f.write(ChangeText)
 f.close()
