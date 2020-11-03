@@ -1,8 +1,8 @@
 <template>
   <div id="MailEditor">
     <div id="editor__menu">
-      <button v-on:click="convertHonorific">save</button>
-      <button v-on:click="draftInit">init</button>
+      <button v-on:click="saveDraft">save</button>
+      <button v-on:click="convertHonorific">convert</button>
     </div>
     <input
       class="editor__input"
@@ -15,27 +15,34 @@
       v-model="mailData.destination"
       placeholder="宛先">
 
-    <div
+    <textarea
       id="editor__body"
-      contenteditable="true">
-    </div>
+      v-model="mailData.body">
+    </textarea>
   </div>
 </template>
 
 <script>
-  // import GitCommand from '../utils/NodeGit'
+  import GitCommand from '../utils/NodeGit'
   import FileAction from '../utils/FileAction'
   // import DiffParser from '../utils/DiffParser'
+  const fs = require('fs')
+
+  const isWindows = process.platform === 'win32'
 
   // デフォルトの実行ディレクトリの確認
   const HOMEDIR =
-    process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME']
+    process.env[isWindows ? 'USERPROFILE' : 'HOME']
 
   export default {
     name: 'MailEditer',
     data () {
       return {
-        draftDirectory: '\\aaplication-name\\draft\\',
+        draft: {
+          directory: '/aaplication-name/draft/',
+          fileName: '/draft.txt'
+        },
+        commitID: '',
         mailData: {
           subject: '',
           destination: '',
@@ -46,18 +53,62 @@
     },
     methods: {
       draftInit () {
+        // Windows用のパス形式で指定
+        if (isWindows) {
+          this.draft.directory = '\\aaplication-name\\draft\\'
+          this.draft.fileName = '\\draft.txt'
+        }
+
+        // 下書きごとのIDはUNIX時間を指定
         this.draftID = Date.now()
-        FileAction.mkdir(HOMEDIR + this.draftDirectory + this.draftID)
-        // GitCommand.gitInit(HOMEDIR + this.draftDirectory + this.draftID)
+        const targetDirectory = HOMEDIR + this.draft.directory + this.draftID
+
+        // 作業ディレクトリの作成
+        FileAction.mkdir(targetDirectory)
+
+        // git init
+        GitCommand.gitInit(targetDirectory)
+
+        // ファイルの作成
+        fs.writeFile(targetDirectory + this.draft.fileName, '', function (err) {
+          if (err) { throw err }
+        })
+      },
+      async saveDraft () {
+        // 作業ディレクトリの定義
+        const draftDirectory = HOMEDIR + this.draft.directory + this.draftID
+
+        // ファイルへの書き込み
+        fs.appendFile(draftDirectory + this.draft.fileName, this.mailData.body, function (err) {
+          if (err) { throw err }
+        })
+
+        // git add
+        await GitCommand.gitAdd('.', draftDirectory).then(function (result) {
+          console.log(result)
+        })
+
+        // git commit
+        const commitMessage = Date.now() + ' draft commit'
+        await GitCommand.gitCommit(commitMessage, draftDirectory).then(function (result) {
+          console.log(result)
+        })
+
+        // commit ID の取得
+        await GitCommand.getCommitID(draftDirectory).then(function (result) {
+          console.log(result)
+        })
       },
       convertHonorific () {
         console.log(HOMEDIR)
       }
     },
     watch: {
-      bodyEditor: function () {
-
+      mailData: function () {
       }
+    },
+    mounted () {
+      this.draftInit()
     }
   }
 </script>
@@ -93,6 +144,7 @@
     height: calc(100vh - 10px - 140px);
     margin: 5px 0 0 3%;
     overflow-y: scroll;
+    outline: none;
 
     &:focus{
       outline: none;
