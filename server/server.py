@@ -7,7 +7,9 @@ from goolabs import GoolabsAPI
 import json
 import requests
 import re
-from flask_cors import CORS 
+from flask_cors import CORS
+from concurrent.futures import ThreadPoolExecutor
+
 
 app = Flask(__name__)
 CORS(app)
@@ -34,13 +36,17 @@ gooAPI = GoolabsAPI(Goo_API_APPLICATION_ID)
 
 # 人名と会社名をリストで取得する関数
 def get_list_people_companies(sentence):
+    # print('get_list_people_companies Start')
     response = gooAPI.entity(sentence=sentence)
     people_name = list(set([people[0] for people in response['ne_list'] if people[1]=='PSN']))
+    # print(people_name)
     companies_name = list(set([company[0] for company in response['ne_list'] if company[1]=='ORG']))
+    # print(companies_name)
     return people_name, companies_name
 
 # 校正支援をリストで取得する関数
 def get_list_roofreading(text):
+    # print('get_list_roofreading Start')
     sentences = re.split('[、。，．,.!！？?"「」]', text)
     response_list = []
     result_list = []
@@ -56,6 +62,7 @@ def get_list_roofreading(text):
                 'alerts': res['alerts']
             }
             result_list.append(result)
+    # print(result_list)
     return result_list
 
 # 単語探索関数
@@ -78,6 +85,7 @@ def ChangeWord(text, HitWordList):
 
 # 敬語変換関数
 def ChangeToHonorific(text):
+    # print('ChangeToHonorific Start')
     # 辞書データ取得
     json_open = open(APP_ROOT + '/sample.json', 'r')
     global HumbleLangDict
@@ -91,9 +99,21 @@ def ChangeToHonorific(text):
     response = gooAPI.morph(sentence = text)
     # 文章ごとに変換
     for sentence in response['word_list']:
-            SearchForWords(sentence)
+        # SearchForWords(sentence)
+        for start in range(len(sentence)):
+            for end in range(len(sentence) - 1, start - 1, -1):
+                testKey = ''
+                for check in range(start, end + 1):
+                    testKey += sentence[check][0]
+                if testKey in HumbleLangDict:
+                    if testKey not in HitWordList:
+                        HitWordList.append(testKey)
     # print(HitWordList)
-    ConvertedText = ChangeWord(text, HitWordList)
+    # ConvertedText = ChangeWord(text, HitWordList)
+    ConvertedText = text
+    for word in HitWordList:
+        ConvertedText = ConvertedText.replace(word, HumbleLangDict[word])
+    # print(ConvertedText)
     return ConvertedText
 
 # ローカルGETテスト用
@@ -122,24 +142,35 @@ def post_getdata():
     sentence = f.read()
     commit_id = '1c40b98'
 
-    # 人名と会社名をリストで取得
-    people_name_list, companies_name_list = get_list_people_companies(sentence)
-    # 校正支援をリストで取得
-    result_before_text_calibration_list = get_list_roofreading(sentence)
-    # 敬語変換
-    change_text = ChangeToHonorific(sentence)
-    # 敬語変換後の校正支援をリストで取得
-    result_change_text_calibration_list = get_list_roofreading(change_text)
+    # print("main start")
+    # # 人名と会社名をリストで取得
+    # people_name_list, companies_name_list = get_list_people_companies(sentence)
+    # # 校正支援をリストで取得
+    # result_before_text_calibration_list = get_list_roofreading(sentence)
+    # # 敬語変換
+    # change_text = ChangeToHonorific(sentence)
+    # # 敬語変換後の校正支援をリストで取得
+    # result_change_text_calibration_list = get_list_roofreading(change_text)
+    with ThreadPoolExecutor(max_workers=3, thread_name_prefix="thread") as executor:
+        # 人名と会社名をリストで取得
+        people_name_list, companies_name_list = executor.submit(get_list_people_companies, sentence).result()
+        # 校正支援をリストで取得
+        result_before_text_calibration_list = executor.submit(get_list_roofreading, sentence).result()
+        # 敬語変換
+        change_text = executor.submit(ChangeToHonorific, sentence).result()
+        # 敬語変換後の校正支援をリストで取得
+        # result_change_text_calibration_list = executor.submit(get_list_roofreading, change_text).result()
+    
 
-    # 全て結果をJSON形式にまとめて返す
+    # # 全て結果をJSON形式にまとめて返す
     result = {
         'commit_id': commit_id,
         'before_sentence': sentence,
         'people_name_list': people_name_list,
         'companies_name_list': companies_name_list,
         'before_sentence_calibration': result_before_text_calibration_list,
-        'change_sentence': change_text,
-        'change_sentence_calibration': result_change_text_calibration_list
+        'change_sentence': change_text
+        # 'change_sentence_calibration': result_change_text_calibration_list
     }
     f.close()
     return result
@@ -151,14 +182,13 @@ def post_postdata():
     commit_id = json_post['commit_id']
     sentence = json_post['sentence']
     
-    # 人名と会社名をリストで取得
-    people_name_list, companies_name_list = get_list_people_companies(sentence)
-    # 校正支援をリストで取得
-    result_before_text_calibration_list = get_list_roofreading(sentence)
-    # 敬語変換
-    change_text = ChangeToHonorific(sentence)
-    # 敬語変換後の校正支援をリストで取得
-    result_change_text_calibration_list = get_list_roofreading(change_text)
+    with ThreadPoolExecutor(max_workers=3, thread_name_prefix="thread") as executor:
+        # 人名と会社名をリストで取得
+        people_name_list, companies_name_list = executor.submit(get_list_people_companies, sentence).result()
+        # 校正支援をリストで取得
+        result_before_text_calibration_list = executor.submit(get_list_roofreading, sentence).result()
+        # 敬語変換
+        change_text = executor.submit(ChangeToHonorific, sentence).result()
     
     # 全て結果をJSON形式にまとめて返す
     result = {
@@ -167,8 +197,7 @@ def post_postdata():
         'people_name_list': people_name_list,
         'companies_name_list': companies_name_list,
         'before_sentence_calibration': result_before_text_calibration_list,
-        'change_sentence': change_text,
-        'change_sentence_calibration': result_change_text_calibration_list
+        'change_sentence': change_text
     }
     return result
 
