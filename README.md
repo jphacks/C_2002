@@ -45,6 +45,7 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
 * Node.js
 * Electron
 * Python
+* Flask
 * Git
 #### API・データ
 * goo ラボ API
