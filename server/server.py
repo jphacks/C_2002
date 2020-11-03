@@ -47,13 +47,17 @@ def get_list_people_companies(sentence):
 # 校正支援をリストで取得する関数
 def get_list_roofreading(text):
     # print('get_list_roofreading Start')
-    sentences = re.split('[、。，．,.!！？?"「」]', text)
+    # sentences = re.split('[、。，．,.!！？?"「」]', text)
+    # morph = gooAPI.morph(sentence = text)
     response_list = []
     result_list = []
-    for sentence in sentences:
-        # Proofreading APIへのGET通信
-        response_proofreading = requests.get(RECRUITE_API_PROOFREADING_URL + '?apikey=' + RECRUITE_API_PROOFREADING_API_KEY + '&sentence=' + sentence)
-        response_list.append(response_proofreading.json())
+    sentence = text
+    # for sentences in morph['word_list']:
+    #     # print(sentences)
+    #     for sentence in sentences:
+    # Proofreading APIへのGET通信
+    response_proofreading = requests.get(RECRUITE_API_PROOFREADING_URL + '?apikey=' + RECRUITE_API_PROOFREADING_API_KEY + '&sentence=' + sentence[0])
+    response_list.append(response_proofreading.json())
     for res in response_list:
         if res['message']!='ok':
             result = {
@@ -62,6 +66,7 @@ def get_list_roofreading(text):
                 'alerts': res['alerts']
             }
             result_list.append(result)
+            print(res['alerts'])
     # print(result_list)
     return result_list
 
@@ -178,27 +183,39 @@ def post_getdata():
 @app.route('/postdata', methods=['POST'])
 def post_postdata():
     json_post = request.get_json()
-    print(json_post)
     commit_id = json_post['commit_id']
     sentence = json_post['sentence']
-    
-    with ThreadPoolExecutor(max_workers=3, thread_name_prefix="thread") as executor:
-        # 人名と会社名をリストで取得
-        people_name_list, companies_name_list = executor.submit(get_list_people_companies, sentence).result()
-        # 校正支援をリストで取得
-        result_before_text_calibration_list = executor.submit(get_list_roofreading, sentence).result()
-        # 敬語変換
-        change_text = executor.submit(ChangeToHonorific, sentence).result()
-    
-    # 全て結果をJSON形式にまとめて返す
-    result = {
-        'commit_id': commit_id,
-        'before_sentence': sentence,
-        'people_name_list': people_name_list,
-        'companies_name_list': companies_name_list,
-        'before_sentence_calibration': result_before_text_calibration_list,
-        'change_sentence': change_text
-    }
+
+    # 文章が空だった場合
+    if sentence == '':
+        # 全て結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'people_name_list': [],
+            'companies_name_list': [],
+            'before_sentence_calibration': [],
+            'change_sentence': ''
+        }
+
+    else :
+        with ThreadPoolExecutor(max_workers=3, thread_name_prefix="thread") as executor:
+            # 人名と会社名をリストで取得
+            people_name_list, companies_name_list = executor.submit(get_list_people_companies, sentence).result()
+            # 校正支援をリストで取得
+            result_before_text_calibration_list = executor.submit(get_list_roofreading, sentence).result()
+            # 敬語変換
+            change_text = executor.submit(ChangeToHonorific, sentence).result()
+        
+        # 全て結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'people_name_list': people_name_list,
+            'companies_name_list': companies_name_list,
+            'before_sentence_calibration': result_before_text_calibration_list,
+            'change_sentence': change_text
+        }
     return result
 
 if __name__ == '__main__':
