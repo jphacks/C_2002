@@ -41,23 +41,29 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
 
 ## 開発技術
 ### 活用した技術
+* HTML
+* SCSS
+* JavaScript
+* Python
+* Git
+
+#### API・データ
+* スポンサー様の提供API
+    * [goo ラボ API](https://labs.goo.ne.jp/)
+        * [形態素解析API](https://labs.goo.ne.jp/api/jp/morphological-analysis/)
+        * [固有表現抽出API](https://labs.goo.ne.jp/api/jp/named-entity-extraction/)
+* 外部API
+    * [Proofreading API](https://a3rt.recruit-tech.co.jp/product/proofreadingAPI/)
+
+#### フレームワーク・ライブラリ・モジュール
 * Vue.js
 * Node.js
 * Electron
-* Python
-* Flask
-* Git
 * jQuery
-#### API・データ
-* goo ラボ API
-* 
-
-#### フレームワーク・ライブラリ・モジュール
-* 
-* 
+* Flask
 
 #### デバイス
-* ？
+* なし
 * 
 
 ### 独自技術
@@ -66,5 +72,7 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
 * 特に力を入れた部分をファイルリンク、またはcommit_idを記載してください。
 
 #### 製品に取り入れた研究内容（データ・ソフトウェアなど）（※アカデミック部門の場合のみ提出必須）
-* 
-* 
+* なし
+
+#### 事前開発プロダクト
+* なし

@@ -7,8 +7,10 @@ from goolabs import GoolabsAPI
 import json
 import requests
 import re
+from flask_cors import CORS 
 
 app = Flask(__name__)
+CORS(app)
 app.config['JSON_AS_ASCII'] = False
 
 # ソースファイルの場所取得
