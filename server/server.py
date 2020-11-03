@@ -30,15 +30,15 @@ headers= {
 # gooラボAPIのAPIクライアント設定
 gooAPI = GoolabsAPI(Goo_API_APPLICATION_ID)
 
-# 人名と会社名をJSON形式で取得する関数
-def get_json_people_companies(sentence):
+# 人名と会社名をリストで取得する関数
+def get_list_people_companies(sentence):
     response = gooAPI.entity(sentence=sentence)
     people_name = list(set([people[0] for people in response['ne_list'] if people[1]=='PSN']))
     companies_name = list(set([company[0] for company in response['ne_list'] if company[1]=='ORG']))
     return people_name, companies_name
 
-# 校正支援をJSON形式で取得する関数
-def get_json_roofreading(text):
+# 校正支援をリストで取得する関数
+def get_list_roofreading(text):
     sentences = re.split('[、。，．,.!！？?"「」]', text)
     response_list = []
     result_list = []
@@ -80,7 +80,7 @@ def ChangeToHonorific(text):
        json_open = open(APP_ROOT + '/sample.json', 'r')
        global HumbleLangDict
        HumbleLangDict = json.load(json_open)
-       print(json.dumps(HumbleLangDict, indent=2).encode().decode('unicode-escape'))
+    #    print(json.dumps(HumbleLangDict, indent=2).encode().decode('unicode-escape'))
        
        global HitWordList
        HitWordList = []
@@ -90,7 +90,7 @@ def ChangeToHonorific(text):
        # 文章ごとに変換
        for sentence in response['word_list']:
              SearchForWords(sentence)
-       print(HitWordList)
+    #    print(HitWordList)
        ConvertedText = ChangeWord(text, HitWordList)
        return ConvertedText
 
@@ -116,36 +116,52 @@ def post_test():
 @app.route('/getdata')
 def post_getdata():
     # テキストファイルの読み込み
-    sentence = open(APP_ROOT + "/sample.txt", "r", encoding="utf-8").read().replace('\n','')
+    f = open(APP_ROOT + "/before.txt", "r", encoding="utf-8")
+    sentence = f.read()
 
-    # 人名と会社名をJSON形式で取得
-    people_name_json, companies_name_json = get_json_people_companies(sentence)
-    # 校正支援をJSON形式で取得
-    result_calibration_json = get_json_roofreading(sentence)
+    # 人名と会社名をリストで取得
+    people_name_list, companies_name_list = get_list_people_companies(sentence)
+    # 校正支援をリストで取得
+    result_before_text_calibration_list = get_list_roofreading(sentence)
+    # 敬語変換
+    change_text = ChangeToHonorific(sentence)
+    # 敬語変換後の校正支援をリストで取得
+    result_change_text_calibration_list = get_list_roofreading(change_text)
 
     # 全て結果をJSON形式にまとめて返す
     result = {
-        'people_name': people_name_json,
-        'companies_name': companies_name_json,
-        'calibration': result_calibration_json
+        'before_sentence': sentence,
+        'people_name_list': people_name_list,
+        'companies_name_list': companies_name_list,
+        'before_sentence_calibration': result_before_text_calibration_list,
+        'change_sentence': change_text,
+        'change_sentence_calibration': result_change_text_calibration_list
     }
+    f.close()
     return result
 
 @app.route('/postdata', methods=['POST'])
 def post_postdata():
     json_post = request.get_json()
-    sentence = json_post['sentence'].replace('\n','')
+    sentence = json_post['sentence']
 
-    # 人名と会社名をJSON形式で取得
-    people_name_json, companies_name_json = get_json_people_companies(sentence)
-    # 校正支援をJSON形式で取得
-    result_calibration_json = get_json_roofreading(sentence)
+    # 人名と会社名をリストで取得
+    people_name_list, companies_name_list = get_list_people_companies(sentence)
+    # 校正支援をリストで取得
+    result_before_text_calibration_list = get_list_roofreading(sentence)
+    # 敬語変換
+    change_text = ChangeToHonorific(sentence)
+    # 敬語変換後の校正支援をリストで取得
+    result_change_text_calibration_list = get_list_roofreading(change_text)
     
     # 全て結果をJSON形式にまとめて返す
     result = {
-        'people_name': people_name_json,
-        'companies_name': companies_name_json,
-        'calibration': result_calibration_json
+        'before_sentence': sentence,
+        'people_name_list': people_name_list,
+        'companies_name_list': companies_name_list,
+        'before_sentence_calibration': result_before_text_calibration_list,
+        'change_sentence': change_text,
+        'change_sentence_calibration': result_change_text_calibration_list
     }
     return result
 
