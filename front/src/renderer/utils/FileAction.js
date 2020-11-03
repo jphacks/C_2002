@@ -26,4 +26,80 @@ async function mkdir (fullPath) {
   }
 }
 
-export default { mkdir }
+// 指定行の削除関数
+async function deleteLINE (fullPath, LINE) {
+  let lineText
+  let resultText = ''
+  console.log('LINE : ' + LINE)
+  // ファイルの読み込み
+  await fs.readFile(fullPath, 'utf8', function (err, data) {
+    // エラー処理
+    if (err) {
+      throw err
+    }
+    // 行ごとに分ける
+    lineText = data.split('\n')
+    console.log('lineText : ' + lineText)
+
+    for (let i = 0; i < lineText.length; i++) {
+      console.log(i + ' : ' + lineText[i])
+      if (i !== LINE - 1) {
+        console.log(i + ' : ' + lineText[i])
+        resultText = resultText + lineText[i] + '\n'
+      }
+    }
+  })
+
+  // ファイルへの書き込み
+  const optionJson = { flag: 'w' }
+  fs.writeFile(fullPath, resultText, optionJson, function (err) {
+    if (err) {
+      console.log(err)
+    }
+  })
+}
+
+// 行追加関数
+async function addLINE (fullPath, LINE, text) {
+  let lineText
+  let resultText = ''
+  // ファイルの読み込み
+  await fs.readFile(fullPath, 'utf8', (err, data) => {
+    if (err) {
+      console.log(err)
+    }
+    console.log('文字判別：' + text.indexOf('\n'))
+    if (text.indexOf('\n') > -1) {
+      text = text.substring(0, text.indexOf('\n'))
+    }
+    console.log('文字判別：' + text.indexOf('\n'))
+    if (data === '') {
+      resultText = text + '\n'
+    } else {
+      lineText = data.split('\n')
+      console.log('lineText : ' + lineText)
+      console.log('lineText.length : ' + lineText.length)
+
+      for (let i = 0; i < lineText.length; i++) {
+        if (i === LINE - 1) {
+          resultText = resultText + '\n' + text
+        } else if (i === 0) {
+          resultText = resultText + lineText[i]
+          continue
+        }
+        resultText = resultText + '\n' + lineText[i]
+      }
+    }
+
+    console.log(resultText)
+    // ファイルへの書き込み
+    const optionJson = { flag: 'w' }
+    fs.writeFile(fullPath, resultText, optionJson, function (err) {
+      if (err) {
+        console.log(err)
+      }
+    })
+  })
+}
+
+export default { mkdir, deleteLINE, addLINE }

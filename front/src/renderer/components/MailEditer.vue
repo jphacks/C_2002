@@ -18,7 +18,8 @@
     <textarea
       id="editor__body"
       v-model="mailData.body"
-      v-on:keyup.enter.exact="mailDataCheck">
+      v-on:keyup.enter.exact="bodyEnterAction"
+      v-on:keyup.delete.exact="bodyDeleteAction">
     </textarea>
   </div>
 </template>
@@ -42,7 +43,9 @@
       return {
         draft: {
           directory: '/aaplication-name/draft/',
-          fileName: '/draft.txt'
+          fileName: '/draft.txt',
+          resultName: 'result.txt',
+          delimiter: '/'
         },
         commitID: '',
         mailData: {
@@ -50,7 +53,8 @@
           destination: '',
           body: '',
           draftID: '',
-          bodyLINE: ''
+          bodyLINE: '',
+          bodyLength: 0
         }
       }
     },
@@ -59,7 +63,7 @@
         // Windows用のパス形式で指定
         if (isWindows) {
           this.draft.directory = '\\aaplication-name\\draft\\'
-          this.draft.fileName = '\\draft.txt'
+          this.draft.delimiter = '\\'
         }
 
         // 下書きごとのIDはUNIX時間を指定
@@ -73,7 +77,13 @@
         await GitCommand.gitInit(targetDirectory)
 
         // ファイルの作成
-        fs.writeFile(targetDirectory + this.draft.fileName, '', function (err) {
+        fs.writeFile(targetDirectory + this.draft.delimiter + this.draft.fileName, '', function (err) {
+          if (err) { throw err }
+        })
+        fs.writeFile(targetDirectory + this.draft.delimiter + '.gitignore', this.draft.resultName, function (err) {
+          if (err) { throw err }
+        })
+        fs.writeFile(targetDirectory + this.draft.delimiter + this.draft.resultName, '', function (err) {
           if (err) { throw err }
         })
 
@@ -94,13 +104,13 @@
 
         // ファイルへの書き込み
         const optionJson = { flag: 'w' }
-        fs.writeFile(draftDirectory + this.draft.fileName, this.mailData.body, optionJson, function (err) {
+        await fs.writeFile(draftDirectory + this.draft.delimiter + this.draft.fileName, this.mailData.body, optionJson, function (err) {
           if (err) { throw err }
         })
 
         // 差分の取得
-        const difStd = await GitCommand.gitDiff('', draftDirectory)
-        const diffObj = DiffParser.diffParse(difStd)
+        const diffStd = await GitCommand.gitDiff('', draftDirectory)
+        const diffObj = DiffParser.diffParse(diffStd)
 
         // git add
         await GitCommand.gitAdd('.', draftDirectory)
@@ -109,17 +119,12 @@
         const commitMessage = Date.now() + ' draft commit'
         await GitCommand.gitCommit(commitMessage, draftDirectory)
 
-        const self = this
         // commit ID の取得
-        const commitID = await GitCommand.getCommitID(draftDirectory)
+        diffObj['commit_id'] = await GitCommand.getCommitID(HOMEDIR + this.draft.directory + this.draftID)
 
-        // 抜き出し
-        Object.keys(diffObj.add).forEach(function (key) {
-          console.log(key + '/' + diffObj.add[key])
-          self.convertHonorific(commitID, diffObj.add[key])
-        })
+        return diffObj
       },
-      async convertHonorific (commitID, sentence) {
+      async convertHonorific (commitID, sentence, key) {
         // APIのURL
         const API = 'http://54.64.167.36:5000/postdata'
 
@@ -132,6 +137,11 @@
           .then((res) => {
             // レスポンスが200の時の処理
             console.log(res)
+            FileAction.addLINE(
+              HOMEDIR + this.draft.directory + this.draftID + this.draft.delimiter + this.draft.resultName,
+              key,
+              res.data['change_sentence']
+            )
           })
           .catch(err => {
             console.log(err)
@@ -140,11 +150,57 @@
             }
           })
       },
-      mailDataCheck: function () {
-        this.mailData.bodyLINE = (this.mailData.body.match(/\n/g) || []).length
-        console.log(this.mailData.bodyLINE)
+      async bodyEnterAction () {
+        if (this.mailData.bodyLength + 1 < this.mailData.body.length) {
+          if (this.mailData.bodyLINE !== (this.mailData.body.match(/\n/g) || []).length) {
+            this.mailData.bodyLINE = (this.mailData.body.match(/\n/g) || []).length
+            const self = this
 
-        this.saveDraft()
+            // 差分オブジェクトを取得
+            const diffObj = await this.saveDraft()
+
+            // 抜き出し
+            Object.keys(diffObj.add).forEach(function (key) {
+              console.log(key + '/' + diffObj.add[key])
+              if (diffObj.add[key] !== '') {
+                self.convertHonorific(diffObj['commit_id'], diffObj.add[key], key)
+              }
+            })
+          }
+        } else {
+          // 作業ディレクトリの定義
+          const draftDirectory = HOMEDIR + this.draft.directory + this.draftID
+
+          // ファイルへの書き込み
+          const optionJson = { flag: 'w' }
+          await fs.writeFile(draftDirectory + this.draft.delimiter + this.draft.fileName, this.mailData.body, optionJson, function (err) {
+            if (err) { throw err }
+          })
+
+          // git add
+          await GitCommand.gitAdd('.', draftDirectory)
+
+          // git commit
+          const commitMessage = Date.now() + ' draft commit'
+          await GitCommand.gitCommit(commitMessage, draftDirectory)
+        }
+        this.mailData.bodyLength = this.mailData.body.length
+      },
+      async bodyDeleteAction () {
+        if (this.mailData.bodyLINE !== (this.mailData.body.match(/\n/g) || []).length) {
+          this.mailData.bodyLINE = (this.mailData.body.match(/\n/g) || []).length
+          const self = this
+
+          // 差分オブジェクトを取得
+          const diffObj = await this.saveDraft()
+
+          // 抜き出し
+          Object.keys(diffObj.remove).forEach(function (key) {
+            console.log('key : ' + key)
+            FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, key)
+            console.log(key)
+          })
+        }
       }
     },
     watch: {

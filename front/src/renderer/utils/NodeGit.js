@@ -111,6 +111,7 @@ function gitDiff (prevID, pwd) {
     // 標準出力受け取り
     child.stdout.on('data', data => {
       // 差分を抜き出す
+      console.log(data)
       return resolve(data)
     })
 

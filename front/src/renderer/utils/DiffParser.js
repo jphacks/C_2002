@@ -65,7 +65,7 @@ function searchAddLINE (targetText, addLINE) {
   for (let prevPosition = 0; targetText.substr(prevPosition).indexOf('\n+') > -1;) {
     // +開始部分取得
     const startPosition = targetText.substr(prevPosition).indexOf('\n+')
-    const endPosition = targetText.substr(prevPosition + startPosition + 2).indexOf('\n')
+    const endPosition = targetText.substr(prevPosition + startPosition + 1).indexOf('\n')
 
     // パース
     if (endPosition === -1) {
@@ -92,7 +92,7 @@ function searchRemoveLINE (targetText, rmLINE) {
   for (let prevPosition = 0; targetText.substr(prevPosition).indexOf('\n-') > -1;) {
     // +開始部分取得
     const startPosition = targetText.substr(prevPosition).indexOf('\n-')
-    const endPosition = targetText.substr(prevPosition + startPosition + 2).indexOf('\n')
+    const endPosition = targetText.substr(prevPosition + startPosition + 1).indexOf('\n')
     if (endPosition === -1) {
       rmObj[rmLINE] = targetText.substr(prevPosition).substr(startPosition + 2)
     } else {
