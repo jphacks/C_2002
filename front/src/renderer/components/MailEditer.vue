@@ -17,7 +17,8 @@
 
     <textarea
       id="editor__body"
-      v-model="mailData.body">
+      v-model="mailData.body"
+      v-on:keyup.enter.exact="mailDataCheck">
     </textarea>
   </div>
 </template>
@@ -48,7 +49,8 @@
           subject: '',
           destination: '',
           body: '',
-          draftID: ''
+          draftID: '',
+          bodyLINE: ''
         }
       }
     },
@@ -91,26 +93,21 @@
         const draftDirectory = HOMEDIR + this.draft.directory + this.draftID
 
         // ファイルへの書き込み
-        fs.appendFile(draftDirectory + this.draft.fileName, this.mailData.body, function (err) {
+        const optionJson = { flag: 'w' }
+        fs.writeFile(draftDirectory + this.draft.fileName, this.mailData.body, optionJson, function (err) {
           if (err) { throw err }
         })
 
         // 差分の取得
         const difStd = await GitCommand.gitDiff('', draftDirectory)
-        console.log(difStd)
         const diffObj = DiffParser.diffParse(difStd)
-        console.log(diffObj)
 
         // git add
-        await GitCommand.gitAdd('.', draftDirectory).then(function (result) {
-          console.log(result)
-        })
+        await GitCommand.gitAdd('.', draftDirectory)
 
         // git commit
         const commitMessage = Date.now() + ' draft commit'
-        await GitCommand.gitCommit(commitMessage, draftDirectory).then(function (result) {
-          console.log(result)
-        })
+        await GitCommand.gitCommit(commitMessage, draftDirectory)
 
         const self = this
         // commit ID の取得
@@ -134,7 +131,6 @@
         })
           .then((res) => {
             // レスポンスが200の時の処理
-            console.log('送れたよ')
             console.log(res)
           })
           .catch(err => {
@@ -143,6 +139,12 @@
               // レスポンスが200以外の時の処理
             }
           })
+      },
+      mailDataCheck: function () {
+        this.mailData.bodyLINE = (this.mailData.body.match(/\n/g) || []).length
+        console.log(this.mailData.bodyLINE)
+
+        this.saveDraft()
       }
     },
     watch: {
