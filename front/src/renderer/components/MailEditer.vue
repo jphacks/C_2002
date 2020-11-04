@@ -61,7 +61,9 @@
           bodyLINE: 0,
           bodyLength: 0,
           resultBody: ''
-        }
+        },
+        isWindows: false,
+        breakChar: '\n'
       }
     },
     methods: {
@@ -159,9 +161,10 @@
           })
       },
       async bodyEnterAction () {
+        const regexp = new RegExp(this.breakChar + '(.*?)', 'g')
         if (this.mailData.bodyLength + 1 < this.mailData.body.length) {
-          if (this.mailData.bodyLINE !== (this.mailData.body.match(/\n/g) || []).length) {
-            this.mailData.bodyLINE = (this.mailData.body.match(/\n/g) || []).length
+          if (this.mailData.bodyLINE !== (this.mailData.body.match(regexp) || []).length) {
+            this.mailData.bodyLINE = (this.mailData.body.match(regexp) || []).length
             const self = this
 
             // 差分オブジェクトを取得
@@ -195,7 +198,8 @@
         this.mailData.bodyLength = this.mailData.body.length
       },
       async bodyDeleteAction () {
-        const breakPoints = (this.mailData.body.match(/\n/g) || []).length
+        const regexp = new RegExp(this.breakChar + '(.*?)', 'g')
+        const breakPoints = (this.mailData.body.match(regexp) || []).length
         if (this.mailData.bodyLINE !== breakPoints) {
           this.mailData.bodyLINE = breakPoints
           const self = this
@@ -294,6 +298,15 @@
       }
     },
     mounted () {
+      // Windowsか確認
+      this.isWindows = process.platform === 'win32'
+      // 改行コードの設定
+      if (isWindows) {
+        this.breakChar = '\n'
+      } else {
+        this.breakChar = '\r'
+      }
+      // ドラフトディレクトリの作成
       this.draftInit()
     }
   }
