@@ -34,8 +34,9 @@
     <div id="tray_frame">
       <!-- 左側 -->
       <div id="main_left">
-        <ChatTree 
-          v-bind:targetAddress="transferData.serchEmail"
+        <ChatTree
+          v-if="users[transferData.serchEmail]"
+          v-bind:targetUser="users[transferData.serchEmail]"
           v-bind:reroadTrigger="transferData.reroadTrigger"
           />
         <!--
@@ -78,7 +79,6 @@
     name: 'c_2002',
     components: {
       MailEditer,
-      // 設定アイコンのコンポーネント
       SettingIcon,
       ChatTree,
       Preview
@@ -115,6 +115,7 @@
     },
     methods: {
       changeTranseferEmail (targetEmail) {
+        console.log(this.users[targetEmail])
         this.transferData.serchEmail = targetEmail
       },
       userMouseOver () {

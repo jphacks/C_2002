@@ -1,10 +1,14 @@
 <template>
   <div id="chat_tree">
+    <div id="tree__title">
+      <h2>{{ targetUser.name }}</h2>
+      <p>{{ targetUser.mail }}</p>
+    </div>
     <div id="tree_frame">
       <div
         class="chat"
         v-for="(message, index) in messages"
-        v-if="message.from.address === targetAddress"
+        v-if="message.from.address === targetUser.mail"
         :key="index">
         <div :class="[userData.mail === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
           <!-- <h5 class="chat__name">{{ message.name }}</h5> -->
@@ -28,7 +32,7 @@
   export default {
     name: 'Chattree',
     props: {
-      targetAddress: '',
+      targetUser: {},
       reroadTrigger: ''
     },
     data () {
@@ -38,11 +42,11 @@
           fileName: '/userInformation.json',
           delimiter: '/'
         },
+        messages: {},
         userData: {
-          name: 'TestUser',
-          mail: 'user@test.com'
-        },
-        messages: {}
+          mail: '',
+          name: ''
+        }
       }
     },
     methods: {
@@ -117,34 +121,33 @@
         if (newStatus === false) {
           this.getUserData()
         }
-      },
-      targetAddress: function (newEmail, oldEmail) {
-        console.log(newEmail)
-        const self = this
-        // メール一覧の取得
-        fs.readFile(HOMEDIR + this.infomation.delimiter + 'frankfrut' + this.infomation.delimiter + 'data' + this.infomation.delimiter + 'userInformation.json', 'utf8', function (err, data) {
-          // エラー処理
-          if (err) {
-            throw err
-          }
-          const userData = JSON.parse(data)
-
-          // メール受信用の認証情報をオブジェクトに格納
-          const authData = {
-            auth: {
-              user: userData['smtp'].auth.user,
-              pass: userData['smtp'].auth.pass
-            },
-            imap: {
-              host: userData['imap'].host,
-              port: userData['imap'].port
-            }
-          }
-
-          // メールを受信
-          self.searchMail(authData, self.targetAddress)
-        })
       }
+    },
+    mounted () {
+      const self = this
+      // メール一覧の取得
+      fs.readFile(HOMEDIR + this.infomation.delimiter + 'frankfrut' + this.infomation.delimiter + 'data' + this.infomation.delimiter + 'userInformation.json', 'utf8', function (err, data) {
+        // エラー処理
+        if (err) {
+          throw err
+        }
+        const userData = JSON.parse(data)
+
+        // メール受信用の認証情報をオブジェクトに格納
+        const authData = {
+          auth: {
+            user: userData['smtp'].auth.user,
+            pass: userData['smtp'].auth.pass
+          },
+          imap: {
+            host: userData['imap'].host,
+            port: userData['imap'].port
+          }
+        }
+
+        // メールを受信
+        self.searchMail(authData, self.targetUser.mail)
+      })
     }
   }
 </script>
@@ -156,15 +159,34 @@
     background-color: #eeeeee;
     width: 450px;
     height: 100vh;
-    overflow-y: scroll;
   }
   #tree_frame {
     width: 90%;
     height: 100vh;
     margin-left: 5%;
+    overflow-y: scroll;
+  }
+  #tree__title{
+    width: 96%;
+    height: 80px;
+    padding-left: 4%;
+    background: #262626;
+    color: #ffffff;
+    font-weight: bold;
+    h2{
+      margin-top: 15px;
+      font-size: 20px;
+      line-height: 20px;
+    }
+    p{
+      margin-top: 5px;
+      font-size: 13px;
+      line-height: 13px;
+    }
   }
 
   $chat__time-fontsize: 10px;
+
   // チャット風UI
   .chat{
     // 送受信時間表記
@@ -185,7 +207,7 @@
       width: 250px;
       height: auto;
       background-color: #ffffff;
-      color: #262626;
+      color: #333333;
       border-radius: 10px 10px 10px 0;
       cursor: pointer;
       vertical-align: middle;
