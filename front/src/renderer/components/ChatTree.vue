@@ -71,7 +71,7 @@
       getUserData () {
         // Windows用のパス形式で指定
         if (isWindows) {
-          this.infomation.directory = '\\frankfrut\\draft\\'
+          this.infomation.directory = '\\frankfrut\\data\\'
           this.infomation.delimiter = '\\'
         }
         // Win/Mac両対応のディレクトリを生成
@@ -91,7 +91,7 @@
       getReceiveEmail (serchTarget) {
         // Windows用のパス形式で指定
         if (isWindows) {
-          this.infomation.directory = '\\frankfrut\\draft\\'
+          this.infomation.directory = '\\frankfrut\\data\\'
           this.infomation.delimiter = '\\'
         }
         // Win/Mac両対応のディレクトリを生成

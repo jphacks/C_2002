@@ -124,7 +124,7 @@
     },
     methods: {
       changeTranseferEmail (targetEmail) {
-        console.log('押されあた！！')
+        console.log('押された！！')
         this.transferData.serchEmail = 'no-reply@accounts.google.com'
       },
       userMouseOver () {
@@ -140,7 +140,7 @@
         console.log('modal ON')
         // Windows用のパス形式で指定
         if (isWindows) {
-          this.infomation.directory = '\\frankfrut\\draft\\'
+          this.infomation.directory = '\\frankfrut\\data\\'
           this.infomation.delimiter = '\\'
         }
         // Win/Mac両対応のディレクトリを生成
@@ -162,7 +162,7 @@
         console.log('modal OFF')
         // Windows用のパス形式で指定
         if (isWindows) {
-          this.infomation.directory = '\\frankfrut\\draft\\'
+          this.infomation.directory = '\\frankfrut\\data\\'
           this.infomation.delimiter = '\\'
         }
         // Win/Mac両対応のディレクトリを生成
