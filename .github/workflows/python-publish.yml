@@ -28,7 +28,6 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         python /home/runner/work/C_2002/C_2002/server/actionsTest.py
-        twine upload dist/*
     - name: Lint with flake8
       run: |
         pip install flake8
