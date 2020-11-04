@@ -42,7 +42,7 @@
     data () {
       return {
         draft: {
-          directory: '/aaplication-name/draft/',
+          directory: '/frankfrut/draft/',
           fileName: '/draft.txt',
           resultName: 'result.txt',
           delimiter: '/'
@@ -53,7 +53,7 @@
           destination: '',
           body: '',
           draftID: '',
-          bodyLINE: '',
+          bodyLINE: 0,
           bodyLength: 0
         }
       }
@@ -187,8 +187,9 @@
         this.mailData.bodyLength = this.mailData.body.length
       },
       async bodyDeleteAction () {
-        if (this.mailData.bodyLINE !== (this.mailData.body.match(/\n/g) || []).length) {
-          this.mailData.bodyLINE = (this.mailData.body.match(/\n/g) || []).length
+        const breakPoints = (this.mailData.body.match(/\n/g) || []).length
+        if (this.mailData.bodyLINE !== breakPoints) {
+          this.mailData.bodyLINE = breakPoints
           const self = this
 
           // 差分オブジェクトを取得
@@ -196,7 +197,6 @@
 
           // 抜き出し
           Object.keys(diffObj.remove).forEach(function (key) {
-            console.log('key : ' + key)
             FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, key)
             console.log(key)
           })
