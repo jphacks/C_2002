@@ -1,7 +1,6 @@
 <template>
   <div id="MailEditor">
     <div id="editor__menu">
-      <button v-on:click="sendMail">send</button>
     </div>
     <input
       class="editor__input"
@@ -17,9 +16,14 @@
     <textarea
       id="editor__body"
       v-model="mailData.body"
+      placeholder="本文を入力"
       v-on:keyup.enter.exact="bodyEnterAction"
       v-on:keyup.delete.exact="bodyDeleteAction">
     </textarea>
+
+    <div id="editor__contents">
+      <button @click="sendMail">送信</button>
+    </div>
   </div>
 </template>
 
@@ -220,24 +224,26 @@
         }
       },
       sendMail () {
-        const smtpData = {
-          host: 'smtp.gmail.com',
-          port: 465,
-          secure: true, // SSL
-          auth: {
-            user: '',
-            pass: ''
+        const self = this
+        // SMTP情報を取得
+        fs.readFile(HOMEDIR + this.draft.delimiter + 'frankfrut' + this.draft.delimiter + 'data' + this.draft.delimiter + 'userInformation.json', 'utf8', function (err, data) {
+          // エラー処理
+          if (err) {
+            throw err
           }
-        }
+          const smtpData = JSON.parse(data)
 
-        const mailData = {
-          from: smtpData.auth.user,
-          to: this.mailData.destination,
-          subject: this.mailData.subject,
-          text: this.mailData.body
-        }
+          console.log(smtpData)
 
-        MailSend.sendMail(smtpData, mailData)
+          const mailData = {
+            from: smtpData['smtp'].auth.user,
+            to: self.mailData.destination,
+            subject: self.mailData.subject,
+            text: self.mailData.body
+          }
+
+          MailSend.sendMail(smtpData['smtp'], mailData)
+        })
       }
     },
     watch: {
@@ -258,7 +264,7 @@
   // 上部メニューバー
   #editor__menu{
     width: 100%;
-    height: 60px;
+    height: 40px;
     background: #4B4B4B;
   }
 
@@ -270,7 +276,7 @@
     // スタイル
     width: 94%;
     padding: 0 3%;
-    font-size: 1em;
+    font-size: 17px;
     line-height: 40px;
     border-bottom: 1px solid #262626;
   }
@@ -280,11 +286,40 @@
     outline: none;
     border: none;
     width: 94%;
-    height: calc(100vh - 10px - 140px);
+    height: calc(100vh - 10px - 170px);
     margin: 5px 0 0 3%;
+    font-size: 17px;
+    line-height: 26px;
     overflow-y: scroll;
     &:focus{
       outline: none;
+    }
+  }
+
+  // 下部メニューバー
+  #editor__contents{
+    width: 100%;
+    height: 40px;
+    border-top: solid 2px #d7d7d7;
+
+    button{
+      display: inline-block;
+      width: 70px;
+      height: 30px;
+      margin: 7px 0 0 7px;
+      border-radius: 5px;
+      background: #5645ff;
+      text-align: center;
+      color: #ffffff;
+      font-weight: bold;
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all  0.3s ease;
+
+      &:hover{
+        opacity: .9;
+      }
     }
   }
 </style>

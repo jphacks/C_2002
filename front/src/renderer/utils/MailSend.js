@@ -7,8 +7,8 @@ function sendMail (smtpData, mailData) {
     port: smtpData.port,
     secure: smtpData.secure, // SSL
     auth: {
-      user: smtpData.auth.user,
-      pass: smtpData.auth.pass
+      user: smtpData.auth['user'],
+      pass: smtpData.auth['pass']
     }
   })
 
