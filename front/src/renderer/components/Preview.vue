@@ -1,32 +1,32 @@
 <template>
   <div id="preview">
-    <div id="content">
-      <div id="subject_frame">
-        <div id="subject">
-          件名：{{ content.subject}}
-        </div>
-        <div id="name">
-          名前：{{ content.name }}
-        </div>
-      </div>
-      <div id="main_message_frame">
-        <div id="main_message">
-          {{ content.message }}
-        </div>
-      </div>
+
+    <div class="upbar_list">
+      UPDATED
     </div>
+
+    <div class="upbar_list">
+      件名：{{ subject }}
+    </div>
+
+    <textarea
+      id="main_message"
+      v-model="mailBody">
+    </textarea>
   </div>
 </template>
 
 <script>
   export default {
     name: 'Preview',
+    props: {
+      subject: '',
+      mailBody: ''
+    },
     data () {
       return {
         content: {
-          subject: 'テスト件名',
-          name: 'テスト送信者',
-          message: 'これはメッセージ本文です．改行をどうにかしないといけないわ'
+          subject: 'テスト件名'
         }
       }
     }
@@ -35,48 +35,33 @@
 
 <style scoped lang="scss">
   #preview{
-    background-color: #ffffff;
     height: 100%;
     width: 100%;
-    #content{
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-      #subject_frame{
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        height: 10%;
-        width: 100%;
-        #subject{
-          height: auto;
-          width: auto;
-          padding: 5px;
-          margin: 10px 10px 0px 10px;
-          border-radius: 10px;
-        }
-        #name{
-          height: auto;
-          width: auto;
-          padding: 5px;
-          margin: 0px 10px 10px 10px;
-        }
-      }
-      #main_message_frame{
-        display: flex;
-        height: 90%;
-        width: 100%;
-        #main_message{
-          margin: 10px;
-          width: 100%;
-          height: auto;
-          overflow: scroll;
-          #test{
-            font-size: 4rem;
-          }
-        }
-      }
+  }
+
+  // 上部のスタイル
+  .upbar_list{
+    width: 94%;
+    padding: 0 3%;
+    font-size: 17px;
+    line-height: 40px;
+    height: 40px;
+    border-bottom: 1px solid #262626;
+  }
+
+  // 本文
+  #main_message{
+    outline: none;
+    border: none;
+    resize: none;
+    width: 94%;
+    margin: 5px 0 0 3%;
+    height: calc(100vh - 10px - 90px);
+    overflow: scroll;
+    font-size: 17px;
+    line-height: 26px;
+    &:focus{
+      outline: none;
     }
   }
 </style>

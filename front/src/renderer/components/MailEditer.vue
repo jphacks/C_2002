@@ -1,17 +1,17 @@
 <template>
   <div id="MailEditor">
-    <div id="editor__menu">
-    </div>
-    <input
-      class="editor__input"
-      type="text"
-      v-model="mailData.subject"
-      placeholder="件名">
     <input
       class="editor__input"
       type="text"
       v-model="mailData.destination"
       placeholder="宛先">
+
+    <input
+      class="editor__input"
+      type="text"
+      maxlength="50"
+      v-model="mailData.subject"
+      placeholder="件名">
 
     <textarea
       id="editor__body"
@@ -58,7 +58,8 @@
           body: '',
           draftID: '',
           bodyLINE: 0,
-          bodyLength: 0
+          bodyLength: 0,
+          resultBody: ''
         }
       }
     },
@@ -133,6 +134,7 @@
         const API = 'http://54.64.167.36:5000/postdata'
         // 送信用のJSONの作成
         const sendJSON = {'commit_id': commitID, 'sentence': sentence}
+        const self = this
         // APIへPOST
         return axios.post(API, sendJSON, {
           headers: {
@@ -146,7 +148,7 @@
               HOMEDIR + this.draft.directory + this.draftID + this.draft.delimiter + this.draft.resultName,
               key,
               res.data['change_sentence']
-            )
+            ).then(self.updatePreview)
           })
           .catch(err => {
             console.log(err)
@@ -221,6 +223,21 @@
           })
         }
       },
+      updatePreview () {
+        const self = this
+        fs.readFile(HOMEDIR + this.draft.directory + this.draftID + this.draft.delimiter + this.draft.resultName, 'utf8', function (err, data) {
+          // エラー処理
+          if (err) {
+            throw err
+          }
+          console.log(data)
+          // 変更結果を代入
+          self.mailData.resultBody = data
+
+          // 親コンポーネントへ渡す
+          self.$emit('updateBody', self.mailData.resultBody)
+        })
+      },
       sendMail () {
         const self = this
         // SMTP情報を取得
@@ -237,7 +254,7 @@
             from: '"' + smtpData['user'].affiliation + ' ' + smtpData['user'].name + '" <' + smtpData['smtp'].auth.user + '>',
             to: self.mailData.destination,
             subject: self.mailData.subject,
-            text: self.mailData.body
+            text: self.mailData.resultBody
           }
 
           MailSend.sendMail(smtpData['smtp'], mailData)
@@ -245,7 +262,34 @@
       }
     },
     watch: {
-      mailData: function () {
+      'mailData.subject': function (val, oldVal) {
+        // APIのURL
+        const API = 'http://54.64.167.36:5000/postdata'
+        const self = this
+
+        // 件名が短いときはAPIを通さない
+        if (this.mailData.subject.length < 4) {
+          this.$emit('updateSubject', this.mailData.subject)
+        } else {
+          // 送信用のJSONの作成
+          const sendJSON = {'commit_id': 'subject', 'sentence': this.mailData.subject}
+          // APIへPOST
+          return axios.post(API, sendJSON, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+            .then((res) => {
+              console.log(res)
+              self.$emit('updateSubject', res.data['change_sentence'])
+            })
+            .catch(err => {
+              console.log(err)
+              if (err.response) {
+                // レスポンスが200以外の時の処理
+              }
+            })
+        }
       }
     },
     mounted () {
@@ -255,15 +299,9 @@
 </script>
 
 <style lang="scss">
+  // 全体スタイル
   #editor__MailEditor{
     width: 600px;
-  }
-
-  // 上部メニューバー
-  #editor__menu{
-    width: 100%;
-    height: 40px;
-    background: #4B4B4B;
   }
 
   // テキスト入力部分のスタイル
@@ -283,8 +321,9 @@
   #editor__body{
     outline: none;
     border: none;
+    resize: none;
     width: 94%;
-    height: calc(100vh - 10px - 170px);
+    height: calc(100vh - 10px - 130px);
     margin: 5px 0 0 3%;
     font-size: 17px;
     line-height: 26px;

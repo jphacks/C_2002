@@ -29,7 +29,6 @@ async function mkdir (fullPath) {
 // 行追加関数
 async function addLINE (fullPath, LINE, text) {
   return new Promise(resolve => {
-    console.log('start add')
     let lineText
     let resultText = ''
     // ファイルの読み込み
@@ -65,6 +64,7 @@ async function addLINE (fullPath, LINE, text) {
         if (err) {
           console.log(err)
         }
+        return resolve(0)
       })
     })
   })
@@ -73,7 +73,6 @@ async function addLINE (fullPath, LINE, text) {
 // 指定行の削除関数
 async function deleteLINE (fullPath, LINE) {
   return new Promise(resolve => {
-    console.log('start remove')
     let lineText
     let resultText = ''
     // ファイルの読み込み
@@ -88,7 +87,6 @@ async function deleteLINE (fullPath, LINE) {
 
       for (let i = 0; i < lineText.length; i++) {
         if (i !== LINE - 1) {
-          console.log(i + ' : ' + lineText[i])
           resultText = resultText + lineText[i] + '\n'
         }
       }
@@ -99,9 +97,9 @@ async function deleteLINE (fullPath, LINE) {
         if (err) {
           console.log(err)
         }
+        return resolve(0)
       })
     })
-    return resolve
   })
 }
 

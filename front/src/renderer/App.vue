@@ -34,14 +34,18 @@
     <div id="tray_frame">
       <!-- 左側 -->
       <div id="main_left">
-        <ChatTree v-bind:email = "transferData" />
-        <!-- <MailEditer/> -->
+        <!-- <ChatTree v-bind:email = "transferData" /> -->
+        <MailEditer
+          @updateBody="mailData.mailBody = $event"
+          @updateSubject="mailData.subject = $event"/>
       </div>
       <!-- リサイズバー -->
       <div id="resize_bar"></div>
       <!-- 右側 -->
       <div id="main_right">
-        <Preview/>
+        <Preview
+          :mailBody="mailData.mailBody"
+          :subject="mailData.subject"/>
       </div>
     </div>
     <router-view></router-view>
@@ -74,6 +78,10 @@
     },
     data () {
       return {
+        mailData: {
+          mailBody: '',
+          subject: ''
+        },
         // チャットツリーに転送するための変数
         transferData: '',
         infomation: {
