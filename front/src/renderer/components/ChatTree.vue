@@ -6,7 +6,8 @@
         v-for="(message, index) in messages"
         :key="index">
         <div :class="[userData.mail === message.mail ? 'chat__send_me' : '', 'chat__frame ' + message.type]">
-          <h5 class="chat__name">{{ message.name }}</h5>
+          <!-- <h5 class="chat__name">{{ message.name }}</h5> -->
+          <h5 class="chat__name">{{ email }}</h5>
           <p class="chat__title">{{ message.subject }}</p>
         </div>
         <span class="chat__time">{{ message.time }}</span><!-- 時間に関してはメールサーバからの情報によって変更 -->
@@ -18,6 +19,12 @@
 <script>
   export default {
     name: 'Chattree',
+    props: {
+      email: {
+        type: String,
+        default: null
+      }
+    },
     data () {
       return {
         userData: {

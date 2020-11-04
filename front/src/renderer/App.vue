@@ -34,8 +34,8 @@
     <div id="tray_frame">
       <!-- 左側 -->
       <div id="main_left">
-        <!-- <ChatTree/> -->
-        <MailEditer/>
+        <ChatTree v-bind:email = "transferData" />
+        <!-- <MailEditer/> -->
       </div>
       <!-- リサイズバー -->
       <div id="resize_bar"></div>
@@ -74,6 +74,8 @@
     },
     data () {
       return {
+        // チャットツリーに転送するための変数
+        transferData: '',
         infomation: {
           directory: '/frankfrut/data/',
           fileName: '/userInformation.json',
