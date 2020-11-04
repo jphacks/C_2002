@@ -17,8 +17,9 @@
       id="editor__body"
       v-model="mailData.body"
       placeholder="本文を入力"
-      v-on:keyup.enter.exact="bodyEnterAction"
-      v-on:keyup.delete.exact="bodyDeleteAction">
+      @keyup.enter.exact="bodyEnterAction"
+      @keyup.delete.exact="bodyDeleteAction"
+      @keydown.ctrl.enter="sendMail">
     </textarea>
 
     <div id="editor__contents">
