@@ -1,7 +1,5 @@
+import OS from './OS'
 const fs = require('fs')
-
-// Windowsか確認
-const isWindows = process.platform === 'win32'
 
 // ディレクトリ作成関数
 async function mkdir (fullPath) {
@@ -36,12 +34,7 @@ async function addLINE (fullPath, LINE, text) {
     let resultText = ''
 
     // 区切り文字をOSに合わせる
-    let delimiter
-    if (isWindows) {
-      delimiter = '\n'
-    } else {
-      delimiter = '\r'
-    }
+    const delimiter = OS.breakChar()
 
     // ファイルの読み込み
     fs.readFile(fullPath, 'utf8', (err, data) => {
@@ -89,12 +82,7 @@ async function deleteLINE (fullPath, LINE) {
     let resultText = ''
 
     // 区切り文字をOSに合わせる
-    let delimiter
-    if (isWindows) {
-      delimiter = '\n'
-    } else {
-      delimiter = '\r'
-    }
+    const delimiter = OS.breakChar()
 
     // ファイルの読み込み
     fs.readFile(fullPath, 'utf8', function (err, data) {

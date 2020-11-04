@@ -56,11 +56,12 @@
 </template>
 
 <script>
-  import FileAction from './utils/FileAction'
   import SettingIcon from './components/icons/setting.vue'
   import ChatTree from './components/ChatTree.vue'
   import Preview from './components/Preview.vue'
   import MailEditer from './components/MailEditer'
+  import FileAction from './utils/FileAction'
+  import MailReciver from './utils/MailReceive'
 
   // モジュールをインポート
   const fs = require('fs')
@@ -197,6 +198,28 @@
         this.displayFlag.settingModal = false
         this.transferData.reroadTrigger = false
       }
+    },
+    mounted () {
+      // メール一覧の取得
+      fs.readFile(HOMEDIR + this.draft.delimiter + 'frankfrut' + this.draft.delimiter + 'data' + this.draft.delimiter + 'userInformation.json', 'utf8', function (err, data) {
+        // エラー処理
+        if (err) {
+          throw err
+        }
+        const userData = JSON.parse(data)
+
+        const authData = {
+          auth: {
+            user: userData['smtp'].auth.user,
+            pass: userData['smtp'].auth.pass
+          },
+          imap: {
+            host: userData['imap'].host,
+            port: userData['imap'].port
+          }
+        }
+        MailReciver.mailReceive(authData)
+      })
     }
   }
 </script>

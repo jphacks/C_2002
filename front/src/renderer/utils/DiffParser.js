@@ -1,14 +1,8 @@
-// Windowsか確認
-const isWindows = process.platform === 'win32'
+import OS from './OS'
 
 // diff内容のパース
 function diffParse (diff) {
-  let delimiter
-  if (isWindows) {
-    delimiter = '\n'
-  } else {
-    delimiter = '\r'
-  }
+  const delimiter = OS.breakChar()
 
   let addObj = {}
   let rmObj = {}
@@ -70,12 +64,7 @@ function diffParse (diff) {
 
 function searchAddLINE (targetText, addLINE) {
   let addObj = {}
-  let delimiter
-  if (isWindows) {
-    delimiter = '\n'
-  } else {
-    delimiter = '\r'
-  }
+  const delimiter = OS.breakChar()
 
   // 追加内容探索
   for (let prevPosition = 0; targetText.substr(prevPosition).indexOf(delimiter + '+') > -1;) {
@@ -103,12 +92,7 @@ function searchAddLINE (targetText, addLINE) {
 
 function searchRemoveLINE (targetText, rmLINE) {
   let rmObj = {}
-  let delimiter
-  if (isWindows) {
-    delimiter = '\n'
-  } else {
-    delimiter = '\r'
-  }
+  const delimiter = OS.breakChar()
 
   // 削除内容探索
   for (let prevPosition = 0; targetText.substr(prevPosition).indexOf(delimiter + '-') > -1;) {

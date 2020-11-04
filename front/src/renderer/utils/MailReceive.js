@@ -1,13 +1,13 @@
 const inbox = require('inbox')
 
 // メール受信関数
-async function mailReceive (userData, getMailCount = 10) {
+async function mailReceive (authData, getMailCount = 10) {
   return new Promise(resolve => {
-    const client = inbox.createConnection(false, 'imap.gmail.com', {
+    const client = inbox.createConnection(authData['imap'].port, authData['imap'].host, {
       secureConnection: true,
       auth: {
-        user: userData['user'],
-        pass: userData['pass']
+        user: authData['auth'].user,
+        pass: authData['auth'].pass
       }
     })
     client.on('connect', function () {

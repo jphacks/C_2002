@@ -34,6 +34,7 @@
   import MailSend from '../utils/MailSend'
   import axios from 'axios'
   import DiffParser from '../utils/DiffParser'
+  import OS from '../utils/OS'
   const fs = require('fs')
 
   const isWindows = process.platform === 'win32'
@@ -62,7 +63,6 @@
           bodyLength: 0,
           resultBody: ''
         },
-        isWindows: false,
         breakChar: '\n'
       }
     },
@@ -298,14 +298,8 @@
       }
     },
     mounted () {
-      // Windowsか確認
-      this.isWindows = process.platform === 'win32'
       // 改行コードの設定
-      if (isWindows) {
-        this.breakChar = '\n'
-      } else {
-        this.breakChar = '\r'
-      }
+      this.breakChar = OS.breakChar()
       // ドラフトディレクトリの作成
       this.draftInit()
     }
