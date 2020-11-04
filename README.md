@@ -44,27 +44,29 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
 
 ## 開発技術
 ### 活用した技術
+
+#### 使用言語
 * HTML
 * SCSS
 * JavaScript
-* Python
-* Git
-* AWS EC2
+* Python 3
+
+#### フレームワーク・ライブラリ・モジュール
+* [Git](https://git-scm.com/)
+* [Vue.js](https://jp.vuejs.org/index.html)
+* [Node.js](https://nodejs.org/ja/)
+* [Electron](https://www.electronjs.org/)
+* [jQuery](https://jquery.com/)
+* [Flask](https://flask.palletsprojects.com/en/1.1.x/)
 
 #### API・データ
-* スポンサー様の提供API
+* スポンサー様の提供サービス
     * [goo ラボ API](https://labs.goo.ne.jp/)
         * [固有表現抽出API](https://labs.goo.ne.jp/api/jp/named-entity-extraction/)
         * [形態素解析API](https://labs.goo.ne.jp/api/jp/morphological-analysis/)
-* 外部API
+* 外部サービス
+    * [AWS EC2](https://aws.amazon.com/jp/ec2/?ec2-whats-new.sort-by=item.additionalFields.postDateTime&ec2-whats-new.sort-order=desc)
     * [Proofreading API](https://a3rt.recruit-tech.co.jp/product/proofreadingAPI/)
-
-#### フレームワーク・ライブラリ・モジュール
-* Vue.js
-* Node.js
-* Electron
-* jQuery
-* Flask
 
 #### デバイス
 * なし
@@ -73,6 +75,13 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
 #### ハッカソンで開発した独自機能・技術
 * 独自で開発したものの内容をこちらに記載してください
 * 特に力を入れた部分をファイルリンク、またはcommit_idを記載してください。
+* アプリケーションの画面や画面遷移等
+* アプリケーション本体の処理
+    * クライアント側の処理
+    * サーバ側の処理
+        * メール文から人名と会社名を抽出（[固有表現抽出API](https://labs.goo.ne.jp/api/jp/named-entity-extraction/)）
+        * 校正箇所の指摘（[Proofreading API](https://a3rt.recruit-tech.co.jp/product/proofreadingAPI/)）
+        * 敬語への変換（[形態素解析API](https://labs.goo.ne.jp/api/jp/morphological-analysis/)，機械学習）
 
 #### 製品に取り入れた研究内容（データ・ソフトウェアなど）（※アカデミック部門の場合のみ提出必須）
 * なし
