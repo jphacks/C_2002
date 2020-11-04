@@ -38,13 +38,17 @@
           v-bind:serchEmail = "transferData.serchEmail"
           v-bind:reroadTrigger = "transferData.reroadTrigger"
           />
-        <!-- <MailEditer/> -->
+        <!-- <MailEditer
+          @updateBody="mailData.mailBody = $event"
+          @updateSubject="mailData.subject = $event"/> -->
       </div>
       <!-- リサイズバー -->
       <div id="resize_bar"></div>
       <!-- 右側 -->
       <div id="main_right">
-        <Preview/>
+        <Preview
+          :mailBody="mailData.mailBody"
+          :subject="mailData.subject"/>
       </div>
     </div>
     <router-view></router-view>
@@ -81,6 +85,10 @@
         transferData: {
           serchEmail: '検索するメールアドレス',
           reroadTrigger: false
+        },
+        mailData: {
+          mailBody: '',
+          subject: ''
         },
         infomation: {
           directory: '/frankfrut/data/',
