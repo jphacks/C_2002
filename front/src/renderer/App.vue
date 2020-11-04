@@ -17,7 +17,7 @@
          :style="'width: ' + userColumn.width + 'px'">
       <div class="scroll-frame">
         <div class="user_content" v-for="(user, index) in users" :key="index">
-          <span class="user_icon">
+          <span class="user_icon" @click="changeTranseferEmail(user.email)">
             {{ user.name.charAt(0) }}
           </span>
           <div v-if="userColumn.openFlg" class="user_info">
@@ -34,7 +34,10 @@
     <div id="tray_frame">
       <!-- 左側 -->
       <div id="main_left">
-        <ChatTree v-bind:email = "transferData" />
+        <ChatTree 
+          v-bind:serchEmail = "transferData.serchEmail"
+          v-bind:reroadTrigger = "transferData.reroadTrigger"
+          />
         <!-- <MailEditer/> -->
       </div>
       <!-- リサイズバー -->
@@ -74,8 +77,11 @@
     },
     data () {
       return {
-        // チャットツリーに転送するための変数
-        transferData: '',
+        // チャットツリーに転送するためのオブジェクト
+        transferData: {
+          serchEmail: '検索するメールアドレス',
+          reroadTrigger: false
+        },
         infomation: {
           directory: '/frankfrut/data/',
           fileName: '/userInformation.json',
@@ -95,7 +101,7 @@
         users: {
           '1': {
             name: 'Test1',
-            mail: 'test@example.com'
+            mail: 'rappy.contact@gmail.com'
           },
           '2': {
             name: 'Test2',
@@ -109,6 +115,10 @@
       }
     },
     methods: {
+      changeTranseferEmail (targetEmail) {
+        console.log('押されあた！！')
+        this.transferData.serchEmail = 'no-reply@accounts.google.com'
+      },
       userMouseOver () {
         this.userColumn.openFlg = true
         this.userColumn.width = 220
@@ -132,12 +142,13 @@
           console.log(targetDirectory + 'は存在します。')
           // ユーザー情報ファイルからデータを取得する
           let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
-          this.userInformation.email = jsonObject['auth']['user']
-          this.userInformation.password = jsonObject['auth']['pass']
+          this.userInformation.email = jsonObject['smtp']['auth']['user']
+          this.userInformation.password = jsonObject['smtp']['auth']['pass']
         } else {
           console.log(targetDirectory + 'は存在しません。')
         }
         this.displayFlag.settingModal = true
+        this.transferData.reroadTrigger = true
       },
       async settingModalDispOff () {
         console.log('modal OFF')
@@ -154,12 +165,18 @@
 
         // json生成
         const jsonData = {
-          host: 'smtp.gmail.com',
-          port: 465,
-          secure: true,
-          auth: {
-            user: this.userInformation.email,
-            pass: this.userInformation.password
+          smtp: {
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth: {
+              user: this.userInformation.email,
+              pass: this.userInformation.password
+            }
+          },
+          user: {
+            name: 'ReERishun',
+            affiliation: '株式会社PiedPiper'
           }
         }
 
@@ -170,6 +187,7 @@
         }))
         // モーダルフラグOFF
         this.displayFlag.settingModal = false
+        this.transferData.reroadTrigger = false
       }
     }
   }
