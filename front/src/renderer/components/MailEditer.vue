@@ -1,8 +1,7 @@
 <template>
   <div id="MailEditor">
     <div id="editor__menu">
-      <button v-on:click="saveDraft">save</button>
-      <button v-on:click="convertHonorific">convert</button>
+      <button v-on:click="sendMail">send</button>
     </div>
     <input
       class="editor__input"
@@ -27,6 +26,7 @@
 <script>
   import GitCommand from '../utils/NodeGit'
   import FileAction from '../utils/FileAction'
+  import MailSend from '../utils/MailSend'
   import axios from 'axios'
   import DiffParser from '../utils/DiffParser'
   const fs = require('fs')
@@ -62,7 +62,7 @@
       async draftInit () {
         // Windows用のパス形式で指定
         if (isWindows) {
-          this.draft.directory = '\\aaplication-name\\draft\\'
+          this.draft.directory = '\\frankfrut\\draft\\'
           this.draft.delimiter = '\\'
         }
 
@@ -77,13 +77,13 @@
         await GitCommand.gitInit(targetDirectory)
 
         // ファイルの作成
-        fs.writeFile(targetDirectory + this.draft.delimiter + this.draft.fileName, '', function (err) {
+        fs.writeFile(targetDirectory + this.draft.delimiter + this.draft.fileName, '', function (err) { // 下書き管理ファイル
           if (err) { throw err }
         })
-        fs.writeFile(targetDirectory + this.draft.delimiter + '.gitignore', this.draft.resultName, function (err) {
+        fs.writeFile(targetDirectory + this.draft.delimiter + '.gitignore', this.draft.resultName, function (err) { // gitignore
           if (err) { throw err }
         })
-        fs.writeFile(targetDirectory + this.draft.delimiter + this.draft.resultName, '', function (err) {
+        fs.writeFile(targetDirectory + this.draft.delimiter + this.draft.resultName, '', function (err) { // 結果保存ファイル
           if (err) { throw err }
         })
 
@@ -127,8 +127,9 @@
       async convertHonorific (commitID, sentence, key) {
         // APIのURL
         const API = 'http://54.64.167.36:5000/postdata'
-
+        // 送信用のJSONの作成
         const sendJSON = {'commit_id': commitID, 'sentence': sentence}
+        // APIへPOST
         return axios.post(API, sendJSON, {
           headers: {
             'Content-Type': 'application/json'
@@ -195,12 +196,48 @@
           // 差分オブジェクトを取得
           const diffObj = await this.saveDraft()
 
-          // 抜き出し
+          console.log(diffObj)
+
+          // 削除行を取得
+          let keysArr = []
           Object.keys(diffObj.remove).forEach(function (key) {
-            FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, key)
-            console.log(key)
+            keysArr.push(key)
+          })
+          const keyLength = keysArr.length
+          // 後ろの行から取り出し
+          for (let i = keyLength - 1; i >= 0; i--) {
+            // await FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, keysArr[i])
+            await FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, keysArr[i])
+          }
+
+          // 追加部分の追加
+          await Object.keys(diffObj.add).forEach(function (key) {
+            console.log(key + ':' + diffObj.add[key])
+            if (diffObj.add[key] !== '') {
+              self.convertHonorific(diffObj['commit_id'], diffObj.add[key], key)
+            }
           })
         }
+      },
+      sendMail () {
+        const smtpData = {
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true, // SSL
+          auth: {
+            user: '',
+            pass: ''
+          }
+        }
+
+        const mailData = {
+          from: smtpData.auth.user,
+          to: this.mailData.destination,
+          subject: this.mailData.subject,
+          text: this.mailData.body
+        }
+
+        MailSend.sendMail(smtpData, mailData)
       }
     },
     watch: {
