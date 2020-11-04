@@ -7,7 +7,7 @@
         <input type="email" placeholder="example@example.com" v-model="userInformation.email">
         <span>パスワード</span>
         <input type="password" v-model="userInformation.password">
-        <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/) && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
+        <button v-if="userInformation.mail.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/) && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
         <button v-else style="background: #919191; cursor: not-allowed;">登録</button>
       </div>
     </div>
@@ -17,7 +17,7 @@
          :style="'width: ' + userColumn.width + 'px'">
       <div class="scroll-frame">
         <div class="user_content" v-for="(user, index) in users" :key="index">
-          <span class="user_icon" @click="changeTranseferEmail(user.email)">
+          <span class="user_icon" @click="changeTranseferEmail(user.mail)">
             {{ user.name.charAt(0) }}
           </span>
           <div v-if="userColumn.openFlg" class="user_info">
@@ -34,14 +34,15 @@
     <div id="tray_frame">
       <!-- 左側 -->
       <div id="main_left">
-        <!--
         <ChatTree 
-          v-bind:serchEmail = "transferData.serchEmail"
-          v-bind:reroadTrigger = "transferData.reroadTrigger"
-          /> -->
+          v-bind:targetAddress="transferData.serchEmail"
+          v-bind:reroadTrigger="transferData.reroadTrigger"
+          />
+        <!--
         <MailEditer
           @updateBody="mailData.mailBody = $event"
           @updateSubject="mailData.subject = $event"/>
+           -->
       </div>
       <!-- リサイズバー -->
       <div id="resize_bar"></div>
@@ -109,30 +110,16 @@
           openFlg: false,
           width: 60
         },
-        users: {
-          '1': {
-            name: 'Test1',
-            mail: 'rappy.contact@gmail.com'
-          },
-          '2': {
-            name: 'Test2',
-            mail: 'test@example.com'
-          },
-          '3': {
-            name: 'Test3',
-            mail: 'test@example.com'
-          }
-        }
+        users: {}
       }
     },
     methods: {
       changeTranseferEmail (targetEmail) {
-        console.log('押された！！')
-        this.transferData.serchEmail = 'no-reply@accounts.google.com'
+        this.transferData.serchEmail = targetEmail
       },
       userMouseOver () {
         this.userColumn.openFlg = true
-        this.userColumn.width = 220
+        this.userColumn.width = 300
       },
       userMouseLeave () {
         this.userColumn.width = 60
@@ -199,10 +186,24 @@
         // モーダルフラグOFF
         this.displayFlag.settingModal = false
         this.transferData.reroadTrigger = false
+      },
+      async getMail (authData) {
+        const messages = await MailReciver.mailReceive(authData, 5)
+        const self = this
+
+        messages.forEach(function (message) {
+          console.log(message)
+          self.users[message['from'].address] = {
+            name: message['from'].name,
+            mail: message['from'].address
+          }
+        })
       }
     },
     mounted () {
       this.infomation.delimiter = OS.delimiterChar()
+
+      const self = this
       // メール一覧の取得
       fs.readFile(HOMEDIR + this.infomation.delimiter + 'frankfrut' + this.infomation.delimiter + 'data' + this.infomation.delimiter + 'userInformation.json', 'utf8', function (err, data) {
         // エラー処理
@@ -211,6 +212,7 @@
         }
         const userData = JSON.parse(data)
 
+        // メール受信用の認証情報をオブジェクトに格納
         const authData = {
           auth: {
             user: userData['smtp'].auth.user,
@@ -221,7 +223,9 @@
             port: userData['imap'].port
           }
         }
-        MailReciver.mailReceive(authData)
+
+        // メールを受信
+        self.getMail(authData)
       })
     }
   }
@@ -233,6 +237,50 @@
     font-family: 'JapaneseFont';
     src: url('~@/assets/font/KosugiMaru-Regular.ttf') format('truetype');
   }
+
+  // RESET
+  body{overflow: hidden;}
+  html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    vertical-align: baseline; }
+
+  /* HTML5 display-role reset for older browsers */
+
+  article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block; }
+
+  body {
+    line-height: 1; }
+
+  ol, ul {
+    list-style: none; }
+
+  blockquote, q {
+    quotes: none; }
+
+  blockquote {
+    &:before, &:after {
+      content: none; } }
+
+  q {
+    &:before, &:after {
+      content: none; } }
+
+  table {
+    border-collapse: collapse;
+    border-spacing: 0; }
+
+  input[type='submit'], button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    appearance: none; }
+
   #app {
     display: flex;
     flex-direction: row;
@@ -328,13 +376,14 @@
   }
   .user_content{
     display: inline-block;
-    width: 200px;
+    width: 300px;
     height: auto;
     cursor: pointer;
+    padding-top: 15px;
     .user_icon{
       display: inline-block;
-      vertical-align: center;
-      margin: 15px 0 0 ($usercolumn__size - $icon-size) / 2;
+      vertical-align: middle;
+      margin: 0 0 0 ($usercolumn__size - $icon-size) / 2;
       width: $icon-size;
       height: $icon-size;
       border-radius: $icon-size;
@@ -346,15 +395,23 @@
     }
     .user_info{
       display: inline-block;
-      vertical-align: center;
+      vertical-align: middle;
       margin-left: 5px;
+      width: 200px;
+      height: $icon-size;
       color: #ffffff;
+      overflow: hidden;
       -webkit-transition: all 0.3s ease;
       -moz-transition: all 0.3s ease;
       -o-transition: all 0.3s ease;
       transition: all  0.3s ease;
+      h3, p{
+        line-height: $icon-size / 2;
+        height: $icon-size / 2;
+      }
     }
   }
+
   // 設定アイコン
   #setting_icon{
     z-index: 900;
@@ -402,47 +459,4 @@
       width: 60%;
     }
   }
-
-  // RESET
-  body{overflow: hidden;}
-  html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font: inherit;
-    vertical-align: baseline; }
-
-  /* HTML5 display-role reset for older browsers */
-
-  article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
-    display: block; }
-
-  body {
-    line-height: 1; }
-
-  ol, ul {
-    list-style: none; }
-
-  blockquote, q {
-    quotes: none; }
-
-  blockquote {
-    &:before, &:after {
-      content: none; } }
-
-  q {
-    &:before, &:after {
-      content: none; } }
-
-  table {
-    border-collapse: collapse;
-    border-spacing: 0; }
-
-  input[type='submit'], button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    outline: none;
-    padding: 0;
-    appearance: none; }
 </style>

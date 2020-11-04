@@ -4,12 +4,13 @@
       <div
         class="chat"
         v-for="(message, index) in messages"
+        v-if="message.from.address === targetAddress"
         :key="index">
-        <div :class="[userData.mail === message.mail ? 'chat__send_me' : '', 'chat__frame ' + message.type]">
+        <div :class="[userData.mail === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
           <!-- <h5 class="chat__name">{{ message.name }}</h5> -->
-          <p class="chat__title">{{ message.subject }}</p>
+          <p class="chat__title">{{ message.title }}</p>
         </div>
-        <span class="chat__time">{{ message.time }}</span><!-- 時間に関してはメールサーバからの情報によって変更 -->
+        <span class="chat__time">{{ dateFormat(new Date(message.date)) }}</span><!-- 時間に関してはメールサーバからの情報によって変更 -->
       </div>
     </div>
   </div>
@@ -26,7 +27,10 @@
 
   export default {
     name: 'Chattree',
-    props: ['serchEmail', 'reroadTrigger'],
+    props: {
+      targetAddress: '',
+      reroadTrigger: ''
+    },
     data () {
       return {
         infomation: {
@@ -38,32 +42,7 @@
           name: 'TestUser',
           mail: 'user@test.com'
         },
-        messages: { // テスト用データ
-          '1': {
-            subject: 'Testsubject1',
-            name: 'testName1',
-            mail: 'test@test.com',
-            type: 'receive',
-            mailID: '0001',
-            time: '2020/11/02\n12:00'
-          },
-          '2': {
-            subject: 'Testsubject1',
-            name: 'TestUser',
-            mail: 'user@test.com',
-            type: 'thread',
-            mailID: '0002',
-            time: '2020/11/02\n12:00'
-          },
-          '3': {
-            subject: 'Testsubject1',
-            name: 'testName1',
-            mail: 'test@test.com',
-            type: 'thread',
-            mailID: '0001',
-            time: '2020/11/02\n12:00'
-          }
-        }
+        messages: {}
       }
     },
     methods: {
@@ -107,6 +86,29 @@
         } else {
           console.log(targetDirectory + 'は存在しません。')
         }
+      },
+      async searchMail (authData, targetAddress) {
+        console.log(targetAddress)
+        const numbers = await MailReciver.mailReceiveUser(authData, targetAddress)
+        this.messages = await MailReciver.mailReceive(authData, numbers[numbers.length - 10]).then()
+      },
+      dateFormat (date, format = 'YYYY-MM-DD hh:mm:ss') {
+        // パース
+        format = format.replace(/YYYY/g, date.getFullYear())
+        format = format.replace(/MM/g, ('0' + (date.getMonth() + 1)).slice(-2))
+        format = format.replace(/DD/g, ('0' + date.getDate()).slice(-2))
+        format = format.replace(/hh/g, ('0' + date.getHours()).slice(-2))
+        format = format.replace(/mm/g, ('0' + date.getMinutes()).slice(-2))
+        format = format.replace(/ss/g, ('0' + date.getSeconds()).slice(-2))
+
+        if (format.match(/S/g)) {
+          let milliSeconds = ('00' + date.getMilliseconds()).slice(-3)
+          let length = format.match(/S/g).length
+          for (let i = 0; i < length; i++) format = format.replace(/S/, milliSeconds.substring(i, i + 1))
+        }
+
+        // 文字列を返す
+        return format
       }
     },
     watch: {
@@ -116,10 +118,32 @@
           this.getUserData()
         }
       },
-      serchEmail: function (newEmail, oldEmail) {
-        // ここで検索する関数を書く
+      targetAddress: function (newEmail, oldEmail) {
         console.log(newEmail)
-        this.getReceiveEmail(newEmail)
+        const self = this
+        // メール一覧の取得
+        fs.readFile(HOMEDIR + this.infomation.delimiter + 'frankfrut' + this.infomation.delimiter + 'data' + this.infomation.delimiter + 'userInformation.json', 'utf8', function (err, data) {
+          // エラー処理
+          if (err) {
+            throw err
+          }
+          const userData = JSON.parse(data)
+
+          // メール受信用の認証情報をオブジェクトに格納
+          const authData = {
+            auth: {
+              user: userData['smtp'].auth.user,
+              pass: userData['smtp'].auth.pass
+            },
+            imap: {
+              host: userData['imap'].host,
+              port: userData['imap'].port
+            }
+          }
+
+          // メールを受信
+          self.searchMail(authData, self.targetAddress)
+        })
       }
     }
   }

@@ -1,7 +1,7 @@
 const inbox = require('inbox')
 
 // メール受信関数
-async function mailReceive (authData, getMailCount = 10) {
+async function mailReceive (authData, getMailCount) {
   return new Promise(resolve => {
     const client = inbox.createConnection(authData['imap'].port, authData['imap'].host, {
       secureConnection: true,
@@ -18,9 +18,6 @@ async function mailReceive (authData, getMailCount = 10) {
           if (err) {
             console.log(err)
           }
-          messages.forEach(function (message) {
-            console.log(message)
-          })
           return resolve(messages)
         })
       })
@@ -29,7 +26,33 @@ async function mailReceive (authData, getMailCount = 10) {
   })
 }
 
-export default {mailReceive}
+// 特定ユーザのメール受信
+async function mailReceiveUser (authData, targetAddress, getMailCount = 20) {
+  return new Promise(resolve => {
+    const client = inbox.createConnection(authData['imap'].port, authData['imap'].host, {
+      secureConnection: true,
+      auth: {
+        user: authData['auth'].user,
+        pass: authData['auth'].pass
+      }
+    })
+    client.on('connect', function () {
+      client.openMailbox('INBOX', function (error, info) {
+        if (error) throw error
+        const query = {header: ['from', targetAddress]}
+        client.search(query, function (err, numbers) {
+          if (err) {
+            console.log(err)
+          }
+          return resolve(numbers)
+        })
+      })
+    })
+    client.connect()
+  })
+}
+
+export default {mailReceive, mailReceiveUser}
 
 // client.on('new', function(messages) {
 //   client.listMessages(-1, function(err, messages){
