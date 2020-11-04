@@ -200,8 +200,6 @@
           // 差分オブジェクトを取得
           const diffObj = await this.saveDraft()
 
-          console.log(diffObj)
-
           // 削除行を取得
           let keysArr = []
           Object.keys(diffObj.remove).forEach(function (key) {
@@ -236,7 +234,7 @@
           console.log(smtpData)
 
           const mailData = {
-            from: smtpData['smtp'].auth.user,
+            from: '"' + smtpData['user'].affiliation + ' ' + smtpData['user'].name + '" <' + smtpData['smtp'].auth.user + '>',
             to: self.mailData.destination,
             subject: self.mailData.subject,
             text: self.mailData.body

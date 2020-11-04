@@ -1,6 +1,7 @@
 const NodeMailer = require('nodemailer')
 
 function sendMail (smtpData, mailData) {
+  console.log(mailData)
   // SMTPサーバの情報をまとめる
   const transporter = NodeMailer.createTransport({
     host: smtpData.host,
