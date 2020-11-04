@@ -34,13 +34,14 @@
     <div id="tray_frame">
       <!-- 左側 -->
       <div id="main_left">
+        <!--
         <ChatTree 
           v-bind:serchEmail = "transferData.serchEmail"
           v-bind:reroadTrigger = "transferData.reroadTrigger"
-          />
-        <!-- <MailEditer
+          /> -->
+        <MailEditer
           @updateBody="mailData.mailBody = $event"
-          @updateSubject="mailData.subject = $event"/> -->
+          @updateSubject="mailData.subject = $event"/>
       </div>
       <!-- リサイズバー -->
       <div id="resize_bar"></div>
@@ -62,6 +63,7 @@
   import MailEditer from './components/MailEditer'
   import FileAction from './utils/FileAction'
   import MailReciver from './utils/MailReceive'
+  import OS from './utils/OS'
 
   // モジュールをインポート
   const fs = require('fs')
@@ -200,8 +202,9 @@
       }
     },
     mounted () {
+      this.infomation.delimiter = OS.delimiterChar()
       // メール一覧の取得
-      fs.readFile(HOMEDIR + this.draft.delimiter + 'frankfrut' + this.draft.delimiter + 'data' + this.draft.delimiter + 'userInformation.json', 'utf8', function (err, data) {
+      fs.readFile(HOMEDIR + this.infomation.delimiter + 'frankfrut' + this.infomation.delimiter + 'data' + this.infomation.delimiter + 'userInformation.json', 'utf8', function (err, data) {
         // エラー処理
         if (err) {
           throw err
