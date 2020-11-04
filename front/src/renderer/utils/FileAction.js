@@ -1,5 +1,8 @@
 const fs = require('fs')
 
+// Windowsか確認
+const isWindows = process.platform === 'win32'
+
 // ディレクトリ作成関数
 async function mkdir (fullPath) {
   // 区切り文字の指定
@@ -31,30 +34,39 @@ async function addLINE (fullPath, LINE, text) {
   return new Promise(resolve => {
     let lineText
     let resultText = ''
+
+    // 区切り文字をOSに合わせる
+    let delimiter
+    if (isWindows) {
+      delimiter = '\n'
+    } else {
+      delimiter = '\r'
+    }
+
     // ファイルの読み込み
     fs.readFile(fullPath, 'utf8', (err, data) => {
       if (err) {
         console.log(err)
       }
       // 文字列に入っている改行コードを削除
-      if (text.indexOf('\n') > -1) {
-        text = text.substring(0, text.indexOf('\n'))
+      if (text.indexOf(delimiter) > -1) {
+        text = text.substring(0, text.indexOf(delimiter))
       }
       // データの有無を確認
       if (data === '') {
-        resultText = text + '\n'
+        resultText = text + delimiter
       } else {
-        lineText = data.split('\n')
+        lineText = data.split(delimiter)
 
         // 文字列をファイル格納用に結合
         for (let i = 0; i < lineText.length; i++) {
           if (i === LINE - 1) {
-            resultText = resultText + '\n' + text
+            resultText = resultText + delimiter + text
           } else if (i === 0) {
             resultText = resultText + lineText[i]
             continue
           }
-          resultText = resultText + '\n' + lineText[i]
+          resultText = resultText + delimiter + lineText[i]
         }
       }
 
@@ -75,6 +87,15 @@ async function deleteLINE (fullPath, LINE) {
   return new Promise(resolve => {
     let lineText
     let resultText = ''
+
+    // 区切り文字をOSに合わせる
+    let delimiter
+    if (isWindows) {
+      delimiter = '\n'
+    } else {
+      delimiter = '\r'
+    }
+
     // ファイルの読み込み
     fs.readFile(fullPath, 'utf8', function (err, data) {
       // エラー処理
@@ -83,11 +104,11 @@ async function deleteLINE (fullPath, LINE) {
       }
 
       // 行ごとに分ける
-      lineText = data.split('\n')
+      lineText = data.split(delimiter)
 
       for (let i = 0; i < lineText.length; i++) {
         if (i !== LINE - 1) {
-          resultText = resultText + lineText[i] + '\n'
+          resultText = resultText + lineText[i] + delimiter
         }
       }
 
