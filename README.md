@@ -78,7 +78,7 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
 * アプリケーションの画面や画面遷移等
 * アプリケーション本体の処理
     * クライアント側の処理
-    * サーバ側の処理
+    * サーバ側の処理（[AWS EC2](https://aws.amazon.com/jp/ec2/?ec2-whats-new.sort-by=item.additionalFields.postDateTime&ec2-whats-new.sort-order=desc)）
         * メール文から人名と会社名を抽出（[固有表現抽出API](https://labs.goo.ne.jp/api/jp/named-entity-extraction/)）
         * 校正箇所の指摘（[Proofreading API](https://a3rt.recruit-tech.co.jp/product/proofreadingAPI/)）
         * 敬語への変換（[形態素解析API](https://labs.goo.ne.jp/api/jp/morphological-analysis/)，機械学習）
