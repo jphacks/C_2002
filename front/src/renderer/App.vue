@@ -16,7 +16,7 @@
          v-on:mouseleave="userMouseLeave"
          :style="'width: ' + userColumn.width + 'px'">
       <div class="scroll-frame">
-        <div class="user_content" v-for="user in users">
+        <div class="user_content" v-for="(user, index) in users" :key="index">
           <span class="user_icon">
             {{ user.name.charAt(0) }}
           </span>
@@ -49,24 +49,22 @@
 </template>
 
 <script>
-  // アイコンインポート
+  import FileAction from './utils/FileAction'
   import SettingIcon from './components/icons/setting.vue'
-
-  // コンポーネントインポート
   import ChatTree from './components/ChatTree.vue'
   import Preview from './components/Preview.vue'
   import MailEditer from './components/MailEditer'
 
-  // fsモジュールをインポート
+  // モジュールをインポート
   const fs = require('fs')
 
-  // ディレクトリを生成
-  const homedir = require('os').homedir() // ホームディレクトリ
-  const targetdir = require('path').join(homedir, 'goateat') // ホーム/アプリディレクトリ
-  const generateFiledir = require('path').join(targetdir, 'userInformation.json') // userInfomation.jsonパス
+  const isWindows = process.platform === 'win32'
+  // デフォルトの実行ディレクトリの確認
+  const HOMEDIR =
+    process.env[isWindows ? 'USERPROFILE' : 'HOME']
 
   export default {
-    name: 'c2002',
+    name: 'c_2002',
     components: {
       MailEditer,
       // 設定アイコンのコンポーネント
@@ -76,12 +74,17 @@
     },
     data () {
       return {
-        displayFlag: {
-          settingModal: false
+        infomation: {
+          directory: '/frankfrut/data/',
+          fileName: '/userInformation.json',
+          delimiter: '/'
         },
         userInformation: {
           email: '',
           password: ''
+        },
+        displayFlag: {
+          settingModal: false
         },
         userColumn: {
           openFlg: false,
@@ -112,42 +115,58 @@
         this.userColumn.width = 60
         this.userColumn.openFlg = false
       },
+      // モーダル項目
       settingModalDispOn () {
         console.log('modal ON')
-        if (fs.existsSync(generateFiledir)) {
-          console.log(generateFiledir + 'は存在します。')
-          let jsonObject = JSON.parse(fs.readFileSync(generateFiledir, 'utf8'))
-          this.userInformation.email = jsonObject['email']
-          this.userInformation.password = jsonObject['password']
+        // Windows用のパス形式で指定
+        if (isWindows) {
+          this.infomation.directory = '\\frankfrut\\draft\\'
+          this.infomation.delimiter = '\\'
+        }
+        // Win/Mac両対応のディレクトリを生成
+        const targetDirectory = HOMEDIR + this.infomation.directory
+
+        if (fs.existsSync(targetDirectory)) {
+          console.log(targetDirectory + 'は存在します。')
+          // ユーザー情報ファイルからデータを取得する
+          let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
+          this.userInformation.email = jsonObject['auth']['user']
+          this.userInformation.password = jsonObject['auth']['pass']
         } else {
-          console.log(generateFiledir + 'は存在しません。')
+          console.log(targetDirectory + 'は存在しません。')
         }
         this.displayFlag.settingModal = true
       },
-      settingModalDispOff () {
+      async settingModalDispOff () {
         console.log('modal OFF')
+        // Windows用のパス形式で指定
+        if (isWindows) {
+          this.infomation.directory = '\\frankfrut\\draft\\'
+          this.infomation.delimiter = '\\'
+        }
+        // Win/Mac両対応のディレクトリを生成
+        const targetDirectory = HOMEDIR + this.infomation.directory
+
+        // 作業ディレクトリの作成
+        await FileAction.mkdir(targetDirectory)
+
         // json生成
         const jsonData = {
-          email: this.userInformation.email,
-          password: this.userInformation.password
-        }
-        if (fs.existsSync(targetdir)) {
-          console.log(targetdir + 'は存在します。')
-        } else {
-          console.log(targetdir + 'は存在しません。')
-          fs.mkdir(targetdir)
-        }
-        fs.writeFile(generateFiledir, JSON.stringify(jsonData, null, '    '), (err) => {
-          // 書き出しに失敗した場合
-          if (err) {
-            console.log('json書き出しにエラーが発生しました' + err)
-            throw err
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          auth: {
+            user: this.userInformation.email,
+            pass: this.userInformation.password
           }
-          // 書き出しに成功した場合
-          if (err) {
-            console.log('json書き出しに成功しました')
-          }
-        })
+        }
+
+        // 作業ディレクトリの作成
+        await FileAction.mkdir(targetDirectory)
+        fs.writeFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, JSON.stringify(jsonData, null, '    ', function (err) { // jsonファイル
+          if (err) { throw err }
+        }))
+        // モーダルフラグOFF
         this.displayFlag.settingModal = false
       }
     }

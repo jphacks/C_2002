@@ -3,8 +3,8 @@
     <div id="tree_frame">
       <div
         class="chat"
-        v-for="message in messages"
-        :key="message">
+        v-for="(message, index) in messages"
+        :key="index">
         <div :class="[userData.mail === message.mail ? 'chat__send_me' : '', 'chat__frame ' + message.type]">
           <h5 class="chat__name">{{ message.name }}</h5>
           <p class="chat__title">{{ message.subject }}</p>
