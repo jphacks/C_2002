@@ -30,42 +30,12 @@
         <SettingIcon/>
       </div>
     </div>
-    <!-- 右側メニュー -->
-    <div id="tray_frame">
-      <!-- 左側 -->
-      <div id="main_left">
-        <ChatTree
-          v-if="users[transferData.serchEmail]"
-          v-bind:targetUser="users[transferData.serchEmail]"
-          v-bind:reroadTrigger="transferData.reroadTrigger"
-          />
-        <div v-else>
-
-        </div>
-        <!--
-        <MailEditer
-          @updateBody="mailData.mailBody = $event"
-          @updateSubject="mailData.subject = $event"/>
-           -->
-      </div>
-      <!-- リサイズバー -->
-      <div id="resize_bar"></div>
-      <!-- 右側 -->
-      <div id="main_right">
-        <Preview
-          :mailBody="mailData.mailBody"
-          :subject="mailData.subject"/>
-      </div>
-    </div>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
   import SettingIcon from './components/icons/setting.vue'
-  import ChatTree from './components/ChatTree.vue'
-  import Preview from './components/Preview.vue'
-  import MailEditer from './components/MailEditer'
   import FileAction from './utils/FileAction'
   import MailReciver from './utils/MailReceive'
   import OS from './utils/OS'
@@ -81,10 +51,7 @@
   export default {
     name: 'c_2002',
     components: {
-      MailEditer,
-      SettingIcon,
-      ChatTree,
-      Preview
+      SettingIcon
     },
     data () {
       return {
@@ -219,8 +186,8 @@
         // メール受信用の認証情報をオブジェクトに格納
         const authData = {
           auth: {
-            user: userData['smtp'].auth.user,
-            pass: userData['smtp'].auth.pass
+            user: userData['auth'].user,
+            pass: userData['auth'].pass
           },
           imap: {
             host: userData['imap'].host,

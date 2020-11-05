@@ -21,7 +21,7 @@
 </template>
 
 <script>
-  import MailReciver from '../utils/MailReceive'
+  import MailReciver from '../../utils/MailReceive'
   // モジュールをインポート
   const fs = require('fs')
   const isWindows = process.platform === 'win32'

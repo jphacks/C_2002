@@ -29,12 +29,12 @@
 </template>
 
 <script>
-  import GitCommand from '../utils/NodeGit'
-  import FileAction from '../utils/FileAction'
-  import MailSend from '../utils/MailSend'
+  import GitCommand from '../../utils/NodeGit'
+  import FileAction from '../../utils/FileAction'
+  import MailSend from '../../utils/MailSend'
   import axios from 'axios'
-  import DiffParser from '../utils/DiffParser'
-  import OS from '../utils/OS'
+  import DiffParser from '../../utils/DiffParser'
+  import OS from '../../utils/OS'
   const fs = require('fs')
 
   const isWindows = process.platform === 'win32'
@@ -251,18 +251,28 @@
           if (err) {
             throw err
           }
-          const smtpData = JSON.parse(data)
-
-          console.log(smtpData)
+          const userData = JSON.parse(data)
 
           const mailData = {
-            from: '"' + smtpData['user'].affiliation + ' ' + smtpData['user'].name + '" <' + smtpData['smtp'].auth.user + '>',
+            from: '"' + userData['user'].affiliation + ' ' + userData['user'].name + '" <' + userData['auth'].user + '>',
             to: self.mailData.destination,
             subject: self.mailData.subject,
             text: self.mailData.resultBody
           }
 
-          MailSend.sendMail(smtpData['smtp'], mailData)
+          const authData = {
+            'smtp': {
+              'host': userData['smtp'].host,
+              'port': userData['smtp'].port,
+              'secure': userData['smtp'].secure,
+              'auth': {
+                'user': userData['auth'].user,
+                'pass': userData['auth'].pass
+              }
+            }
+          }
+
+          MailSend.sendMail(authData['smtp'], mailData)
         })
       }
     },
