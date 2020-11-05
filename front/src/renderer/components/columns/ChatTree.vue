@@ -10,7 +10,9 @@
         v-for="(message, index) in messages"
         v-if="message.from.address === targetUser.mail"
         :key="index">
-        <div :class="[userData.mail === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
+        <div
+          @click="openMailData"
+          :class="[userData.mail === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
           <!-- <h5 class="chat__name">{{ message.name }}</h5> -->
           <p class="chat__title">{{ message.title }}</p>
         </div>
@@ -113,6 +115,9 @@
 
         // 文字列を返す
         return format
+      },
+      openMailData (mailData) {
+        self.$emit('getMailData', mailData)
       }
     },
     watch: {
@@ -174,14 +179,15 @@
     color: #ffffff;
     font-weight: bold;
     h2{
-      margin-top: 15px;
+      margin-top: 12px;
       font-size: 20px;
       line-height: 20px;
     }
     p{
-      margin-top: 5px;
+      margin-top: 8px;
       font-size: 13px;
       line-height: 13px;
+      color: #aaaaaa;
     }
   }
 

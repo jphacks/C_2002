@@ -5,6 +5,7 @@
       <ChatTree
         v-if="$route.query['userData']"
         :targetUser="$route.query['userData']"
+        @getMailData="mailData = $event"
       />
       <div v-else>
 
@@ -39,14 +40,19 @@
       return {
         // チャットツリーに転送するためのオブジェクト
         transferData: {
-          serchEmail: '検索するメールアドレス',
-          reroadTrigger: false
-        }
+          serchEmail: ''
+        },
+        mailData: {}
       }
     },
     mounted () {
       console.log('$route : ')
       console.log(this.$route.query['userData'])
+    },
+    watch: {
+      mailData: function (newData, oldData) {
+        console.log(newData)
+      }
     }
   }
 </script>
