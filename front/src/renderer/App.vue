@@ -83,8 +83,8 @@
           delimiter: '/'
         },
         userInformation: {
-          email: 'piedpiper.jphacks@gmail.com',
-          password: 'jphacksc_2002'
+          email: '',
+          password: ''
         },
         displayFlag: {
           settingModal: false
