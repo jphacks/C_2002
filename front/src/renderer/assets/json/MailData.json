@@ -1,0 +1,17 @@
+{
+  "gmail": {
+    "smtp": {
+      "host": "smtp.gmail.com",
+      "port": 465,
+      "secure": true
+    },
+    "imap": {
+      "host": "imap.gmail.com",
+      "port": "993"
+    },
+    "pop": {
+      "host": "pop.gmail.com",
+      "port": "995"
+    }
+  }
+}

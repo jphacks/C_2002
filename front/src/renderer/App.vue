@@ -39,6 +39,9 @@
           v-bind:targetUser="users[transferData.serchEmail]"
           v-bind:reroadTrigger="transferData.reroadTrigger"
           />
+        <div v-else>
+
+        </div>
         <!--
         <MailEditer
           @updateBody="mailData.mailBody = $event"
