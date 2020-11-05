@@ -1,25 +1,25 @@
-// // POST送信テスト
+// POST送信テスト
+const request = require('request');
 
 // ユーザからのキーボード入力を取得する Promise を生成する
 function readUserInput(question) {
-    const readline = require('readline').createInterface({
-      input: process.stdin,
-      output: process.stdout
+  const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  return new Promise((resolve, reject) => {
+    readline.question(question, (answer) => {
+      resolve(answer);
+      readline.close();
     });
-  
-    return new Promise((resolve, reject) => {
-      readline.question(question, (answer) => {
-        resolve(answer);
-        readline.close();
-      });
-    });
-  }
+  });
+}
   
 // メイン処理
 (async function main() {
     while(true) {
         const sentence = await readUserInput('Send Sentence: ');
-        const request = require('request');
 
         var commit_id = '1c40b98';
         // var message = 'お世話様です。';
