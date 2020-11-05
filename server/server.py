@@ -34,6 +34,20 @@ headers= {
 # gooラボAPIのAPIクライアント設定
 gooAPI = GoolabsAPI(Goo_API_APPLICATION_ID)
 
+# 例文のテキストファイル読み込み
+f = open(APP_ROOT + "/before.txt", "r", encoding="utf-8")
+
+## 辞書データ取得
+json_open = open(APP_ROOT + '/dict.json', 'r')
+HumbleLangDict = json.load(json_open)
+
+## 名詞用辞書データ取得
+json_open = open(APP_ROOT + '/noun.json', 'r')
+HumbleNounDict = json.load(json_open)
+
+# 探索の省略が可能な品詞（Part of speech to omit）
+Posto = ['句点', '読点', '空白', '格助詞', '終助詞', '括弧', '助数詞', '助助数詞', '冠数詞']
+
 # 人名と会社名をリストで取得する関数
 def get_list_people_companies(sentence):
     # print('get_list_people_companies Start')
@@ -87,37 +101,51 @@ def ChangeWord(text, HitWordList):
     return ConvertedText
 
 # 敬語変換関数
-def ChangeToHonorific(text):
-    # print('ChangeToHonorific Start')
-    # 辞書データ取得
-    json_open = open(APP_ROOT + '/sample.json', 'r')
-    global HumbleLangDict
-    HumbleLangDict = json.load(json_open)
-    # print(json.dumps(HumbleLangDict, indent=2).encode().decode('unicode-escape'))
-       
-    global HitWordList
-    HitWordList = []
-
+def ChangeToHonorific(original):
     # See sample response below.
-    response = gooAPI.morph(sentence = text)
-    # 文章ごとに変換
-    for sentence in response['word_list']:
-        # SearchForWords(sentence)
-        for start in range(len(sentence)):
-            for end in range(len(sentence) - 1, start - 1, -1):
+    response = gooAPI.morph(sentence = original)
+
+    # 形態素解析のデータの抽出
+    originalData = response['word_list'][0]
+    # print(originalData)
+
+    ## 変換が必要な箇所を探索する
+    for start in range(len(originalData)):
+        ## 名詞の敬語に変換
+        # ひとつ前に冠名詞がないか確認
+        if start > 0 and originalData[start - 1][1] != '冠名詞':
+            # 品詞の確認
+            if originalData[start][1] == '名詞':
+                # 名詞用辞書に登録されているか確認
+                if originalData[start][0] in HumbleNounDict:
+                    # 辞書に登録されていれば敬語に変換
+                    originalData[start][0] = HumbleNounDict[originalData[start][0]]
+
+        ## 名詞以外を警護に変換
+        # 探索する必要がある品詞か判定
+        if originalData[start][1] not in Posto or re.search(r'(\W)', originalData[start][1]) == 'None':
+            # 辞書にヒットする語句を探索
+            for end in range(len(originalData) - 1, start - 1, -1):
                 testKey = ''
+                # 辞書の検索にかける文字列の生成
                 for check in range(start, end + 1):
-                    testKey += sentence[check][0]
+                    testKey += originalData[check][0]
+                # 文字列が辞書に登録されているか確認
                 if testKey in HumbleLangDict:
-                    if testKey not in HitWordList:
-                        HitWordList.append(testKey)
-    # print(HitWordList)
-    # ConvertedText = ChangeWord(text, HitWordList)
-    ConvertedText = text
-    for word in HitWordList:
-        ConvertedText = ConvertedText.replace(word, HumbleLangDict[word])
-    # print(ConvertedText)
-    return ConvertedText
+                    # 辞書に登録されていた敬語に文字列を変換する
+                    for i in range(start, end):
+                        originalData[i][0] = ""
+                    originalData[end][0] = HumbleLangDict[testKey]
+
+    # 形態素解析のデータを敬語に変換したものを返す
+    ConvertedData = originalData
+
+    # 形態素解析のデータを敬語に変換したものを文に整形
+    ConvertedSentence = ""
+    for word in ConvertedData:
+        ConvertedSentence += word[0]
+    # 整形したデータを返す
+    return ConvertedSentence
 
 # ローカルGETテスト用
 @app.route('/')
@@ -140,8 +168,6 @@ def post_test():
 
 @app.route('/getdata')
 def get_data():
-    # テキストファイルの読み込み
-    f = open(APP_ROOT + "/before.txt", "r", encoding="utf-8")
     sentence = f.read()
     commit_id = '1c40b98'
 
