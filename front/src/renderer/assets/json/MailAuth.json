@@ -13,5 +13,46 @@
       "host": "pop.gmail.com",
       "port": "995"
     }
+  },
+  "yahoo": {
+    "smtp": {
+      "host": "smtp.mail.yahoo.co.jp",
+      "port": 465,
+      "secure": true
+    },
+    "imap": {
+      "host": "imap.mail.yahoo.co.jp",
+      "port": "993"
+    },
+    "pop": {
+      "host": "pop.mail.yahoo.com",
+      "port": "995"
+    }
+  },
+  "outlook": {
+    "smtp": {
+      "host": "smtp.office365.com",
+      "port": 587,
+      "secure": true
+    },
+    "imap": {
+      "host": "outlook.office365.com",
+      "port": "993"
+    },
+    "pop": {
+      "host": "outlook.office365.com",
+      "port": "995"
+    }
+  },
+  "icloud": {
+    "smtp": {
+      "host": "smtp.mail.me.com",
+      "port": 587,
+      "secure": true
+    },
+    "imap": {
+      "host": "imap.mail.me.com",
+      "port": "993"
+    }
   }
 }
