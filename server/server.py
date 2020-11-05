@@ -34,9 +34,6 @@ headers= {
 # gooラボAPIのAPIクライアント設定
 gooAPI = GoolabsAPI(Goo_API_APPLICATION_ID)
 
-# 例文のテキストファイル読み込み
-f = open(APP_ROOT + "/before.txt", "r", encoding="utf-8")
-
 ## 辞書データ取得
 json_open = open(APP_ROOT + '/dict.json', 'r')
 HumbleLangDict = json.load(json_open)
@@ -168,6 +165,8 @@ def post_test():
 
 @app.route('/getdata')
 def get_data():
+    # 例文のテキストファイル読み込み
+    f = open(APP_ROOT + "/before.txt", "r", encoding="utf-8")
     sentence = f.read()
     commit_id = '1c40b98'
 
