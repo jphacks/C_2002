@@ -18,6 +18,11 @@ const routes = [
     path: '/tray',
     name: 'tray',
     component: () => import('../components/Tray')
+  },
+  {
+    path: '/setting',
+    name: 'setting',
+    component: () => import('../components/Setting')
   }
 ]
 
