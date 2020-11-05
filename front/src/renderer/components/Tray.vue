@@ -3,8 +3,8 @@
     <!-- 左側 -->
     <div id="tree_frame__left">
       <ChatTree
-        v-if="$route.params['subject']"
-        :targetUser="$route.params['subject']"
+        v-if="$route.query['userData']"
+        :targetUser="$route.query['userData']"
       />
       <div v-else>
 
@@ -15,15 +15,22 @@
       <!-- 右側 -->
       <div id="tree_frame__right">
         <Preview
-          :mailBody="$route.params['subject'].mailBody"
-          :subject="$route.params['subject'].mailBody"/>
+          :mailBody="$route.query['userData'].title"
+          :subject="$route.query['userData'].title"/>
       </div>
   </div>
 </template>
 
 <script>
+  import ChatTree from './columns/ChatTree'
+  import Preview from './columns/Preview'
+
   export default {
     name: 'Tray',
+    components: {
+      ChatTree,
+      Preview
+    },
     props: {
       users: {},
       targetUser: ''
@@ -39,7 +46,7 @@
     },
     mounted () {
       console.log('$route : ')
-      console.log(this.$route)
+      console.log(this.$route.query['userData'])
     }
   }
 </script>

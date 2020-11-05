@@ -318,8 +318,9 @@
 
 <style lang="scss">
   // 全体スタイル
-  #editor__MailEditor{
+  #MailEditor{
     width: 600px;
+    color: #ffffff;
   }
 
   // テキスト入力部分のスタイル
@@ -332,7 +333,9 @@
     padding: 0 3%;
     font-size: 17px;
     line-height: 40px;
-    border-bottom: 1px solid #262626;
+    border-bottom: 1px solid #888888;
+    background: none;
+    color: #ffffff;
   }
 
   // 本文編集部分
@@ -346,6 +349,8 @@
     font-size: 17px;
     line-height: 26px;
     overflow-y: scroll;
+    background: none;
+    color: #ffffff;
     &:focus{
       outline: none;
     }
@@ -355,7 +360,7 @@
   #editor__contents{
     width: 100%;
     height: 40px;
-    border-top: solid 2px #d7d7d7;
+    border-top: solid 2px #888888;
 
     button{
       display: inline-block;
