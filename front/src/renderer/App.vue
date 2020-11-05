@@ -7,7 +7,7 @@
         <input type="email" placeholder="example@example.com" v-model="userInformation.email">
         <span>パスワード</span>
         <input type="password" v-model="userInformation.password">
-        <button v-if="userInformation.mail.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/) && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
+        <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/) && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
         <button v-else style="background: #919191; cursor: not-allowed;">登録</button>
       </div>
     </div>
@@ -83,8 +83,8 @@
           delimiter: '/'
         },
         userInformation: {
-          email: '',
-          password: ''
+          email: 'piedpiper.jphacks@gmail.com',
+          password: 'jphacksc_2002'
         },
         displayFlag: {
           settingModal: false
@@ -120,8 +120,8 @@
           console.log(targetDirectory + 'は存在します。')
           // ユーザー情報ファイルからデータを取得する
           let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
-          this.userInformation.email = jsonObject['smtp']['auth']['user']
-          this.userInformation.password = jsonObject['smtp']['auth']['pass']
+          this.userInformation.email = jsonObject['auth']['user']
+          this.userInformation.password = jsonObject['auth']['pass']
         } else {
           console.log(targetDirectory + 'は存在しません。')
         }
@@ -146,18 +146,25 @@
           smtp: {
             host: 'smtp.gmail.com',
             port: 465,
-            secure: true,
-            auth: {
-              user: this.userInformation.email,
-              pass: this.userInformation.password
-            }
+            secure: true
+          },
+          imap: {
+            host: 'imap.gmail.com',
+            port: '993'
+          },
+          pop: {
+            host: 'pop.gmail.com',
+            port: '995'
           },
           user: {
             name: 'ReERishun',
             affiliation: '株式会社PiedPiper'
+          },
+          auth: {
+            user: this.userInformation.email,
+            pass: this.userInformation.password
           }
         }
-
         // 作業ディレクトリの作成
         await FileAction.mkdir(targetDirectory)
         fs.writeFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, JSON.stringify(jsonData, null, '    ', function (err) { // jsonファイル
