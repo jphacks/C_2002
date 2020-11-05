@@ -32,6 +32,10 @@
           </div>
         </router-link>
       </div>
+      <router-link
+        :to="{ name: 'start' }">
+        home
+      </router-link>
       <div id="icons">
         <router-link
           id="plus_icon"
@@ -339,6 +343,10 @@
         border: solid 2px #aaaaaa;
       }
     }
+  }
+
+  *{
+    outline: solid 1px red;
   }
 
   // ユーザ一覧カラム
