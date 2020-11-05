@@ -161,7 +161,7 @@
     height: 100vh;
   }
   #tree_frame {
-    width: 90%;
+    width: 95%;
     height: 100vh;
     margin-left: 5%;
     overflow-y: scroll;
@@ -215,9 +215,6 @@
       .chat__name{
         font-weight: bold;
       }
-      // .chat__title{
-
-      // }
       // 自身の送信したメールスタイル
       &.chat__send_me{
         background-color: #5645ff;
