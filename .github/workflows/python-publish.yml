@@ -27,4 +27,4 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        python /home/runner/work/C_2002/C_2002/server/actionsTest.py
+        python /home/runner/work/C_2002/C_2002/server/FunctionTest/actionsTest.py
