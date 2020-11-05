@@ -42,12 +42,12 @@
 </script>
 
 <style lang="scss">
-
   #editor{
     height: 100vh;
     width: 100%;
     display: flex;
     flex-direction: row;
+    background: #333333;
   }
   #resize_bar{
     height: 100%;

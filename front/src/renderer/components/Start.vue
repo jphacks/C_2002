@@ -1,6 +1,5 @@
 <template>
   <div id="description">
-
   </div>
 </template>
 
@@ -18,6 +17,7 @@
 
     // 背景画像の設定
     background-image:  url('../assets/img/frankfurt_logo.png');
+    background-color: #333333;
     background-position: center;
     background-repeat: no-repeat;
     background-size: 200px;

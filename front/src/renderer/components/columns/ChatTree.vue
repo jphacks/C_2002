@@ -156,7 +156,7 @@
   #chat_tree {
     display: flex;
     flex-direction: column;
-    background-color: #eeeeee;
+    background-color: #333333;
     width: 450px;
     height: 100vh;
   }
@@ -170,7 +170,7 @@
     width: 96%;
     height: 80px;
     padding-left: 4%;
-    background: #262626;
+    background: #222222;
     color: #ffffff;
     font-weight: bold;
     h2{
@@ -193,6 +193,7 @@
     .chat__time{
       display: inline-block;
       width: 60px;
+      color: #aaaaaa;
       height: $chat__time-fontsize;
       line-height: $chat__time-fontsize;
       font-size: $chat__time-fontsize;
@@ -206,8 +207,8 @@
       padding: 6px 20px;
       width: 250px;
       height: auto;
-      background-color: #ffffff;
-      color: #333333;
+      background-color: #444444;
+      color: #ffffff;
       border-radius: 10px 10px 10px 0;
       cursor: pointer;
       vertical-align: middle;

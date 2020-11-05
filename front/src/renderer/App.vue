@@ -32,12 +32,17 @@
           </div>
         </router-link>
       </div>
-      <router-link
-        :to="{ name: 'editor' }">
-        new
-      </router-link>
-      <div id="setting_icon" v-on:click="settingModalDispOn">
-        <SettingIcon/>
+      <div id="icons">
+        <router-link
+          id="plus_icon"
+          :to="{ name: 'editor' }">
+          <PlusIcon/>
+        </router-link>
+        <div
+          id="setting_icon"
+          v-on:click="settingModalDispOn">
+          <SettingIcon/>
+        </div>
       </div>
     </div>
 
@@ -47,7 +52,8 @@
 </template>
 
 <script>
-  import SettingIcon from './components/icons/setting.vue'
+  import SettingIcon from './components/icons/Setting'
+  import PlusIcon from './components/icons/Plus'
   import FileAction from './utils/FileAction'
   import MailReciver from './utils/MailReceive'
   import OS from './utils/OS'
@@ -63,7 +69,8 @@
   export default {
     name: 'c_2002',
     components: {
-      SettingIcon
+      SettingIcon,
+      PlusIcon
     },
     data () {
       return {
@@ -337,7 +344,7 @@
     flex-direction: column;
     width: $usercolumn__size;
     height: 100vh;
-    background: #cccccc;
+    background: #222222;
     -webkit-transition: all 0.2s ease;
     -moz-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
@@ -395,51 +402,43 @@
     }
   }
 
-  // 設定アイコン
-  #setting_icon{
-    z-index: 900;
+  // アイコンエリア
+  #icons{
+    z-index: 200;
     position: absolute; // 絶対位置指定することを定義
-    bottom: 0px; // 絶対位置指定(左0px,下0px)
-    margin: 8px 8px 8px 8px;
-    width: $icon-size;
-    height: $icon-size;
-    border-radius: $icon-size;
-    border: solid 2px #aaaaaa;
-    background-color: #ffffff;
-    cursor: pointer;
-    &:hover{ // 歯車アイコン回転アニメーション
-      animation: r1 1s cubic-bezier(0, 0, 1.0, 1.0) infinite;
-      @keyframes r1 {
-        0%   { transform: rotate(0deg); }
-        100% { transform: rotate(135deg); }
-      }
-    }
-  }
+    bottom: 0; // 絶対位置指定(左0px,下0px)
 
-  // 右側メニュー
-  #tray_frame{
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    #main_left{
-      padding-left: 60px;
-      height: 100%;
+    // 新規作成アイコン
+    #plus_icon{
+      display: inline-block;
+      width: $icon-size + 10px;
+      height: $icon-size + 10px;
+      margin: 0 0 0 ($usercolumn__size - $icon-size - 10) / 2;
+      fill: #ffffff;
+      cursor: pointer;
     }
-    #resize_bar{
-      height: 100%;
-      width: 4px;
-      background-color: gray;
-      cursor: col-resize;
-      transition-delay: 0.2s;
-      transition: 0.5s ;
-      &:hover{
-        background-color: mediumturquoise;
+
+    // 設定アイコン
+    #setting_icon{
+      margin: 8px 8px 8px 8px;
+      width: $icon-size;
+      height: $icon-size;
+      border-radius: $icon-size;
+      border: solid 2px #ffffff;
+      cursor: pointer;
+
+      path{
+        fill: #ffffff;
       }
-    }
-    #main_right{
-      height: 100%;
-      width: 60%;
+
+      // 歯車アイコン回転アニメーション
+      &:hover{
+        animation: r1 1s cubic-bezier(0, 0, 1.0, 1.0) infinite;
+        @keyframes r1 {
+          0%   { transform: rotate(0deg); }
+          100% { transform: rotate(135deg); }
+        }
+      }
     }
   }
 </style>
