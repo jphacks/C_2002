@@ -19,7 +19,7 @@ function exe (command, pwd = HOMEDIR) { // コマンド実行関数
 }
 
 // git init
-function gitInit (pwd) {
+async function gitInit (pwd) {
   return new Promise(resolve => {
     const child = exe('git init', pwd)
 

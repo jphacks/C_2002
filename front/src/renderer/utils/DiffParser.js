@@ -1,9 +1,13 @@
+import OS from './OS'
+
 // diff内容のパース
 function diffParse (diff) {
+  const delimiter = OS.breakChar()
+
   let addObj = {}
   let rmObj = {}
 
-  for (let dataPosition = diff.indexOf('\n@@ '); dataPosition > -1;) {
+  for (let dataPosition = diff.indexOf(delimiter + '@@ '); dataPosition > -1;) {
     const positionDataStart = dataPosition + 4
     const positionDataSeparate = diff.substr(positionDataStart).indexOf(' ')
     const positionDataEnd = diff.substr(positionDataStart + positionDataSeparate + 1).indexOf(' ')
@@ -33,7 +37,7 @@ function diffParse (diff) {
 
     // 探索関数の引数整形
     const positionDataFull = positionDataStart + positionDataSeparate + positionDataEnd
-    const positionDataNext = diff.substr(positionDataFull).indexOf('\n@@') // 行情報の行開始位置
+    const positionDataNext = diff.substr(positionDataFull).indexOf(delimiter + '@@') // 行情報の行開始位置
 
     // 探索関数実行
     if (positionDataNext === -1) {
@@ -60,12 +64,13 @@ function diffParse (diff) {
 
 function searchAddLINE (targetText, addLINE) {
   let addObj = {}
+  const delimiter = OS.breakChar()
 
   // 追加内容探索
-  for (let prevPosition = 0; targetText.substr(prevPosition).indexOf('\n+') > -1;) {
+  for (let prevPosition = 0; targetText.substr(prevPosition).indexOf(delimiter + '+') > -1;) {
     // +開始部分取得
-    const startPosition = targetText.substr(prevPosition).indexOf('\n+')
-    const endPosition = targetText.substr(prevPosition + startPosition + 1).indexOf('\n')
+    const startPosition = targetText.substr(prevPosition).indexOf(delimiter + '+')
+    const endPosition = targetText.substr(prevPosition + startPosition + 1).indexOf(delimiter)
 
     // パース
     if (endPosition === -1) {
@@ -87,12 +92,13 @@ function searchAddLINE (targetText, addLINE) {
 
 function searchRemoveLINE (targetText, rmLINE) {
   let rmObj = {}
+  const delimiter = OS.breakChar()
 
   // 削除内容探索
-  for (let prevPosition = 0; targetText.substr(prevPosition).indexOf('\n-') > -1;) {
+  for (let prevPosition = 0; targetText.substr(prevPosition).indexOf(delimiter + '-') > -1;) {
     // +開始部分取得
-    const startPosition = targetText.substr(prevPosition).indexOf('\n-')
-    const endPosition = targetText.substr(prevPosition + startPosition + 1).indexOf('\n')
+    const startPosition = targetText.substr(prevPosition).indexOf(delimiter + '-')
+    const endPosition = targetText.substr(prevPosition + startPosition + 1).indexOf(delimiter)
     if (endPosition === -1) {
       rmObj[rmLINE] = targetText.substr(prevPosition).substr(startPosition + 2)
     } else {
