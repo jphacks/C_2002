@@ -16,15 +16,19 @@
          v-on:mouseleave="userMouseLeave"
          :style="'width: ' + userColumn.width + 'px'">
       <div class="scroll-frame">
-        <div class="user_content" v-for="(user, index) in users" :key="index">
-          <span class="user_icon" @click="changeTranseferEmail(user.mail)">
+        <router-link
+          class="user_content"
+          v-for="(user, index) in users"
+          :to="{ name: 'tray', params: { userData: user }}"
+          :key="index">
+          <span class="user_icon">
             {{ user.name.charAt(0) }}
           </span>
           <div v-if="userColumn.openFlg" class="user_info">
             <h3>{{ user.name }}</h3>
             <p>{{ user.mail }}</p>
           </div>
-        </div>
+        </router-link>
       </div>
       <div id="setting_icon" v-on:click="settingModalDispOn">
         <SettingIcon/>
@@ -57,12 +61,7 @@
       return {
         // チャットツリーに転送するためのオブジェクト
         transferData: {
-          serchEmail: '検索するメールアドレス',
-          reroadTrigger: false
-        },
-        mailData: {
-          mailBody: '',
-          subject: ''
+          serchEmail: '検索するメールアドレス'
         },
         infomation: {
           directory: '/frankfrut/data/',

@@ -1,11 +1,10 @@
 <template>
   <div>
     <!-- 左側 -->
-    <div id="frame_left">
+    <div id="tree_frame__left">
       <ChatTree
-        v-if="users[transferData.serchEmail]"
-        v-bind:targetUser="users[transferData.serchEmail]"
-        v-bind:reroadTrigger="transferData.reroadTrigger"
+        v-if="$route.params['subject']"
+        :targetUser="$route.params['subject']"
       />
       <div v-else>
 
@@ -14,10 +13,10 @@
       <!-- リサイズバー -->
       <div id="resize_bar"></div>
       <!-- 右側 -->
-      <div id="frame_right">
+      <div id="tree_frame__right">
         <Preview
-          :mailBody="mailData.mailBody"
-          :subject="mailData.subject"/>
+          :mailBody="$route.params['subject'].mailBody"
+          :subject="$route.params['subject'].mailBody"/>
       </div>
   </div>
 </template>
@@ -37,9 +36,38 @@
           reroadTrigger: false
         }
       }
+    },
+    mounted () {
+      console.log('$route : ')
+      console.log(this.$route)
     }
   }
 </script>
 
-<style scoped>
+<style lang="scss">
+  #chat_tree{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+  }
+  #resize_bar{
+    height: 100%;
+    width: 4px;
+    background-color: gray;
+    cursor: col-resize;
+    transition-delay: 0.2s;
+    transition: 0.5s ;
+  &:hover{
+     background-color: mediumturquoise;
+   }
+  }
+  #tree_frame__left{
+    padding-left: 60px;
+    height: 100%;
+  }
+  #tree_frame__right{
+    height: 100%;
+    width: 60%;
+  }
 </style>

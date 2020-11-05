@@ -7,8 +7,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'tray',
+      name: 'editor',
       component: () => import('../components/Editor')
+    },
+    {
+      path: '/tray',
+      name: 'tray',
+      component: () => import('../components/Tray')
     },
     {
       path: '/login',
