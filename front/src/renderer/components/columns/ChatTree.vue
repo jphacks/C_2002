@@ -65,7 +65,7 @@
           // ユーザー情報ファイルからデータを取得する
           let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
           this.userData.name = jsonObject['user']['name']
-          this.userData.mail = jsonObject['smtp']['auth']['user']
+          this.userData.mail = jsonObject['smtp']['user']
         } else {
           console.log(targetDirectory + 'は存在しません。')
         }
@@ -84,7 +84,7 @@
           console.log(targetDirectory + 'は存在します。')
           // ユーザー情報ファイルからデータを取得する
           let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
-          let AuthData = jsonObject['smtp']['auth']
+          let AuthData = jsonObject['auth']
 
           MailReciver.mailReceive(AuthData)
         } else {
@@ -136,8 +136,8 @@
         // メール受信用の認証情報をオブジェクトに格納
         const authData = {
           auth: {
-            user: userData['smtp'].auth.user,
-            pass: userData['smtp'].auth.pass
+            user: userData['auth'].user,
+            pass: userData['auth'].pass
           },
           imap: {
             host: userData['imap'].host,

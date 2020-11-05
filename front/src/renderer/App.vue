@@ -11,6 +11,8 @@
         <button v-else style="background: #919191; cursor: not-allowed;">登録</button>
       </div>
     </div>
+
+    <!-- ユーザ一覧 -->
     <div id="column__user"
          v-on:mouseover="userMouseOver"
          v-on:mouseleave="userMouseLeave"
@@ -19,7 +21,7 @@
         <router-link
           class="user_content"
           v-for="(user, index) in users"
-          :to="{ name: 'tray', params: { userData: user }}"
+          :to="{ name: 'tray', query: { userData: user }}"
           :key="index">
           <span class="user_icon">
             {{ user.name.charAt(0) }}
@@ -30,11 +32,17 @@
           </div>
         </router-link>
       </div>
+      <router-link
+        :to="{ name: 'editor' }">
+        new
+      </router-link>
       <div id="setting_icon" v-on:click="settingModalDispOn">
         <SettingIcon/>
       </div>
     </div>
-    <router-view></router-view>
+
+    <router-view/>
+
   </div>
 </template>
 
@@ -83,10 +91,6 @@
       }
     },
     methods: {
-      changeTranseferEmail (targetEmail) {
-        console.log(this.users[targetEmail])
-        this.transferData.serchEmail = targetEmail
-      },
       userMouseOver () {
         this.userColumn.openFlg = true
         this.userColumn.width = 300
@@ -205,7 +209,7 @@
   // フォントの読み込み
   @font-face {
     font-family: 'JapaneseFont';
-    src: url('~@/assets/font/KosugiMaru-Regular.ttf') format('truetype');
+    src: url('./assets/font/KosugiMaru-Regular.ttf') format('truetype');
   }
 
   // RESET
@@ -350,6 +354,8 @@
     height: auto;
     cursor: pointer;
     padding-top: 15px;
+
+    // アイコンのスタイル
     .user_icon{
       display: inline-block;
       vertical-align: middle;
@@ -363,6 +369,8 @@
       background: #f1a90c;
       color: #ffffff;
     }
+
+    // ユーザ情報のスタイル
     .user_info{
       display: inline-block;
       vertical-align: middle;
@@ -379,6 +387,11 @@
         line-height: $icon-size / 2;
         height: $icon-size / 2;
       }
+    }
+
+    // リンクとしてのスタイル
+    &:link, &:visited{
+      text-decoration: none;
     }
   }
 
