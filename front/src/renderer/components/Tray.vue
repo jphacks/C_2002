@@ -1,30 +1,36 @@
 <template>
-  <div>
+  <div id="chat_tree">
     <!-- 左側 -->
     <div id="tree_frame__left">
       <ChatTree
         v-if="$route.query['userData']"
         :targetUser="$route.query['userData']"
-        @getMailData="mailData = $event"
-      />
-      <div v-else>
-
-      </div>
+        @getMailData="mailData = $event"/>
     </div>
-      <!-- リサイズバー -->
-      <div id="resize_bar"></div>
-      <!-- 右側 -->
-      <div id="tree_frame__right">
-        <Preview
-          :mailBody="$route.query['userData'].title"
-          :subject="$route.query['userData'].title"/>
-      </div>
+    <!-- リサイズバー -->
+    <div id="resize_bar"></div>
+    <!-- 右側 -->
+    <div id="tree_frame__right">
+      <Preview
+        :subject="mailData.title"
+        :mailBody="mailData.title"/>
+    </div>
   </div>
 </template>
 
 <script>
+  import MailReceive from '../utils/MailReceive'
   import ChatTree from './columns/ChatTree'
   import Preview from './columns/Preview'
+  import OS from '../utils/OS'
+
+  // モジュールをインポート
+  const fs = require('fs')
+
+  // デフォルトの実行ディレクトリの確認
+  const isWindows = process.platform === 'win32'
+  const HOMEDIR =
+    process.env[isWindows ? 'USERPROFILE' : 'HOME']
 
   export default {
     name: 'Tray',
@@ -42,16 +48,39 @@
         transferData: {
           serchEmail: ''
         },
-        mailData: {}
+        mailData: {},
+        mailText: ''
       }
     },
     mounted () {
-      console.log('$route : ')
-      console.log(this.$route.query['userData'])
     },
     watch: {
-      mailData: function (newData, oldData) {
-        console.log(newData)
+      mailData: async function (newData, oldData) {
+        console.log('data : ')
+        console.log(newData.title)
+        const self = this
+        const delimiter = OS.delimiterChar()
+        // SMTP情報を取得
+        fs.readFile(HOMEDIR + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json', 'utf8', function (err, data) {
+          // エラー処理
+          if (err) {
+            throw err
+          }
+          const userData = JSON.parse(data)
+
+          const authData = {
+            auth: {
+              user: userData['auth'].user,
+              pass: userData['auth'].pass
+            },
+            imap: {
+              host: userData['imap'].host,
+              port: userData['imap'].port
+            }
+          }
+
+          self.mailText = MailReceive.getMailText(authData, newData.UID)
+        })
       }
     }
   }
@@ -63,6 +92,7 @@
     width: 100%;
     display: flex;
     flex-direction: row;
+    background: #333333;
   }
   #resize_bar{
     height: 100%;
@@ -71,9 +101,9 @@
     cursor: col-resize;
     transition-delay: 0.2s;
     transition: 0.5s ;
-  &:hover{
-     background-color: mediumturquoise;
-   }
+    &:hover{
+      background-color: mediumturquoise;
+    }
   }
   #tree_frame__left{
     padding-left: 60px;
