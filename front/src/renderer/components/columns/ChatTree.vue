@@ -10,7 +10,9 @@
         v-for="(message, index) in messages"
         v-if="message.from.address === targetUser.mail"
         :key="index">
-        <div :class="[userData.mail === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
+        <div
+          @click="openMailData"
+          :class="[userData.mail === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
           <!-- <h5 class="chat__name">{{ message.name }}</h5> -->
           <p class="chat__title">{{ message.title }}</p>
         </div>
@@ -21,7 +23,7 @@
 </template>
 
 <script>
-  import MailReciver from '../utils/MailReceive'
+  import MailReciver from '../../utils/MailReceive'
   // モジュールをインポート
   const fs = require('fs')
   const isWindows = process.platform === 'win32'
@@ -65,7 +67,7 @@
           // ユーザー情報ファイルからデータを取得する
           let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
           this.userData.name = jsonObject['user']['name']
-          this.userData.mail = jsonObject['smtp']['auth']['user']
+          this.userData.mail = jsonObject['smtp']['user']
         } else {
           console.log(targetDirectory + 'は存在しません。')
         }
@@ -84,7 +86,7 @@
           console.log(targetDirectory + 'は存在します。')
           // ユーザー情報ファイルからデータを取得する
           let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
-          let AuthData = jsonObject['smtp']['auth']
+          let AuthData = jsonObject['auth']
 
           MailReciver.mailReceive(AuthData)
         } else {
@@ -113,6 +115,9 @@
 
         // 文字列を返す
         return format
+      },
+      openMailData (mailData) {
+        self.$emit('getMailData', mailData)
       }
     },
     watch: {
@@ -136,8 +141,8 @@
         // メール受信用の認証情報をオブジェクトに格納
         const authData = {
           auth: {
-            user: userData['smtp'].auth.user,
-            pass: userData['smtp'].auth.pass
+            user: userData['auth'].user,
+            pass: userData['auth'].pass
           },
           imap: {
             host: userData['imap'].host,
@@ -156,12 +161,12 @@
   #chat_tree {
     display: flex;
     flex-direction: column;
-    background-color: #eeeeee;
+    background-color: #333333;
     width: 450px;
     height: 100vh;
   }
   #tree_frame {
-    width: 90%;
+    width: 95%;
     height: 100vh;
     margin-left: 5%;
     overflow-y: scroll;
@@ -170,18 +175,19 @@
     width: 96%;
     height: 80px;
     padding-left: 4%;
-    background: #262626;
+    background: #222222;
     color: #ffffff;
     font-weight: bold;
     h2{
-      margin-top: 15px;
+      margin-top: 12px;
       font-size: 20px;
       line-height: 20px;
     }
     p{
-      margin-top: 5px;
+      margin-top: 8px;
       font-size: 13px;
       line-height: 13px;
+      color: #aaaaaa;
     }
   }
 
@@ -193,6 +199,7 @@
     .chat__time{
       display: inline-block;
       width: 60px;
+      color: #aaaaaa;
       height: $chat__time-fontsize;
       line-height: $chat__time-fontsize;
       font-size: $chat__time-fontsize;
@@ -206,17 +213,14 @@
       padding: 6px 20px;
       width: 250px;
       height: auto;
-      background-color: #ffffff;
-      color: #333333;
+      background-color: #444444;
+      color: #ffffff;
       border-radius: 10px 10px 10px 0;
       cursor: pointer;
       vertical-align: middle;
       .chat__name{
         font-weight: bold;
       }
-      // .chat__title{
-
-      // }
       // 自身の送信したメールスタイル
       &.chat__send_me{
         background-color: #5645ff;

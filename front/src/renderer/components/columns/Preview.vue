@@ -63,6 +63,8 @@
   #preview{
     height: 100%;
     width: 100%;
+    color: #ffffff;
+    background: #333333;
   }
 
   // 上部のスタイル
@@ -72,20 +74,23 @@
     font-size: 17px;
     line-height: 40px;
     height: 40px;
-    border-bottom: 1px solid #262626;
+    border-bottom: 1px solid #888888;
+    color: #ffffff;
   }
 
   // 本文
   #main_message{
     outline: none;
     border: none;
-    resize: none;
     width: 94%;
     margin: 5px 0 0 3%;
     height: calc(100vh - 10px - 90px);
     overflow: scroll;
     font-size: 17px;
     line-height: 26px;
+    background: none;
+    color: #ffffff;
+    resize: none;
     &:focus{
       outline: none;
     }

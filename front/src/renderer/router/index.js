@@ -3,16 +3,28 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'tray',
-      component: () => import('../components/Tray')
-    },
-    {
-      path: '/login',
-      redirect: ''
-    }
-  ]
+const routes = [
+  {
+    path: '/',
+    name: 'start',
+    component: () => import('../components/Start')
+  },
+  {
+    path: '/editor',
+    name: 'editor',
+    component: () => import('../components/Editor')
+  },
+  {
+    path: '/tray',
+    name: 'tray',
+    component: () => import('../components/Tray')
+  }
+]
+
+const router = new Router({
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes
 })
+
+export default router

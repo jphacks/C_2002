@@ -7,62 +7,52 @@
         <input type="email" placeholder="example@example.com" v-model="userInformation.email">
         <span>パスワード</span>
         <input type="password" v-model="userInformation.password">
-        <button v-if="userInformation.mail.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/) && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
+        <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/) && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
         <button v-else style="background: #919191; cursor: not-allowed;">登録</button>
       </div>
     </div>
+
+    <!-- ユーザ一覧 -->
     <div id="column__user"
          v-on:mouseover="userMouseOver"
          v-on:mouseleave="userMouseLeave"
          :style="'width: ' + userColumn.width + 'px'">
       <div class="scroll-frame">
-        <div class="user_content" v-for="(user, index) in users" :key="index">
-          <span class="user_icon" @click="changeTranseferEmail(user.mail)">
+        <router-link
+          class="user_content"
+          v-for="(user, index) in users"
+          :to="{ name: 'tray', query: { userData: user }}"
+          :key="index">
+          <span class="user_icon">
             {{ user.name.charAt(0) }}
           </span>
           <div v-if="userColumn.openFlg" class="user_info">
             <h3>{{ user.name }}</h3>
             <p>{{ user.mail }}</p>
           </div>
+        </router-link>
+      </div>
+      <div id="icons">
+        <router-link
+          id="plus_icon"
+          :to="{ name: 'editor' }">
+          <PlusIcon/>
+        </router-link>
+        <div
+          id="setting_icon"
+          v-on:click="settingModalDispOn">
+          <SettingIcon/>
         </div>
       </div>
-      <div id="setting_icon" v-on:click="settingModalDispOn">
-        <SettingIcon/>
-      </div>
     </div>
-    <!-- 右側メニュー -->
-    <div id="tray_frame">
-      <!-- 左側 -->
-      <div id="main_left">
-        <ChatTree
-          v-if="users[transferData.serchEmail]"
-          v-bind:targetUser="users[transferData.serchEmail]"
-          v-bind:reroadTrigger="transferData.reroadTrigger"
-          />
-        <!--
-        <MailEditer
-          @updateBody="mailData.mailBody = $event"
-          @updateSubject="mailData.subject = $event"/>
-           -->
-      </div>
-      <!-- リサイズバー -->
-      <div id="resize_bar"></div>
-      <!-- 右側 -->
-      <div id="main_right">
-        <Preview
-          :mailBody="mailData.mailBody"
-          :subject="mailData.subject"/>
-      </div>
-    </div>
-    <router-view></router-view>
+
+    <router-view/>
   </div>
 </template>
 
 <script>
-  import SettingIcon from './components/icons/setting.vue'
-  import ChatTree from './components/ChatTree.vue'
-  import Preview from './components/Preview.vue'
-  import MailEditer from './components/MailEditer'
+  import SettingIcon from './components/icons/Setting'
+  import PlusIcon from './components/icons/Plus'
   import FileAction from './utils/FileAction'
   import MailReciver from './utils/MailReceive'
   import OS from './utils/OS'
@@ -78,21 +68,14 @@
   export default {
     name: 'c_2002',
     components: {
-      MailEditer,
       SettingIcon,
-      ChatTree,
-      Preview
+      PlusIcon
     },
     data () {
       return {
         // チャットツリーに転送するためのオブジェクト
         transferData: {
-          serchEmail: '検索するメールアドレス',
-          reroadTrigger: false
-        },
-        mailData: {
-          mailBody: '',
-          subject: ''
+          serchEmail: '検索するメールアドレス'
         },
         infomation: {
           directory: '/frankfrut/data/',
@@ -114,10 +97,6 @@
       }
     },
     methods: {
-      changeTranseferEmail (targetEmail) {
-        console.log(this.users[targetEmail])
-        this.transferData.serchEmail = targetEmail
-      },
       userMouseOver () {
         this.userColumn.openFlg = true
         this.userColumn.width = 300
@@ -141,8 +120,8 @@
           console.log(targetDirectory + 'は存在します。')
           // ユーザー情報ファイルからデータを取得する
           let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
-          this.userInformation.email = jsonObject['smtp']['auth']['user']
-          this.userInformation.password = jsonObject['smtp']['auth']['pass']
+          this.userInformation.email = jsonObject['auth']['user']
+          this.userInformation.password = jsonObject['auth']['pass']
         } else {
           console.log(targetDirectory + 'は存在しません。')
         }
@@ -167,18 +146,25 @@
           smtp: {
             host: 'smtp.gmail.com',
             port: 465,
-            secure: true,
-            auth: {
-              user: this.userInformation.email,
-              pass: this.userInformation.password
-            }
+            secure: true
+          },
+          imap: {
+            host: 'imap.gmail.com',
+            port: '993'
+          },
+          pop: {
+            host: 'pop.gmail.com',
+            port: '995'
           },
           user: {
             name: 'ReERishun',
             affiliation: '株式会社PiedPiper'
+          },
+          auth: {
+            user: this.userInformation.email,
+            pass: this.userInformation.password
           }
         }
-
         // 作業ディレクトリの作成
         await FileAction.mkdir(targetDirectory)
         fs.writeFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, JSON.stringify(jsonData, null, '    ', function (err) { // jsonファイル
@@ -216,8 +202,8 @@
         // メール受信用の認証情報をオブジェクトに格納
         const authData = {
           auth: {
-            user: userData['smtp'].auth.user,
-            pass: userData['smtp'].auth.pass
+            user: userData['auth'].user,
+            pass: userData['auth'].pass
           },
           imap: {
             host: userData['imap'].host,
@@ -236,7 +222,7 @@
   // フォントの読み込み
   @font-face {
     font-family: 'JapaneseFont';
-    src: url('~@/assets/font/KosugiMaru-Regular.ttf') format('truetype');
+    src: url('./assets/font/KosugiMaru-Regular.ttf') format('truetype');
   }
 
   // RESET
@@ -364,7 +350,7 @@
     flex-direction: column;
     width: $usercolumn__size;
     height: 100vh;
-    background: #cccccc;
+    background: #222222;
     -webkit-transition: all 0.2s ease;
     -moz-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
@@ -381,6 +367,8 @@
     height: auto;
     cursor: pointer;
     padding-top: 15px;
+
+    // アイコンのスタイル
     .user_icon{
       display: inline-block;
       vertical-align: middle;
@@ -394,6 +382,8 @@
       background: #f1a90c;
       color: #ffffff;
     }
+
+    // ユーザ情報のスタイル
     .user_info{
       display: inline-block;
       vertical-align: middle;
@@ -411,53 +401,50 @@
         height: $icon-size / 2;
       }
     }
+
+    // リンクとしてのスタイル
+    &:link, &:visited{
+      text-decoration: none;
+    }
   }
 
-  // 設定アイコン
-  #setting_icon{
-    z-index: 900;
+  // アイコンエリア
+  #icons{
+    z-index: 200;
     position: absolute; // 絶対位置指定することを定義
-    bottom: 0px; // 絶対位置指定(左0px,下0px)
-    margin: 8px 8px 8px 8px;
-    width: $icon-size;
-    height: $icon-size;
-    border-radius: $icon-size;
-    border: solid 2px #aaaaaa;
-    background-color: #ffffff;
-    cursor: pointer;
-    &:hover{ // 歯車アイコン回転アニメーション
-      animation: r1 1s cubic-bezier(0, 0, 1.0, 1.0) infinite;
-      @keyframes r1 {
-        0%   { transform: rotate(0deg); }
-        100% { transform: rotate(135deg); }
-      }
-    }
-  }
+    bottom: 0; // 絶対位置指定(左0px,下0px)
 
-  // 右側メニュー
-  #tray_frame{
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    #main_left{
-      padding-left: 60px;
-      height: 100%;
+    // 新規作成アイコン
+    #plus_icon{
+      display: inline-block;
+      width: $icon-size + 10px;
+      height: $icon-size + 10px;
+      margin: 0 0 0 ($usercolumn__size - $icon-size - 10) / 2;
+      fill: #ffffff;
+      cursor: pointer;
     }
-    #resize_bar{
-      height: 100%;
-      width: 4px;
-      background-color: gray;
-      cursor: col-resize;
-      transition-delay: 0.2s;
-      transition: 0.5s ;
-      &:hover{
-        background-color: mediumturquoise;
+
+    // 設定アイコン
+    #setting_icon{
+      margin: 8px 8px 8px 8px;
+      width: $icon-size;
+      height: $icon-size;
+      border-radius: $icon-size;
+      border: solid 2px #ffffff;
+      cursor: pointer;
+
+      path{
+        fill: #ffffff;
       }
-    }
-    #main_right{
-      height: 100%;
-      width: 60%;
+
+      // 歯車アイコン回転アニメーション
+      &:hover{
+        animation: r1 1s cubic-bezier(0, 0, 1.0, 1.0) infinite;
+        @keyframes r1 {
+          0%   { transform: rotate(0deg); }
+          100% { transform: rotate(135deg); }
+        }
+      }
     }
   }
 </style>
