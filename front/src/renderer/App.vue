@@ -1,17 +1,5 @@
 <template>
   <div id="app">
-    <!-- 左側メニュー -->
-    <div v-if="displayFlag.settingModal" id="setting_modal">
-      <div class="form_frame">
-        <span>メールアドレス</span>
-        <input type="email" placeholder="example@example.com" v-model="userInformation.email">
-        <span>パスワード</span>
-        <input type="password" v-model="userInformation.password">
-        <button v-if="userInformation.email.match(/[\w\-._]+@[\w\-._]+\.[A-Za-z]+/) && userInformation.password" v-on:click="settingModalDispOff" style="background: #f1a90c; cursor: pointer;">登録</button>
-        <button v-else style="background: #919191; cursor: not-allowed;">登録</button>
-      </div>
-    </div>
-
     <!-- ユーザ一覧 -->
     <div id="column__user"
          v-on:mouseover="userMouseOver"
@@ -32,20 +20,16 @@
           </div>
         </router-link>
       </div>
-      <router-link
-        :to="{ name: 'start' }">
-        home
-      </router-link>
       <div id="icons">
         <router-link
           id="plus_icon"
           :to="{ name: 'editor' }">
           <PlusIcon/>
         </router-link>
-        <div
-          id="setting_icon"
-          v-on:click="settingModalDispOn">
-          <SettingIcon/>
+        <div id="setting_icon">
+          <router-link :to="{ name: 'setting' }">
+            <SettingIcon/>
+          </router-link>
         </div>
       </div>
     </div>
@@ -57,7 +41,6 @@
 <script>
   import SettingIcon from './components/icons/Setting'
   import PlusIcon from './components/icons/Plus'
-  import FileAction from './utils/FileAction'
   import MailReciver from './utils/MailReceive'
   import OS from './utils/OS'
 
@@ -90,9 +73,6 @@
           email: '',
           password: ''
         },
-        displayFlag: {
-          settingModal: false
-        },
         userColumn: {
           openFlg: false,
           width: 60
@@ -108,75 +88,6 @@
       userMouseLeave () {
         this.userColumn.width = 60
         this.userColumn.openFlg = false
-      },
-      // モーダル項目
-      settingModalDispOn () {
-        console.log('modal ON')
-        // Windows用のパス形式で指定
-        if (isWindows) {
-          this.infomation.directory = '\\frankfrut\\data\\'
-          this.infomation.delimiter = '\\'
-        }
-        // Win/Mac両対応のディレクトリを生成
-        const targetDirectory = HOMEDIR + this.infomation.directory
-
-        if (fs.existsSync(targetDirectory)) {
-          console.log(targetDirectory + 'は存在します。')
-          // ユーザー情報ファイルからデータを取得する
-          let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
-          this.userInformation.email = jsonObject['auth']['user']
-          this.userInformation.password = jsonObject['auth']['pass']
-        } else {
-          console.log(targetDirectory + 'は存在しません。')
-        }
-        this.displayFlag.settingModal = true
-        this.transferData.reroadTrigger = true
-      },
-      async settingModalDispOff () {
-        console.log('modal OFF')
-        // Windows用のパス形式で指定
-        if (isWindows) {
-          this.infomation.directory = '\\frankfrut\\data\\'
-          this.infomation.delimiter = '\\'
-        }
-        // Win/Mac両対応のディレクトリを生成
-        const targetDirectory = HOMEDIR + this.infomation.directory
-
-        // 作業ディレクトリの作成
-        await FileAction.mkdir(targetDirectory)
-
-        // json生成
-        const jsonData = {
-          smtp: {
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true
-          },
-          imap: {
-            host: 'imap.gmail.com',
-            port: '993'
-          },
-          pop: {
-            host: 'pop.gmail.com',
-            port: '995'
-          },
-          user: {
-            name: 'ReERishun',
-            affiliation: '株式会社PiedPiper'
-          },
-          auth: {
-            user: this.userInformation.email,
-            pass: this.userInformation.password
-          }
-        }
-        // 作業ディレクトリの作成
-        await FileAction.mkdir(targetDirectory)
-        fs.writeFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, JSON.stringify(jsonData, null, '    ', function (err) { // jsonファイル
-          if (err) { throw err }
-        }))
-        // モーダルフラグOFF
-        this.displayFlag.settingModal = false
-        this.transferData.reroadTrigger = false
       },
       async getMail (authData) {
         const messages = await MailReciver.mailReceive(authData, 5)
@@ -290,63 +201,6 @@
       background-color: #cbcbcb;
       border-radius: 6px;
     }
-  }
-
-  // 設定モーダル
-  #setting_modal{
-    z-index:1000;
-    position: absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background-color:rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .form_frame{
-      min-height: 200px;
-      min-width: 400px;
-      width:50%;
-      height:50%;
-      border-radius: 10px;
-      background-color:rgba(255,255,255,1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      span{
-        margin: 5px 0px 5px 0px;
-        font-size: 25px;
-        font-weight: 700;
-      }
-      input{
-        margin: 5px 0px 10px 0px;
-        padding: 2.5px 12.5px 2.5px 12.5px;
-        min-height: 25px;
-        min-width: 200px;
-        max-width: 400px;
-        width:50%;
-        font-size: 25px;
-        border-radius: 20px;
-        border: solid 3px #aaaaaa;
-      }
-      button{
-        margin: 5px 0px 10px 0px;
-        min-height: 40px;
-        min-width: 70px;
-        max-width: 100px;
-        width:30%;
-        font-size: 20px;
-        font-weight: 500;
-        border-radius: 10px;
-        border: solid 2px #aaaaaa;
-      }
-    }
-  }
-
-  *{
-    outline: solid 1px red;
   }
 
   // ユーザ一覧カラム
