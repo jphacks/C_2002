@@ -106,8 +106,8 @@
         const self = this
 
         await messages.forEach(function (message) {
-          // 新規メールアドレスであれば追加
-          if (!(message['from'].address in self.users)) {
+          // 新規ユーザであれば追加
+          if (!(message['from'].address in self.users) && (message['from'].address !== authData['auth'].user)) {
             self.users[message['from'].address] = {
               name: message['from'].name,
               mail: message['from'].address,

@@ -48,6 +48,7 @@ async function mailReceiveUser (authData, targetAddress, getMailCount = 20) {
           if (err) {
             console.log(err)
           }
+          console.log(numbers)
           return resolve(numbers)
         })
       })

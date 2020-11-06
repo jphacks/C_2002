@@ -328,6 +328,7 @@
           let mailData = {
             from: '"' + userData['user'].affiliation + ' ' + userData['user'].name + '" <' + userData['auth'].user + '>',
             to: self.mailData.destination,
+            bcc: userData['auth'].user,
             subject: self.mailData.subject,
             text: self.mailData.resultBody
           }

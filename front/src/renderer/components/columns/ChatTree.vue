@@ -10,11 +10,11 @@
       <div
         class="chat"
         v-for="(message, index) in messages"
-        v-if="message.from.address === targetUser.mail"
+        v-if="(message.from.address === targetUser.mail) || (message.from.address === authData['auth'].user)"
         :key="index">
         <div
           @click="openMailData(message)"
-          :class="[userData.mail === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
+          :class="[authData['auth'].user === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
           <p class="chat__title">{{ message.title }}</p>
         </div>
         <span class="chat__time">{{ dateFormat(new Date(message.date)) }}</span><!-- 時間に関してはメールサーバからの情報によって変更 -->
@@ -48,7 +48,8 @@
         userData: {
           mail: '',
           name: ''
-        }
+        },
+        authData: {}
       }
     },
     methods: {
@@ -66,8 +67,8 @@
           console.log(targetDirectory + 'は存在します。')
           // ユーザー情報ファイルからデータを取得する
           let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
-          this.userData.name = jsonObject['user']['name']
-          this.userData.mail = jsonObject['smtp']['user']
+          this.userData.name = jsonObject['user'].name
+          this.userData.mail = jsonObject['smtp'].user
         } else {
           console.log(targetDirectory + 'は存在しません。')
         }
@@ -95,7 +96,10 @@
       },
       async searchMail (authData, targetAddress) {
         console.log(targetAddress)
-        const numbers = await MailReciver.mailReceiveUser(authData, targetAddress)
+        const myNumbers = await MailReciver.mailReceiveUser(authData, authData['auth'].user)
+        const targetNumbers = await MailReciver.mailReceiveUser(authData, targetAddress)
+        const numbers = myNumbers.concat(targetNumbers)
+        console.log(numbers)
         this.messages = await MailReciver.mailReceive(authData, numbers[numbers.length - 10]).then()
       },
       dateFormat (date, format = 'YYYY-MM-DD hh:mm:ss') {
@@ -134,7 +138,7 @@
         const userData = JSON.parse(data)
 
         // メール受信用の認証情報をオブジェクトに格納
-        const authData = {
+        self.authData = {
           auth: {
             user: userData['auth'].user,
             pass: userData['auth'].pass
@@ -146,7 +150,7 @@
         }
 
         // メールを受信
-        self.searchMail(authData, self.targetUser.mail)
+        self.searchMail(self.authData, self.targetUser.mail)
       })
     }
   }
