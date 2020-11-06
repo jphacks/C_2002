@@ -86,7 +86,7 @@
         },
         userCtrCheck: {
           ID: '',
-          time: 5000
+          time: 4000
         }
       }
     },
@@ -163,7 +163,7 @@
         const sendJSON = {'commit_id': commitID, 'sentence': sentence}
         const self = this
         // APIへPOST
-        return axios.post(API, sendJSON, {
+        await axios.post(API, sendJSON, {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -173,7 +173,7 @@
             console.log(res)
             FileAction.addLINE(
               HOMEDIR + this.draft.directory + this.draftID + this.draft.delimiter + this.draft.resultName,
-              key,
+              Number(key),
               res.data['change_sentence']
             ).then(self.updatePreview)
           })
@@ -184,10 +184,46 @@
             }
           })
       },
+      async autoUpdate () {
+        const regexp = new RegExp(this.breakChar + '(.*?)', 'g')
+        const breakPoints = (this.mailData.body.match(regexp) || []).length
+
+        // 行数に変化があった場合
+        this.mailData.bodyLINE = breakPoints
+        const self = this
+
+        // 差分オブジェクトを取得
+        const diffObj = await this.saveDraft()
+
+        // 削除行を取得
+        let keysArr = []
+        Object.keys(diffObj.remove).forEach(function (key) {
+          keysArr.push(key)
+        })
+        const keyLength = keysArr.length
+        // 後ろの行から取り出し
+        for (let i = keyLength - 1; i >= 0; i--) {
+          console.log(keysArr[i] + ' remove : ' + diffObj.remove[keysArr[i]])
+          await FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, Number(keysArr[i]))
+        }
+
+        // 追加部分の追加
+        Object.keys(diffObj.add).forEach(function (key) {
+          console.log(key + ' add : ' + diffObj.add[key])
+          if (diffObj.add[key] !== '') {
+            self.convertHonorific(diffObj['commit_id'], diffObj.add[key], key)
+          }
+        })
+        // プレビューの更新
+        this.updatePreview()
+      },
       async bodyEnterAction () {
         const regexp = new RegExp(this.breakChar + '(.*?)', 'g')
         if (this.mailData.bodyLength + 1 < this.mailData.body.length) {
           if (this.mailData.bodyLINE !== (this.mailData.body.match(regexp) || []).length) {
+            // タイムアウトの停止
+            clearTimeout(this.userCtrCheck.ID)
+
             this.mailData.bodyLINE = (this.mailData.body.match(regexp) || []).length
             const self = this
 
@@ -220,6 +256,9 @@
           await GitCommand.gitCommit(commitMessage, draftDirectory)
         }
         this.mailData.bodyLength = this.mailData.body.length
+
+        // プレビューの更新
+        this.updatePreview()
       },
       async bodyDeleteAction () {
         const regexp = new RegExp(this.breakChar + '(.*?)', 'g')
@@ -227,6 +266,9 @@
 
         // 行数に変化があった場合
         if (this.mailData.bodyLINE !== breakPoints) {
+          // タイムアウトの停止
+          clearTimeout(this.userCtrCheck.ID)
+
           this.mailData.bodyLINE = breakPoints
           const self = this
 
@@ -242,7 +284,7 @@
           // 後ろの行から取り出し
           for (let i = keyLength - 1; i >= 0; i--) {
             console.log(keysArr[i] + ' remove : ' + diffObj.remove[keysArr[i]])
-            await FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, keysArr[i])
+            await FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, Number(keysArr[i]))
           }
 
           // 追加部分の追加
@@ -253,6 +295,9 @@
             }
           })
         }
+
+        // プレビューの更新
+        this.updatePreview()
       },
       updatePreview () {
         const self = this
@@ -261,7 +306,7 @@
           if (err) {
             throw err
           }
-          console.log(data)
+          console.log('updated : ' + data)
           // 変更結果を代入
           self.mailData.resultBody = data
 
@@ -361,6 +406,19 @@
               }
             })
         }
+      },
+      'mailData.body': function (val, oldval) {
+        // タイムアウトの停止
+        clearTimeout(this.userCtrCheck.ID)
+
+        // タイムアウトの設定
+        const self = this
+        this.userCtrCheck.ID = setTimeout(
+          function () {
+            self.autoUpdate()
+          },
+          this.userCtrCheck.time
+        )
       }
     },
     mounted () {

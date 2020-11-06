@@ -100,7 +100,9 @@ async function deleteLINE (fullPath, LINE) {
 
       for (let i = 0; i < lineText.length; i++) {
         if (i !== LINE - 1) {
-          resultText = resultText + lineText[i] + delimiter
+          if (!(i === lineText.length - 1 && lineText[i] === '')) {
+            resultText = resultText + lineText[i] + delimiter
+          }
         }
       }
 
