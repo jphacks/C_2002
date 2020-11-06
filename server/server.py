@@ -45,15 +45,27 @@ HumbleNounDict = json.load(json_open)
 # 探索の省略が可能な品詞（Part of speech to omit）
 Posto = ['句点', '読点', '空白', '格助詞', '終助詞', '括弧', '助数詞', '助助数詞', '冠数詞']
 
-# 人名と会社名をリストで取得する関数
-def get_list_people_companies(sentence):
+def get_list_people_companies_time(sentence):
     # print('get_list_people_companies Start')
     response = gooAPI.entity(sentence=sentence)
     people_name = list(set([people[0] for people in response['ne_list'] if people[1]=='PSN']))
     # print(people_name)
     companies_name = list(set([company[0] for company in response['ne_list'] if company[1]=='ORG']))
     # print(companies_name)
-    return people_name, companies_name
+    date_list = list([time[0] for time in response['ne_list'] if time[1]=='DAT'])
+    time_list = list([time[0] for time in response['ne_list'] if time[1]=='TIM'])
+    # print(date_list)
+    # print(time_list)
+    datetime_list = []
+    if date_list and len(time_list)==2:
+        date = gooAPI.chrono(sentence=date_list[0])
+        date_str = date['datetime_list'][0][1].split('-')
+        minutes_start_str = time_list[0].split(':')
+        minutes_start = int(minutes_start_str[0])*60 + int(minutes_start_str[1])
+        minutes_end_str = time_list[1].split(':')
+        minutes_end = int(minutes_end_str[0])*60 + int(minutes_end_str[1])
+        datetime_list = [[int(date_str[0]), int(date_str[1]), int(date_str[2]), int(minutes_start_str[0]), int(minutes_start_str[1])], minutes_end - minutes_start]
+    return people_name, companies_name, datetime_list
 
 # 校正支援をリストで取得する関数
 def get_list_roofreading(text):
@@ -79,23 +91,23 @@ def get_list_roofreading(text):
     # print(result_list)
     return result_list
 
-# 単語探索関数
-def SearchForWords(sentence):
-    for start in range(len(sentence)):
-        for end in range(len(sentence) - 1, start - 1, -1):
-            testKey = ''
-            for check in range(start, end + 1):
-                testKey += sentence[check][0]
-            if testKey in HumbleLangDict:
-                if testKey not in HitWordList:
-                    HitWordList.append(testKey)
+# # 単語探索関数
+# def SearchForWords(sentence):
+#     for start in range(len(sentence)):
+#         for end in range(len(sentence) - 1, start - 1, -1):
+#             testKey = ''
+#             for check in range(start, end + 1):
+#                 testKey += sentence[check][0]
+#             if testKey in HumbleLangDict:
+#                 if testKey not in HitWordList:
+#                     HitWordList.append(testKey)
 
-# 単語置き換え用関数
-def ChangeWord(text, HitWordList):
-    ConvertedText = text
-    for word in HitWordList:
-        ConvertedText = ConvertedText.replace(word, HumbleLangDict[word])
-    return ConvertedText
+# # 単語置き換え用関数
+# def ChangeWord(text, HitWordList):
+#     ConvertedText = text
+#     for word in HitWordList:
+#         ConvertedText = ConvertedText.replace(word, HumbleLangDict[word])
+#     return ConvertedText
 
 # 敬語変換関数
 def ChangeToHonorific(original):
@@ -178,6 +190,7 @@ def get_data():
             'before_sentence': sentence,
             'people_name_list': [],
             'companies_name_list': [],
+            'datetime_list': [],
             'before_sentence_calibration': [],
             'change_sentence': ''
         }
@@ -185,7 +198,7 @@ def get_data():
     else :
         with ThreadPoolExecutor(max_workers=3, thread_name_prefix="thread") as executor:
             # 人名と会社名をリストで取得
-            people_name_list, companies_name_list = executor.submit(get_list_people_companies, sentence).result()
+            people_name_list, companies_name_list, time_list = executor.submit(get_list_people_companies_time, sentence).result()
             # 校正支援をリストで取得
             result_before_text_calibration_list = executor.submit(get_list_roofreading, sentence).result()
             # 敬語変換
@@ -199,6 +212,7 @@ def get_data():
             'before_sentence': sentence,
             'people_name_list': people_name_list,
             'companies_name_list': companies_name_list,
+            'datetime_list': time_list,
             'before_sentence_calibration': result_before_text_calibration_list,
             'change_sentence': change_text
             # 'change_sentence_calibration': result_change_text_calibration_list
@@ -220,6 +234,7 @@ def post_data():
             'before_sentence': sentence,
             'people_name_list': [],
             'companies_name_list': [],
+            'datetime_list': [],
             'before_sentence_calibration': [],
             'change_sentence': ''
         }
@@ -227,7 +242,7 @@ def post_data():
     else :
         with ThreadPoolExecutor(max_workers=3, thread_name_prefix="thread") as executor:
             # 人名と会社名をリストで取得
-            people_name_list, companies_name_list = executor.submit(get_list_people_companies, sentence).result()
+            people_name_list, companies_name_list, time_list = executor.submit(get_list_people_companies_time, sentence).result()
             # 校正支援をリストで取得
             result_before_text_calibration_list = executor.submit(get_list_roofreading, sentence).result()
             # 敬語変換
@@ -239,6 +254,7 @@ def post_data():
             'before_sentence': sentence,
             'people_name_list': people_name_list,
             'companies_name_list': companies_name_list,
+            'datetime_list': time_list,
             'before_sentence_calibration': result_before_text_calibration_list,
             'change_sentence': change_text
         }

@@ -19,7 +19,7 @@ function readUserInput(question) {
 // メイン処理
 (async function main() {
     while(true) {
-        const sentence = await readUserInput('Send Sentence: ');
+        const sentence = await readUserInput('');
 
         var commit_id = '1c40b98';
         // var message = 'お世話様です。';
@@ -29,8 +29,8 @@ function readUserInput(question) {
         // var sentences = message.split('\n')
 
         var options = {
-            // uri: "http://0.0.0.0:5000/postdata",
-            uri: "http://54.64.167.36:5000/postdata",
+            uri: "http://0.0.0.0:5000/postdata",
+            // uri: "http://54.64.167.36:5000/postdata",
             headers: {
                 "Content-type": "application/json",
             },
