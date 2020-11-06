@@ -12,7 +12,8 @@
     <div id="editor_frame__right">
       <Preview
         :mailBody="mailData.body"
-        :subject="mailData.subject"/>
+        :subject="mailData.subject"
+        :sendUser="false"/>
     </div>
   </div>
 </template>

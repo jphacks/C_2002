@@ -16,7 +16,7 @@
       <Preview
         :subject="mailData.title"
         :mailBody="mailText"
-        :sendTime="$route.query['userData']"
+        :sendUser="$route.query['userData']"
         v-if="mailData.title"/>
       <Start
         v-else/>

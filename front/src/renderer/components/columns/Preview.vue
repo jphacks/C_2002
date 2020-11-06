@@ -1,21 +1,21 @@
 <template>
   <div id="preview">
 
-    <div class="upbar_list" v-if="sendTime">
-      UPDATED {{ updated }}
+    <div class="upbar_list" v-if="sendUser">
+      差出人：{{ sendUser.name }}
     </div>
     <div class="upbar_list" v-else>
-      受信日時 {{ dateFormat(new Date(sendTime)) }}
+      UPDATED {{ updated }}
     </div>
 
     <div class="upbar_list">
-      件名：{{ subject }}
+      件　名：{{ subject }}
     </div>
 
     <textarea
       id="main_message"
       v-model="mailBody"
-      :readonly="[sendTime !== '' ? 'readonly' : '']">
+      v-bind:readonly="sendUser">
     </textarea>
   </div>
 </template>
@@ -26,7 +26,7 @@
     props: {
       subject: '',
       mailBody: '',
-      sendTime: ''
+      sendUser: ''
     },
     data () {
       return {
