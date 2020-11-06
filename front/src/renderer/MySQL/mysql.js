@@ -8,7 +8,7 @@
 'use strict'
 
 // MySQLに接続
-const mysql = require('mysql')
+const mysql = require('src/renderer/MySQL/mysql')
 
 // DB接続用関数（MySQL情報）
 function Connect (connecteInfo) {
