@@ -74,6 +74,7 @@ COVID-19(新型コロナウイルス)の影響により世の中で様々なこ�
 * [Electron](https://www.electronjs.org/)
 * [jQuery](https://jquery.com/)
 * [Flask](https://flask.palletsprojects.com/en/1.1.x/)
+* [MySQL](https://www.mysql.com/jp/)
 
 #### API・データ
 * スポンサー様の提供サービス
