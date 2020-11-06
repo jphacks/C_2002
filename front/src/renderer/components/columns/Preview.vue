@@ -89,15 +89,16 @@
   #main_message{
     outline: none;
     border: none;
+    background: none;
+    resize: none;
+
     width: 94%;
     margin: 5px 0 0 3%;
     height: calc(100vh - 10px - 90px);
-    overflow: scroll;
+    overflow-y: scroll;
     font-size: 17px;
     line-height: 26px;
-    background: none;
     color: #ffffff;
-    resize: none;
     &:focus{
       outline: none;
     }
