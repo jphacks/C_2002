@@ -6,6 +6,9 @@
 
 ## アーキテクチャ
 
+[![Architecture.png](https://github.com/jphacks/C_2002/blob/master/%E3%83%97%E3%83%AC%E3%82%BC%E3%83%B3/Architecture.png?raw=true)](https://github.com/jphacks/C_2002/blob/master/%E3%83%97%E3%83%AC%E3%82%BC%E3%83%B3/Architecture.png?raw=true)
+
+
 ## 製品概要
 
 ### ビジネスマナー × Tech
