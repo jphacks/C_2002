@@ -77,10 +77,10 @@ function userColor (mailAddress) {
     '#ff6f3e',
     '#8d71ff',
     '#f0a70d',
-    '#ff3c41',
     '#416aff',
     '#51ff37',
     '#ff6172',
+    '#ff3c41',
     '#333333'
   ]
 

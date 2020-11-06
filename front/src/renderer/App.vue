@@ -22,19 +22,21 @@
       </div>
       <router-link
         :to="{ name: 'start' }">
-        start
+        デバッグ用のクソダサいボタン
       </router-link>
       <div id="icons">
         <router-link
           id="plus_icon"
+          title="新規メールを作成"
           :to="{ name: 'editor' }">
           <PlusIcon/>
         </router-link>
-        <div id="setting_icon">
-          <router-link :to="{ name: 'setting' }">
-            <SettingIcon/>
-          </router-link>
-        </div>
+        <router-link
+          id="setting_icon"
+          :to="{ name: 'setting' }"
+          title="設定を開く">
+          <SettingIcon/>
+        </router-link>
       </div>
     </div>
 
@@ -250,7 +252,11 @@
     width: 300px;
     height: auto;
     cursor: pointer;
-    padding-top: 15px;
+    padding: 10px 0;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all  0.3s ease;
 
     // アイコンのスタイル
     .user_icon{
@@ -290,6 +296,11 @@
     &:link, &:visited{
       text-decoration: none;
     }
+
+    // ホバーアニメーション
+    &:hover{
+      background-color: rgba(255, 255, 255, .1);
+    }
   }
 
   // アイコンエリア
@@ -306,17 +317,24 @@
       margin: 0 0 0 ($usercolumn__size - $icon-size - 10) / 2;
       fill: #ffffff;
       cursor: pointer;
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all  0.3s ease;
+      &:hover{
+        opacity: .8;
+      }
     }
 
     // 設定アイコン
     #setting_icon{
+      display: block;
       margin: 8px 8px 8px 8px;
       width: $icon-size;
       height: $icon-size;
       border-radius: $icon-size;
       border: solid 2px #ffffff;
       cursor: pointer;
-
       path{
         fill: #ffffff;
       }
