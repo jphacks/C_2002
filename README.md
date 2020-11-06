@@ -6,7 +6,7 @@
 
 ### ビジネスマナー × Tech
 
-[![×TECH.png](https://drive.google.com/file/d/1gr6Qv_LlGG-sEhE2uZ3eL0tMLyKwadIa/view?usp=sharing)](https://drive.google.com/file/d/1gr6Qv_LlGG-sEhE2uZ3eL0tMLyKwadIa/view?usp=sharing)
+[![×TECH.png](https://github.com/jphacks/C_2002/blob/master/%E3%83%97%E3%83%AC%E3%82%BC%E3%83%B3/%C3%97TECH.png?raw=true)](https://github.com/jphacks/C_2002/blob/master/%E3%83%97%E3%83%AC%E3%82%BC%E3%83%B3/%C3%97TECH.png?raw=true)
 
 ### 背景(製品開発のきっかけ、課題等）
 COVID-19(コロナウイルス)の影響により世の中で様々なことがオンライン形態へと変化した．
