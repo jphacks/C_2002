@@ -70,7 +70,7 @@
       return {
         // チャットツリーに転送するためのオブジェクト
         transferData: {
-          serchEmail: '検索するメールアドレス'
+          serchEmail: ''
         },
         infomation: {
           directory: '/frankfrut/data/',
@@ -85,7 +85,13 @@
           openFlg: false,
           width: 60
         },
-        users: {}
+        users: {},
+        mailCheck: {
+          id: '',
+          interval: 20000,
+          newestMsg: ''
+        },
+        authData: {}
       }
     },
     methods: {
@@ -98,17 +104,33 @@
         this.userColumn.openFlg = false
       },
       async getUser (authData) {
-        const messages = await MailReciver.mailReceive(authData, 5)
+        const messages = await MailReciver.mailReceive(authData, 20)
         const self = this
 
         await messages.forEach(function (message) {
-          self.users[message['from'].address] = {
-            name: message['from'].name,
-            mail: message['from'].address,
-            color: ContactsList.userColor(message['from'].address)
+          // 新規メールアドレスであれば追加
+          if (!(message['from'].address in self.users)) {
+            self.users[message['from'].address] = {
+              name: message['from'].name,
+              mail: message['from'].address,
+              color: ContactsList.userColor(message['from'].address)
+            }
           }
         })
         await ContactsList.updateAddress(this.users)
+      },
+      async getMail (authData) {
+        const messages = await MailReciver.mailReceive(authData, 1)
+        const self = this
+
+        // UIDを取得
+        await messages.forEach(function (message) {
+          // 最新メッセージに変更があったか確認
+          if (self.mailCheck.newestMsg !== message.UID) {
+            self.mailCheck.newestMsg = message.UID
+            self.getUser(authData)
+          }
+        })
       }
     },
     mounted () {
@@ -137,7 +159,7 @@
         const userData = JSON.parse(data)
 
         // メール受信用の認証情報をオブジェクトに格納
-        const authData = {
+        self.authData = {
           auth: {
             user: userData['auth'].user,
             pass: userData['auth'].pass
@@ -149,8 +171,19 @@
         }
 
         // メールを受信
-        self.getUser(authData)
+        self.getMail(self.authData)
       })
+
+      // 新規メール受信処理
+      this.mailCheck.id = setInterval(
+        function () {
+          self.getMail(self.authData)
+        },
+        this.mailCheck.interval
+      )
+    },
+    beforeDestroy () {
+      clearInterval(this.mailCheck.id)
     },
     watch: {
     }

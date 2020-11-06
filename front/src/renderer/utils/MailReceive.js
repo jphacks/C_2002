@@ -6,6 +6,7 @@ const conv = new iconv.Iconv('ISO-2022-JP', 'UTF-8')
 // メール受信関数
 async function mailReceive (authData, getMailCount) {
   return new Promise(resolve => {
+    // メールクライアントの定義
     const client = inbox.createConnection(authData['imap'].port, authData['imap'].host, {
       secureConnection: true,
       auth: {
@@ -119,17 +120,3 @@ function mailDataParser (targetSource) {
 }
 
 export default {mailReceive, mailReceiveUser, getMailText}
-
-// client.on('new', function(messages) {
-//   client.listMessages(-1, function(err, messages){
-//     messages.forEach(function(message){
-//       console.log()
-//       console.log(message.UID)
-//       console.log('日時:\t\t' + message.date)
-//       console.log('送信者:\t\t' + message.from.name + '-' + message.from.address)
-//       console.log('タイトル:\t' + message.title)
-//     })
-//   })
-// })
-
-// client.connect()
