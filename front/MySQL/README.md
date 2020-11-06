@@ -45,3 +45,44 @@ mysql> SELECT * FROM idTable;
 +------+----+
 
 ```
+
+
+```javascript
+
+// ----------引数例----------
+
+// MySQL情報の例
+let info = {
+  host     : 'localhost',
+  user     : 'root',
+  password : 'ys0718',
+  database : 'FrankFurtDB'
+}
+
+
+// データ引き出し関数用の条件の値の例
+let value = {
+  name:'haru'
+}
+// PullData(value, info)
+
+// データ登録用関数用の登録データの例
+let data = {
+  name:'tatsuya',
+  mail:'okazaki@gmail.com',
+  color:'black',
+  flag:0
+}
+// Registration(data ,info)
+
+// データ更新用関数用の更新データの例
+let val = {
+  id:'4',
+  name:'yoshiharu'
+}
+// UpdateMail(val, info)
+
+// データ削除関数用の条件の値の例
+let v = [4, 6]
+// Delete(v, info)
+```

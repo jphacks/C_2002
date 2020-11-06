@@ -54,6 +54,9 @@
     },
     methods: {
       async getText (authData, UID) {
+        // テキストの初期化
+        this.mailText = ''
+
         const self = this
         await MailReceive.getMailText(authData, UID).then(text => {
           console.log('this.mailText : ')
