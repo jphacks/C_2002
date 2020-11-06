@@ -6,6 +6,8 @@
         v-if="$route.query['userData']"
         :targetUser="$route.query['userData']"
         @getMailData="mailData = $event"/>
+      <Start
+        v-else/>
     </div>
     <!-- リサイズバー -->
     <div id="resize_bar"></div>
@@ -13,7 +15,11 @@
     <div id="tree_frame__right">
       <Preview
         :subject="mailData.title"
-        :mailBody="mailText"/>
+        :mailBody="mailText"
+        :sendTime="$route.query['userData']"
+        v-if="mailData.title"/>
+      <Start
+        v-else/>
     </div>
   </div>
 </template>
@@ -23,6 +29,7 @@
   import ChatTree from './columns/ChatTree'
   import Preview from './columns/Preview'
   import OS from '../utils/OS'
+  import Start from './Start'
 
   // モジュールをインポート
   const fs = require('fs')
@@ -35,6 +42,7 @@
   export default {
     name: 'Tray',
     components: {
+      Start,
       ChatTree,
       Preview
     },

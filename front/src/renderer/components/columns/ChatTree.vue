@@ -1,10 +1,12 @@
 <template>
-  <div id="chat_tree">
+  <div
+    id="chat_tree">
     <div id="tree__title">
       <h2>{{ targetUser.name }}</h2>
       <p>{{ targetUser.mail }}</p>
     </div>
-    <div id="tree_frame">
+    <div
+      id="tree_frame">
       <div
         class="chat"
         v-for="(message, index) in messages"

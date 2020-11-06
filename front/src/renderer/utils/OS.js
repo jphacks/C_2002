@@ -23,4 +23,11 @@ function delimiterChar () {
   return delimiter
 }
 
-export default { breakChar, delimiterChar }
+// ホームディレクトリの取得
+function homeDirectory () {
+  // デフォルトの実行ディレクトリの確認
+  return process.env[isWindows ? 'USERPROFILE' : 'HOME']
+}
+
+// エクスポート
+export default { breakChar, delimiterChar, homeDirectory }

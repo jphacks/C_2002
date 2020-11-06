@@ -5,10 +5,35 @@
  * "idTable"は新規登録のためのID管理用DB
  * "idTable"の中にはデータを削除したIDと現在使用しているIDのなかで一番大きいIDの次のIDを登録
  */
+
 'use strict'
+
+// モジュールをインポート
+import OS from '../utils/OS'
+const fs = require('fs')
 
 // MySQLに接続
 const mysql = require('src/renderer/MySQL/mysql')
+
+// 認証情報とDB情報の取得
+async function getMySQLData () {
+  return new Promise(resolve => {
+    const delimiter = OS.delimiterChar()
+    const JSONpath = OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'mysql.json'
+
+    fs.readFile(JSONpath, 'utf8', function (err, data) {
+      // エラー処理
+      if (err) {
+        throw err
+      }
+      const mysqlObj = JSON.parse(data)
+
+      console.log(mysqlObj)
+
+      return resolve(mysqlObj)
+    })
+  })
+}
 
 // DB接続用関数（MySQL情報）
 function Connect (connecteInfo) {
@@ -210,4 +235,4 @@ function Delete (value, connecteInfo) {
   idConnect.end()
 }
 
-export default {PullData, Registration, UpdateMail, Delete}
+export default {getMySQLData, PullData, Registration, UpdateMail, Delete}
