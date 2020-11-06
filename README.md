@@ -98,8 +98,9 @@ COVID-19(新型コロナウイルス)の影響により世の中で様々なこ�
 * 独自で開発したものの内容をこちらに記載してください
 * 特に力を入れた部分をファイルリンク、またはcommit_idを記載してください。
 * アプリケーションの画面や画面遷移等
-    * **[チャット形式のUI](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/components/columns/ChatTree.vue)**
-    * [メールの作成](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/components/columns/MailEditer.vue)
+    * **[メールの送受信をチャット形式で表示](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/components/columns/ChatTree.vue)**
+    * [メールの作成画面](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/components/columns/MailEditer.vue)
+    * [校正画面](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/components/columns/Preview.vue)
 * アプリケーション本体の処理
     * [クライアント側の処理](https://github.com/jphacks/C_2002/tree/master/front/src)（Electron）
         * **[メール本文の差分管理](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/utils/NodeGit.js)**（Git）
