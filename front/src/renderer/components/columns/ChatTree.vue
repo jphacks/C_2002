@@ -6,11 +6,14 @@
       <p>{{ targetUser.mail }}</p>
     </div>
     <div
-      id="tree_frame">
+      id="tree_frame"
+      ref="tree_frame">
       <div
         class="chat"
         v-for="(message, index) in messages"
-        v-if="(message.from.address === targetUser.mail) || (message.from.address === authData['auth'].user)"
+        v-if="
+          (message.from.address === targetUser.mail) ||
+          ((message.from.address === authData['auth'].user) && (message.to[0].address === targetUser.mail))"
         :key="index">
         <div
           @click="openMailData(message)"
@@ -25,6 +28,7 @@
 
 <script>
   import MailReciver from '../../utils/MailReceive'
+  import OS from '../../utils/OS'
   // モジュールをインポート
   const fs = require('fs')
   const isWindows = process.platform === 'win32'
@@ -39,11 +43,6 @@
     },
     data () {
       return {
-        infomation: {
-          directory: '/frankfrut/data/',
-          fileName: '/userInformation.json',
-          delimiter: '/'
-        },
         messages: {},
         userData: {
           mail: '',
@@ -53,54 +52,15 @@
       }
     },
     methods: {
-      // ユーザーデータ（名前とメールアドレス）を取得
-      getUserData () {
-        // Windows用のパス形式で指定
-        if (isWindows) {
-          this.infomation.directory = '\\frankfrut\\data\\'
-          this.infomation.delimiter = '\\'
-        }
-        // Win/Mac両対応のディレクトリを生成
-        const targetDirectory = HOMEDIR + this.infomation.directory
-
-        if (fs.existsSync(targetDirectory)) {
-          console.log(targetDirectory + 'は存在します。')
-          // ユーザー情報ファイルからデータを取得する
-          let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
-          this.userData.name = jsonObject['user'].name
-          this.userData.mail = jsonObject['smtp'].user
-        } else {
-          console.log(targetDirectory + 'は存在しません。')
-        }
-      },
-      // メールサーバーからメール一覧を取得してくる
-      getReceiveEmail (serchTarget) {
-        // Windows用のパス形式で指定
-        if (isWindows) {
-          this.infomation.directory = '\\frankfrut\\data\\'
-          this.infomation.delimiter = '\\'
-        }
-        // Win/Mac両対応のディレクトリを生成
-        const targetDirectory = HOMEDIR + this.infomation.directory
-
-        if (fs.existsSync(targetDirectory)) {
-          console.log(targetDirectory + 'は存在します。')
-          // ユーザー情報ファイルからデータを取得する
-          let jsonObject = JSON.parse(fs.readFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, 'utf8'))
-          let AuthData = jsonObject['auth']
-
-          MailReciver.mailReceive(AuthData)
-        } else {
-          console.log(targetDirectory + 'は存在しません。')
-        }
-      },
       async searchMail (authData, targetAddress) {
         console.log(targetAddress)
         const myNumbers = await MailReciver.mailReceiveUser(authData, authData['auth'].user)
         const targetNumbers = await MailReciver.mailReceiveUser(authData, targetAddress)
         const numbers = myNumbers.concat(targetNumbers)
         console.log(numbers)
-        this.messages = await MailReciver.mailReceive(authData, numbers[numbers.length - 10]).then()
+
+        // メールを取得
+        this.messages = await MailReciver.mailReceive(authData, numbers[numbers.length - 10])
       },
       dateFormat (date, format = 'YYYY-MM-DD hh:mm:ss') {
         // パース
@@ -128,13 +88,15 @@
     watch: {
     },
     mounted () {
+      const delimiter = OS.delimiterChar()
       const self = this
       // メール一覧の取得
-      fs.readFile(HOMEDIR + this.infomation.delimiter + 'frankfrut' + this.infomation.delimiter + 'data' + this.infomation.delimiter + 'userInformation.json', 'utf8', function (err, data) {
+      fs.readFile(HOMEDIR + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json', 'utf8', function (err, data) {
         // エラー処理
         if (err) {
           throw err
         }
+        // ユーザ情報のJSONをオブジェクトへ変換
         const userData = JSON.parse(data)
 
         // メール受信用の認証情報をオブジェクトに格納
@@ -150,7 +112,11 @@
         }
 
         // メールを受信
-        self.searchMail(self.authData, self.targetUser.mail)
+        self.searchMail(self.authData, self.targetUser.mail).then(function () {
+          const chatLog = self.$refs.tree_frame
+          if (!chatLog) return
+          chatLog.scrollTop = chatLog.scrollHeight
+        })
       })
     }
   }
@@ -169,6 +135,7 @@
     height: 100vh;
     margin-left: 5%;
     overflow-y: scroll;
+    padding-bottom: 20px;
   }
   #tree__title{
     width: 96%;
