@@ -4,7 +4,14 @@
       class="editor__input"
       type="text"
       v-model="mailData.destination"
-      placeholder="宛先">
+      placeholder="宛先"
+      autocomplete="on"
+      list="addressList">
+    <datalist id="addressList">
+      <option
+        v-for="address in addressList"
+        :key="address.name">{{address.mail}}</option>
+    </datalist>
 
     <input
       class="editor__input"
@@ -24,6 +31,7 @@
 
     <div id="editor__contents">
       <button @click="sendMail">送信</button>
+      <label class="attach_file"><input type="file" @change="attachmentFile"></label>
     </div>
   </div>
 </template>
@@ -35,6 +43,7 @@
   import axios from 'axios'
   import DiffParser from '../../utils/DiffParser'
   import OS from '../../utils/OS'
+  import ContactsList from '../../utils/ContactsList'
   const fs = require('fs')
 
   const isWindows = process.platform === 'win32'
@@ -63,7 +72,9 @@
           bodyLength: 0,
           resultBody: ''
         },
-        breakChar: '\n'
+        breakChar: '\n',
+        addressList: {},
+        attachmentFile: ''
       }
     },
     methods: {
@@ -305,6 +316,11 @@
               }
             })
         }
+      },
+      addFile (event) {
+        const files = event.target.files || event.dataTransfer.files
+        const imgName = files[0].name
+        console.log(imgName)
       }
     },
     mounted () {
@@ -312,6 +328,13 @@
       this.breakChar = OS.breakChar()
       // ドラフトディレクトリの作成
       this.draftInit()
+      // 連絡先の取得
+      const self = this
+      ContactsList.getAddress().then(addressObj => {
+        console.log('addressobj : ')
+        console.log(addressObj)
+        self.addressList = addressObj
+      })
     }
   }
 </script>
@@ -336,6 +359,10 @@
     border-bottom: 1px solid #888888;
     background: none;
     color: #ffffff;
+  }
+  #addressList{
+    color: #ffffff;
+    background: #222222;
   }
 
   // 本文編集部分
@@ -379,6 +406,22 @@
 
       &:hover{
         opacity: .9;
+      }
+    }
+
+    .attach_file{
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      overflow: hidden;
+      background-image:  url('../../assets/img/clip_icon.png');
+      background-repeat: no-repeat;
+      background-size: 30px;
+      background-color: red;
+
+      input[type="file"]{
+        opacity: 0;
+        display: none;
       }
     }
   }
