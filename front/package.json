@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "electron-updater": "^4.3.5",
     "iconv": "^3.0.0",
     "inbox": "^1.1.59",
     "nodemailer": "^6.4.14",

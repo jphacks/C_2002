@@ -1,3 +1,4 @@
+// モジュールのインポート
 const inbox = require('inbox')
 
 // メール受信関数
@@ -52,7 +53,33 @@ async function mailReceiveUser (authData, targetAddress, getMailCount = 20) {
   })
 }
 
-export default {mailReceive, mailReceiveUser}
+// メール内容の取得
+async function getMailText (authData, messageUID) {
+  return new Promise(resolve => {
+    const client = inbox.createConnection(authData['imap'].port, authData['imap'].host, {
+      secureConnection: true,
+      auth: {
+        user: authData['auth'].user,
+        pass: authData['auth'].pass
+      }
+    })
+    console.log(messageUID)
+    client.on('connect', function () {
+      client.openMailbox('INBOX', function (error, info) {
+        if (error) console.log(error)
+        console.log('Successfully connected to server')
+        client.createMessageStream(messageUID).on('data', function (data) {
+          // BASE64をデコード
+          console.log(data)
+          return resolve(data)
+        })
+      })
+    })
+    client.connect()
+  })
+}
+
+export default {mailReceive, mailReceiveUser, getMailText}
 
 // client.on('new', function(messages) {
 //   client.listMessages(-1, function(err, messages){

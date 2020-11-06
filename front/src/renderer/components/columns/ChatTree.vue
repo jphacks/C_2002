@@ -11,7 +11,7 @@
         v-if="message.from.address === targetUser.mail"
         :key="index">
         <div
-          @click="openMailData"
+          @click="openMailData(message)"
           :class="[userData.mail === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
           <!-- <h5 class="chat__name">{{ message.name }}</h5> -->
           <p class="chat__title">{{ message.title }}</p>
@@ -117,7 +117,8 @@
         return format
       },
       openMailData (mailData) {
-        self.$emit('getMailData', mailData)
+        console.log(mailData)
+        this.$emit('getMailData', mailData)
       }
     },
     watch: {

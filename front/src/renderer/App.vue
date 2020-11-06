@@ -202,6 +202,7 @@
       border-radius: 6px;
     }
   }
+
   // ユーザ一覧カラム
   $icon-size: 40px;
   $usercolumn__size: 60px;

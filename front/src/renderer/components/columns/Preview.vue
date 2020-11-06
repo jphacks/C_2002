@@ -50,6 +50,8 @@
     },
     watch: {
       'mailBody': function () {
+        console.log(this.mailBody)
+        console.log(this.subject)
         this.updated = this.dateFormat(new Date())
       }
     },
