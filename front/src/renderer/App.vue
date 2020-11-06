@@ -20,6 +20,10 @@
           </div>
         </router-link>
       </div>
+      <router-link
+        :to="{ name: 'start' }">
+        start
+      </router-link>
       <div id="icons">
         <router-link
           id="plus_icon"

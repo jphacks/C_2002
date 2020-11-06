@@ -1,5 +1,7 @@
 // モジュールのインポート
 const inbox = require('inbox')
+const iconv = require('iconv')
+const conv = new iconv.Iconv('ISO-2022-JP', 'UTF-8')
 
 // メール受信関数
 async function mailReceive (authData, getMailCount) {
@@ -63,6 +65,7 @@ async function getMailText (authData, messageUID) {
         pass: authData['auth'].pass
       }
     })
+
     console.log(messageUID)
     client.on('connect', function () {
       client.openMailbox('INBOX', function (error, info) {
@@ -70,13 +73,49 @@ async function getMailText (authData, messageUID) {
         console.log('Successfully connected to server')
         client.createMessageStream(messageUID).on('data', function (data) {
           // BASE64をデコード
-          console.log(data)
-          return resolve(data)
+          const body = conv.convert(data).toString()
+          console.log(body)
+          const resultText = mailDataParser(body)
+
+          console.log('resultText : ')
+          console.log(resultText)
+
+          if (resultText !== '') {
+            return resolve(resultText)
+          }
         })
       })
     })
     client.connect()
   })
+}
+
+// Base64の本文をパースしてデコード
+function mailDataParser (targetSource) {
+  const delimiterPrevText = 'Content-Type: multipart/alternative; boundary="'
+  const delimiterPrevTextPosition = targetSource.indexOf(delimiterPrevText) + delimiterPrevText.length
+  const delimiterNextTextPosition = targetSource.substr(delimiterPrevTextPosition).indexOf('"')
+
+  // 区切り文字列の取得
+  const delimiterText = targetSource.substr(delimiterPrevTextPosition, delimiterNextTextPosition)
+
+  // 区切り文字部分に移動
+  const delimiterPosition = targetSource.substr(delimiterPrevTextPosition + delimiterNextTextPosition).indexOf(delimiterText) + delimiterPrevTextPosition + delimiterNextTextPosition + delimiterText.length
+
+  // 1行空いている部分を探索
+  const breakChar = '\r\n' // SMTPサーバがLinuxのため
+  const base64HeadPosition = targetSource.substr(delimiterPosition).indexOf(breakChar + breakChar) + delimiterPosition + (breakChar.length * 2)
+  const base64TailPosition = targetSource.substr(base64HeadPosition).indexOf(breakChar + '--' + delimiterText)
+
+  // Base64にエンコードされた本文を取得
+  const base64Text = targetSource.substr(base64HeadPosition, base64TailPosition)
+
+  // Base64からのデコード
+  const plainText = decodeURIComponent(escape(atob(base64Text)))
+
+  console.log('plaintext : ' + plainText)
+
+  return plainText
 }
 
 export default {mailReceive, mailReceiveUser, getMailText}

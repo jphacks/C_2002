@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "electron-rebuild": "^2.3.2",
     "electron-updater": "^4.3.5",
     "iconv": "^3.0.0",
     "inbox": "^1.1.59",

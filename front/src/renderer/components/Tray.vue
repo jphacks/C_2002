@@ -13,7 +13,7 @@
     <div id="tree_frame__right">
       <Preview
         :subject="mailData.title"
-        :mailBody="mailData.title"/>
+        :mailBody="mailText"/>
     </div>
   </div>
 </template>
@@ -52,6 +52,16 @@
         mailText: ''
       }
     },
+    methods: {
+      async getText (authData, UID) {
+        const self = this
+        await MailReceive.getMailText(authData, UID).then(text => {
+          console.log('this.mailText : ')
+          console.log(self.mailText)
+          self.mailText = text
+        })
+      }
+    },
     mounted () {
     },
     watch: {
@@ -61,7 +71,7 @@
         const self = this
         const delimiter = OS.delimiterChar()
         // SMTP情報を取得
-        fs.readFile(HOMEDIR + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json', 'utf8', function (err, data) {
+        await fs.readFile(HOMEDIR + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json', 'utf8', function (err, data) {
           // エラー処理
           if (err) {
             throw err
@@ -78,8 +88,8 @@
               port: userData['imap'].port
             }
           }
-
-          self.mailText = MailReceive.getMailText(authData, newData.UID)
+          // 結果を取得
+          self.getText(authData, newData.UID)
         })
       }
     }
