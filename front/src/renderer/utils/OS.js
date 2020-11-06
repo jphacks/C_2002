@@ -7,7 +7,7 @@ function breakChar () {
   if (isWindows) {
     delimiter = '\n'
   } else {
-    delimiter = '\r'
+    delimiter = '\n'
   }
   return delimiter
 }
