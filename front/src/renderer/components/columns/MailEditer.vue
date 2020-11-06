@@ -83,6 +83,10 @@
         attachmentFile: {
           data: {},
           count: 0
+        },
+        userCtrCheck: {
+          ID: '',
+          time: 5000
         }
       }
     },
@@ -220,6 +224,8 @@
       async bodyDeleteAction () {
         const regexp = new RegExp(this.breakChar + '(.*?)', 'g')
         const breakPoints = (this.mailData.body.match(regexp) || []).length
+
+        // 行数に変化があった場合
         if (this.mailData.bodyLINE !== breakPoints) {
           this.mailData.bodyLINE = breakPoints
           const self = this
@@ -235,13 +241,13 @@
           const keyLength = keysArr.length
           // 後ろの行から取り出し
           for (let i = keyLength - 1; i >= 0; i--) {
-            // await FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, keysArr[i])
+            console.log(keysArr[i] + ' remove : ' + diffObj.remove[keysArr[i]])
             await FileAction.deleteLINE(HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName, keysArr[i])
           }
 
           // 追加部分の追加
-          await Object.keys(diffObj.add).forEach(function (key) {
-            console.log(key + ':' + diffObj.add[key])
+          Object.keys(diffObj.add).forEach(function (key) {
+            console.log(key + ' add : ' + diffObj.add[key])
             if (diffObj.add[key] !== '') {
               self.convertHonorific(diffObj['commit_id'], diffObj.add[key], key)
             }
@@ -360,8 +366,10 @@
     mounted () {
       // 改行コードの設定
       this.breakChar = OS.breakChar()
+
       // ドラフトディレクトリの作成
       this.draftInit()
+
       // 連絡先の取得
       const self = this
       ContactsList.getAddress().then(addressObj => {

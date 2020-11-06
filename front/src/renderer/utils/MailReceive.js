@@ -119,4 +119,22 @@ function mailDataParser (targetSource) {
   return plainText
 }
 
-export default {mailReceive, mailReceiveUser, getMailText}
+// サーバとの接続を切断
+function disconnectServer (authData) {
+  // メールクライアントの定義
+  const client = inbox.createConnection(authData['imap'].port, authData['imap'].host, {
+    secureConnection: true,
+    auth: {
+      user: authData['auth'].user,
+      pass: authData['auth'].pass
+    }
+  })
+
+  // サーバとの接続を切断
+  client.close()
+  client.on('close', function () {
+    console.log('DISCONNECTED!')
+  })
+}
+
+export default {mailReceive, mailReceiveUser, getMailText, disconnectServer}

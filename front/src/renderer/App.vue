@@ -55,10 +55,9 @@
   // モジュールをインポート
   const fs = require('fs')
 
-  const isWindows = process.platform === 'win32'
   // デフォルトの実行ディレクトリの確認
-  const HOMEDIR =
-    process.env[isWindows ? 'USERPROFILE' : 'HOME']
+  const HOMEDIR = OS.homeDirectory()
+  const DELIMITER = OS.delimiterChar()
 
   export default {
     name: 'c_2002',
@@ -74,8 +73,7 @@
         },
         infomation: {
           directory: '/frankfrut/data/',
-          fileName: '/userInformation.json',
-          delimiter: '/'
+          fileName: '/userInformation.json'
         },
         userInformation: {
           email: '',
@@ -123,6 +121,9 @@
         const messages = await MailReciver.mailReceive(authData, 1)
         const self = this
 
+        console.log('最新メッセージ : ')
+        console.log(messages)
+
         // UIDを取得
         await messages.forEach(function (message) {
           // 最新メッセージに変更があったか確認
@@ -136,9 +137,6 @@
     mounted () {
       const self = this
 
-      // 区切り文字の判別
-      this.infomation.delimiter = OS.delimiterChar()
-
       // 連絡先一覧の作成（存在しない場合）
       ContactsList.contactInit().then(data => {
         // 連絡先一覧の取得
@@ -149,7 +147,7 @@
       })
 
       // メール一覧の取得
-      fs.readFile(HOMEDIR + this.infomation.delimiter + 'frankfrut' + this.infomation.delimiter + 'data' + this.infomation.delimiter + 'userInformation.json', 'utf8', function (err, data) {
+      fs.readFile(HOMEDIR + DELIMITER + 'frankfrut' + DELIMITER + 'data' + DELIMITER + 'userInformation.json', 'utf8', function (err, data) {
         // エラー処理
         if (err) {
           throw err
@@ -183,7 +181,11 @@
       )
     },
     beforeDestroy () {
+      // 定期チェックを終了
       clearInterval(this.mailCheck.id)
+
+      // サーバとの接続を切断
+      MailReciver.disconnectServer(this.authData)
     },
     watch: {
     }

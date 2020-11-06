@@ -15,7 +15,6 @@
         <div
           @click="openMailData(message)"
           :class="[userData.mail === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
-          <!-- <h5 class="chat__name">{{ message.name }}</h5> -->
           <p class="chat__title">{{ message.title }}</p>
         </div>
         <span class="chat__time">{{ dateFormat(new Date(message.date)) }}</span><!-- 時間に関してはメールサーバからの情報によって変更 -->
@@ -214,22 +213,31 @@
       border-radius: 10px 10px 10px 0;
       cursor: pointer;
       vertical-align: middle;
-      .chat__name{
-        font-weight: bold;
-      }
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all  0.3s ease;
+
       // 自身の送信したメールスタイル
       &.chat__send_me{
         background-color: #5645ff;
         color: #ffffff;
         border-radius: 10px 10px 0 10px;
       }
+
       // 通常メールスタイル
       &.receive{
         margin: 20px 40px 0 0;
       }
+
       // 返信メール（スレッド）スタイル
       &.thread{
         margin: 0 10px 0 30px;
+      }
+
+      // ホバー
+      &:hover{
+        opacity: .7;
       }
     }
   }

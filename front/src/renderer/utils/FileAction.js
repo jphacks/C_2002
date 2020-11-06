@@ -54,7 +54,11 @@ async function addLINE (fullPath, LINE, text) {
         // 文字列をファイル格納用に結合
         for (let i = 0; i < lineText.length; i++) {
           if (i === LINE - 1) {
-            resultText = resultText + delimiter + text
+            if (i === 0) {
+              resultText = text
+            } else {
+              resultText = resultText + delimiter + text
+            }
           } else if (i === 0) {
             resultText = resultText + lineText[i]
             continue
