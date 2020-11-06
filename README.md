@@ -9,11 +9,10 @@
 [![×TECH.png](https://github.com/jphacks/C_2002/blob/master/%E3%83%97%E3%83%AC%E3%82%BC%E3%83%B3/%C3%97TECH.png?raw=true)](https://github.com/jphacks/C_2002/blob/master/%E3%83%97%E3%83%AC%E3%82%BC%E3%83%B3/%C3%97TECH.png?raw=true)
 
 ### 背景(製品開発のきっかけ、課題等）
-COVID-19(コロナウイルス)の影響により世の中で様々なことがオンライン形態へと変化した．
-その中でコミュニケーション形態もまた大きな影響を受けている．
-コミュニケーション形態は，対面からビデオ会議やテキストベースに変化している．
+COVID-19(新型コロナウイルス)の影響により世の中で様々なことがオンライン化した．
+その中でコミュニケーション様式もまた大きな影響を受け，**対面からビデオ会議やテキストベースに変化**している．
 こうした変化の中で起こりうる問題は様々であり，その中で私たちはテキストベースのコミュニケーションでの適切な言葉遣いという点に着目した．
-近年では，チャット形式のコミュニケーションツールが普及し，電子メールなどを作成する際に適切な体裁や言葉遣いを意識しない傾向にある．
+近年では，チャット形式のコミュニケーションツールが普及し，電子メールなどを作成する際に**適切な体裁や言葉遣いを意識しない**傾向にある．
 こうした傾向を背景にして私たちは「チャットに慣れた者が適切な体裁・言葉遣いが上手くできない」ということを課題とした．
 
 ### 製品説明（具体的な製品の説明）
@@ -23,7 +22,7 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
     * チャット感覚で利用可能なメールクライアントアプリケーション
 
 * エンジニアが使う超有能ツールをユーザが意識することなく利用
-    * gitによるバージョン管理
+    * gitによるメール本文の差分管理
     * IDEのメリットを取り入れた
         * ソースコード補完 → フォーマルな文章補完
         * デバック → 文章校正
@@ -32,29 +31,32 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
 
 ### 特長
 
-#### 1. メール本文を機械学習により自動校正
+#### 1. **機械学習によるメール本文の自動校正**
 メール本文を作成した際に，目上の人に送信しても困らない文章に自動で校正する．
 
-#### 2. よく使われる敬語表現を推測することにより文章補完
+#### 2. **よく使われる敬語表現を推測することによる文章補完**
 よく使われる定型文を推測し，最小の文字入力でサジェスト表示をして文章の補完を行う．
 
-#### 3. クロスプラットフォームでアプリケーションを作成
-クロスプラットフォームであるため，MacOSやWindows,Linuxなどの様々なOSでの利用が可能である．
+#### 3. **チャット形式のUI**
+日頃使い慣れているチャット形式のUIにすることにより，メールを見やすくし，メールの見落としを無くす．
 
 ### 解決出来ること
-ビジネスメールのやりとりで生じる不適切なメール本文を事前に修正することで、メールでのコミュニケーションの悪印象を改善することができる．
-メールのやりとりをメール相手によってフィルタリングし，さらに送受信の方向性を一目でわかるUIにしたことにより，メールの見落としをなくすことができる．
+* メールでのコミュニケーションにより与える可能性のある悪印象を回避
+    * ビジネスメールのやりとりで生じる不適切なメール本文を事前に修正
+
+* メールの見落としを無くす
+    * メールのやりとりをメール相手によってフィルタリングし，さらに送受信の方向性を一目でわかるUI
 
 ### 今後の展望
-今後は対応できるメールサービスの数を増やし，一つのアプリケーションでの完結性を向上させる．
+今後は対応できるメールサービスの数を増やし，1つのアプリケーションでの完結性を向上させる．
 
 # **そのほかもあれば**
 
 ### 注力したこと（こだわり等）
-* 機械学習により適切な文章へと校正できることはもちろん，その機能をONとOFFで切り替えることが可能
+* 機械学習により適切な文章へと校正できることはもちろん，その機能をON/OFFで切り替えることが可能
 * 文章校正の高速化を行うために文章をGitにより差分管理し，差分のみを校正する機能を実装した
-* チャット形態のコミュニケーションに慣れている人を対象にしていることから，そういった人が使いやすく馴染みやすいUIとしたこと
-* メールクライアントアプリケーションとしてどんな人にでも使ってもらえるようなUIのシンプルさを考えて実装した
+* チャット形式のコミュニケーションに慣れている人にも使いやすく，馴染みやすいUI
+* メールクライアントアプリケーションとしてどんな人にでも使ってもらえるようなUIのシンプルさ
 
 ## 開発技術
 ### 活用した技術
@@ -90,12 +92,18 @@ COVID-19(コロナウイルス)の影響により世の中で様々なことが�
 * 独自で開発したものの内容をこちらに記載してください
 * 特に力を入れた部分をファイルリンク、またはcommit_idを記載してください。
 * アプリケーションの画面や画面遷移等
+    * **[チャット形式のUI](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/components/columns/ChatTree.vue)**
+    * [メールの作成](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/components/columns/MailEditer.vue)
 * アプリケーション本体の処理
-    * クライアント側の処理
-    * サーバ側の処理（[AWS EC2](https://aws.amazon.com/jp/ec2/?ec2-whats-new.sort-by=item.additionalFields.postDateTime&ec2-whats-new.sort-order=desc)）
-        * メール文から人名と会社名を抽出（[固有表現抽出API](https://labs.goo.ne.jp/api/jp/named-entity-extraction/)）
-        * 校正箇所の指摘（[Proofreading API](https://a3rt.recruit-tech.co.jp/product/proofreadingAPI/)）
-        * 敬語への変換（[形態素解析API](https://labs.goo.ne.jp/api/jp/morphological-analysis/)，機械学習）
+    * [クライアント側の処理](https://github.com/jphacks/C_2002/tree/master/front/src)（Electron）
+        * **[メール本文の差分管理](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/utils/NodeGit.js)**（Git）
+        * [クロスプラットフォーム対応](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/utils/OS.js)
+        * [メール送信](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/utils/MailSend.js)
+        * [メール受信](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/utils/MailReceive.js)
+    * [サーバ側の処理](https://github.com/jphacks/C_2002/blob/master/server/server.py)（AWS EC2）
+        * **[敬語への変換](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/NewHonorificsConvert.py)**（形態素解析API，機械学習）
+        * [メール文から人名と会社名を抽出](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/ExtractProperNoun.py)（固有表現抽出API）
+        * [校正箇所の指摘](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/Proofreading_RECRUIT.py)（Proofreading API）
 
 #### 製品に取り入れた研究内容（データ・ソフトウェアなど）（※アカデミック部門の場合のみ提出必須）
 * なし
