@@ -58,6 +58,7 @@
     "electron-updater": "^4.3.5",
     "iconv": "^3.0.0",
     "inbox": "^1.1.59",
+    "mysql": "^2.18.1",
     "nodemailer": "^6.4.14",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",

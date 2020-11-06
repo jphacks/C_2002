@@ -43,10 +43,12 @@
 </template>
 
 <script>
+  // ライブラリのインポート
   import SettingIcon from './components/icons/Setting'
   import PlusIcon from './components/icons/Plus'
   import MailReciver from './utils/MailReceive'
   import OS from './utils/OS'
+  import ContactsList from './utils/ContactsList'
 
   // モジュールをインポート
   const fs = require('fs')
@@ -93,29 +95,42 @@
         this.userColumn.width = 60
         this.userColumn.openFlg = false
       },
-      async getMail (authData) {
+      async getUser (authData) {
         const messages = await MailReciver.mailReceive(authData, 5)
         const self = this
 
-        messages.forEach(function (message) {
-          console.log(message)
+        await messages.forEach(function (message) {
           self.users[message['from'].address] = {
             name: message['from'].name,
             mail: message['from'].address
           }
         })
+        await ContactsList.updateAddress(this.users)
       }
     },
     mounted () {
+      const self = this
+
+      // 区切り文字の判別
       this.infomation.delimiter = OS.delimiterChar()
 
-      const self = this
+      // 連絡先一覧の作成（存在しない場合）
+      ContactsList.contactInit().then(data => {
+        // 連絡先一覧の取得
+        ContactsList.getAddress().then(Obj => {
+          console.log(Obj)
+          self.users = Obj
+        })
+      })
+
       // メール一覧の取得
       fs.readFile(HOMEDIR + this.infomation.delimiter + 'frankfrut' + this.infomation.delimiter + 'data' + this.infomation.delimiter + 'userInformation.json', 'utf8', function (err, data) {
         // エラー処理
         if (err) {
           throw err
         }
+
+        // JSONをオブジェクトに変換
         const userData = JSON.parse(data)
 
         // メール受信用の認証情報をオブジェクトに格納
@@ -131,8 +146,10 @@
         }
 
         // メールを受信
-        self.getMail(authData)
+        self.getUser(authData)
       })
+    },
+    watch: {
     }
   }
 </script>
@@ -202,7 +219,7 @@
       box-shadow: none;
     }
     ::-webkit-scrollbar-thumb {
-      background-color: #cbcbcb;
+      background-color: #666666;
       border-radius: 6px;
     }
   }

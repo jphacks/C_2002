@@ -1,8 +1,11 @@
 <template>
   <div id="preview">
 
-    <div class="upbar_list">
+    <div class="upbar_list" v-if="sendTime">
       UPDATED {{ updated }}
+    </div>
+    <div class="upbar_list" v-else>
+      受信日時 {{ dateFormat(new Date(sendTime)) }}
     </div>
 
     <div class="upbar_list">
@@ -11,7 +14,8 @@
 
     <textarea
       id="main_message"
-      v-model="mailBody">
+      v-model="mailBody"
+      :readonly="[sendTime !== '' ? 'readonly' : '']">
     </textarea>
   </div>
 </template>
@@ -21,7 +25,8 @@
     name: 'Preview',
     props: {
       subject: '',
-      mailBody: ''
+      mailBody: '',
+      sendTime: ''
     },
     data () {
       return {
