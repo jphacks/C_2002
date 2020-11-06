@@ -36,8 +36,7 @@
   export default {
     name: 'Chattree',
     props: {
-      targetUser: {},
-      reroadTrigger: ''
+      targetUser: {}
     },
     data () {
       return {
@@ -124,12 +123,6 @@
       }
     },
     watch: {
-      // ユーザーデータが入力されたらそれを取得する
-      reroadTrigger: function (newStatus, oldStatus) {
-        if (newStatus === false) {
-          this.getUserData()
-        }
-      }
     },
     mounted () {
       const self = this

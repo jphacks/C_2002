@@ -31,7 +31,13 @@
 
     <div id="editor__contents">
       <button @click="sendMail">送信</button>
-      <label class="attach_file"><input type="file" @change="attachmentFile"></label>
+      <label
+        class="attach_file"
+        title="添付ファイルを追加">
+        <input
+          type="file"
+          @change="addFile">
+      </label>
     </div>
   </div>
 </template>
@@ -74,7 +80,10 @@
         },
         breakChar: '\n',
         addressList: {},
-        attachmentFile: ''
+        attachmentFile: {
+          data: {},
+          count: 0
+        }
       }
     },
     methods: {
@@ -264,13 +273,25 @@
           }
           const userData = JSON.parse(data)
 
-          const mailData = {
+          // 送信内容オブジェクトの作成
+          let mailData = {
             from: '"' + userData['user'].affiliation + ' ' + userData['user'].name + '" <' + userData['auth'].user + '>',
             to: self.mailData.destination,
             subject: self.mailData.subject,
             text: self.mailData.resultBody
           }
 
+          // 添付ファイルの追加処理
+          if (self.attachmentFile.count > 0) {
+            for (let i = 0; i < self.attachmentFile.count; i++) {
+              mailData['attachments'] = {
+                filename: self.attachmentFile.data[i].name,
+                path: self.attachmentFile.data[i].path
+              }
+            }
+          }
+
+          // 認証情報オブジェクトの作成
           const authData = {
             'smtp': {
               'host': userData['smtp'].host,
@@ -285,6 +306,24 @@
 
           MailSend.sendMail(authData['smtp'], mailData)
         })
+      },
+      addFile (event) {
+        // 添付ファイル追加処理
+        const files = event.target.files || event.dataTransfer.files
+
+        // ファイル情報を格納
+        this.attachmentFile.data[this.attachmentFile.count] = {
+          name: files[0].name,
+          path: files[0].path,
+          size: files[0].size,
+          type: files[0].type
+        }
+
+        // ファイル数をカウント
+        this.attachmentFile.count++
+
+        // デバッグ用出力
+        console.log(files)
       }
     },
     watch: {
@@ -316,11 +355,6 @@
               }
             })
         }
-      },
-      addFile (event) {
-        const files = event.target.files || event.dataTransfer.files
-        const imgName = files[0].name
-        console.log(imgName)
       }
     },
     mounted () {
@@ -394,6 +428,7 @@
       width: 70px;
       height: 30px;
       margin: 7px 0 0 7px;
+      vertical-align: top;
       border-radius: 5px;
       background: #5645ff;
       text-align: center;
@@ -413,11 +448,13 @@
       display: inline-block;
       width: 30px;
       height: 30px;
+      margin: 7px 0 0 7px;
+      vertical-align: top;
       overflow: hidden;
       background-image:  url('../../assets/img/clip_icon.png');
       background-repeat: no-repeat;
       background-size: 30px;
-      background-color: red;
+      cursor: pointer;
 
       input[type="file"]{
         opacity: 0;
