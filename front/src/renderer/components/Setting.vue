@@ -298,6 +298,7 @@
     border: solid 2px #777777;
     border-radius: 5px;
     background-color: #222222;
+    cursor: pointer;
     span{
       color: #efefef;
       font-size: 2rem;
