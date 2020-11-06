@@ -6,6 +6,8 @@
 
 ### ビジネスマナー × Tech
 
+[![×TECH.png](https://drive.google.com/file/d/1gr6Qv_LlGG-sEhE2uZ3eL0tMLyKwadIa/view?usp=sharing)](https://drive.google.com/file/d/1gr6Qv_LlGG-sEhE2uZ3eL0tMLyKwadIa/view?usp=sharing)
+
 ### 背景(製品開発のきっかけ、課題等）
 COVID-19(コロナウイルス)の影響により世の中で様々なことがオンライン形態へと変化した．
 その中でコミュニケーション形態もまた大きな影響を受けている．
