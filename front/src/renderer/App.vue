@@ -11,7 +11,7 @@
           v-for="(user, index) in users"
           :to="{ name: 'tray', query: { userData: user }}"
           :key="index">
-          <span class="user_icon">
+          <span class="user_icon" :style="'background: ' + user.color">
             {{ user.name.charAt(0) }}
           </span>
           <div v-if="userColumn.openFlg" class="user_info">
@@ -102,7 +102,8 @@
         await messages.forEach(function (message) {
           self.users[message['from'].address] = {
             name: message['from'].name,
-            mail: message['from'].address
+            mail: message['from'].address,
+            color: ContactsList.userColor(message['from'].address)
           }
         })
         await ContactsList.updateAddress(this.users)

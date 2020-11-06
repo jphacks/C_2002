@@ -66,5 +66,37 @@ function updateAddress (addressObj) {
   })
 }
 
+// ユーザカラーの設定
+function userColor (mailAddress) {
+  // アルファベットテーブル
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz'
+
+  // カラーテーブル
+  const colors = [
+    '#00ff86',
+    '#ff6f3e',
+    '#8d71ff',
+    '#f0a70d',
+    '#ff3c41',
+    '#416aff',
+    '#51ff37',
+    '#ff6172',
+    '#333333'
+  ]
+
+  // 一文字ずつ数値へ変換して合計値を出す
+  let sumChar = 0
+  const chars = mailAddress.split('')
+  for (let i = 0; i < mailAddress.length; i++) {
+    const position = alphabet.indexOf(chars[i])
+    if (position > -1) {
+      sumChar += position
+    }
+  }
+
+  // 対応する色を返す
+  return colors[sumChar % colors.length]
+}
+
 // エクスポート
-export default { contactInit, getAddress, updateAddress }
+export default { contactInit, getAddress, updateAddress, userColor }
