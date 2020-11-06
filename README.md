@@ -2,6 +2,10 @@
 
 [![IMAGE ALT TEXT HERE](https://github.com/jphacks/C_2002/wiki/images/pop-logo.png)](https://github.com/jphacks/C_2002/wiki/images/pop-logo.png)
 
+## デモ動画
+
+## アーキテクチャ
+
 ## 製品概要
 
 ### ビジネスマナー × Tech
@@ -81,6 +85,7 @@ COVID-19(新型コロナウイルス)の影響により世の中で様々なこ�
     * [goo ラボ API](https://labs.goo.ne.jp/)
         * [固有表現抽出API](https://labs.goo.ne.jp/api/jp/named-entity-extraction/)
         * [形態素解析API](https://labs.goo.ne.jp/api/jp/morphological-analysis/)
+        * [時刻情報正規化API](https://labs.goo.ne.jp/api/jp/time-normalization)
 * 外部サービス
     * [AWS EC2](https://aws.amazon.com/jp/ec2/?ec2-whats-new.sort-by=item.additionalFields.postDateTime&ec2-whats-new.sort-order=desc)
     * [Proofreading API](https://a3rt.recruit-tech.co.jp/product/proofreadingAPI/)
@@ -101,10 +106,12 @@ COVID-19(新型コロナウイルス)の影響により世の中で様々なこ�
         * [クロスプラットフォーム対応](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/utils/OS.js)
         * [メール送信](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/utils/MailSend.js)
         * [メール受信](https://github.com/jphacks/C_2002/blob/master/front/src/renderer/utils/MailReceive.js)
+        * カレンダーイベント(.ics)ファイルの作成（時刻情報正規化API）
     * [サーバ側の処理](https://github.com/jphacks/C_2002/blob/master/server/server.py)（AWS EC2）
         * **[敬語への変換](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/NewHonorificsConvert.py)**（形態素解析API，機械学習）
-        * [メール文から人名と会社名を抽出](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/ExtractProperNoun.py)（固有表現抽出API）
+        * [人名と会社名の抽出](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/ExtractProperNoun.py)（固有表現抽出API）
         * [校正箇所の指摘](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/Proofreading_RECRUIT.py)（Proofreading API）
+        * [日時情報の抽出](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/getTime.py)(時刻情報正規化API)
 
 #### 製品に取り入れた研究内容（データ・ソフトウェアなど）（※アカデミック部門の場合のみ提出必須）
 * なし
