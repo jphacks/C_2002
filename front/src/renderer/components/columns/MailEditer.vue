@@ -102,7 +102,8 @@
           draftID: '',
           bodyLINE: 0,
           bodyLength: 0,
-          resultBody: ''
+          resultBody: '',
+          resultSubject: ''
         },
         breakChar: '\n',
         addressList: {},
@@ -342,6 +343,7 @@
       },
       sendMail () {
         const self = this
+
         // SMTP情報を取得
         fs.readFile(HOMEDIR + this.draft.delimiter + 'frankfrut' + this.draft.delimiter + 'data' + this.draft.delimiter + 'userInformation.json', 'utf8', function (err, data) {
           // エラー処理
@@ -350,13 +352,24 @@
           }
           const userData = JSON.parse(data)
 
+          // 公正を渡すか分岐
+          let sendText = ''
+          let sendSubject = ''
+          if (self.proofread) {
+            sendText = self.mailData.resultBody
+            sendSubject = self.mailData.resultSubject
+          } else {
+            sendText = self.mailData.body
+            sendSubject = self.mailData.subject
+          }
+
           // 送信内容オブジェクトの作成
           let mailData = {
             from: '"' + userData['user'].affiliation + ' ' + userData['user'].name + '" <' + userData['auth'].user + '>',
             to: self.mailData.destination,
             bcc: userData['auth'].user,
-            subject: self.mailData.subject,
-            text: self.mailData.resultBody
+            subject: sendSubject,
+            text: sendText
           }
 
           // 添付ファイルの追加処理
@@ -424,6 +437,7 @@
           })
             .then((res) => {
               console.log(res)
+              self.mailData.resultSubject = res.data['change_sentence']
               self.$emit('updateSubject', res.data['change_sentence'])
             })
             .catch(err => {
