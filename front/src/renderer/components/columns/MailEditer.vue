@@ -38,11 +38,18 @@
           type="file"
           @change="addFile">
       </label>
-      <span class="label">校正：</span>
-      <div class="toggle-switch">
-        <input id="toggle" class="toggle-input" type='checkbox' />
-        <label for="toggle" class="toggle-label"/>
-        <span></span>
+      <div class="switch_span">
+        <p>校正モード</p>
+        <div class="toggle-switch">
+          <input
+            id="toggle"
+            class="toggle-input"
+            type="checkbox"
+            v-model="proofread"
+            checked/>
+          <label for="toggle" class="toggle-label"/>
+          <span></span>
+        </div>
       </div>
     </div>
   </div>
@@ -68,6 +75,7 @@
     name: 'MailEditer',
     data () {
       return {
+        proofread: true,
         draft: {
           directory: '/frankfrut/draft/',
           fileName: '/draft.txt',
@@ -426,6 +434,10 @@
           },
           this.userCtrCheck.time
         )
+      },
+      proofread: function (newval, oldval) {
+        this.$emit('proofread', newval)
+        console.log(newval)
       }
     },
     mounted () {
@@ -549,14 +561,28 @@
     }
   }
 
+  .switch_span{
+    display: inline-block;
+    width: auto;
+    margin: 7px 0 0 10px;
+    vertical-align: top;
+
+    p{
+      width: 100%;
+      text-align: center;
+      font-size: 10px;
+    }
+  }
+
   // トグルスイッチ
   .toggle-switch {
     display: inline-block;
     position: relative;
-    width: 60px;
-    height: $ui-size;
-    margin: 7px 0 0 0;
+    width: 50px;
+    height: $ui-size - 15px;
+    margin: 4px 0 0 0;
     vertical-align: top;
+
     input[type="checkbox"] {
       position: absolute;
       left: 0;
@@ -569,19 +595,19 @@
     }
 
     label {
-      width: 60px;
-      height: $ui-size;
+      width: 50px;
+      height: $ui-size - 15px;
       background: #ccc;
       position: relative;
       display: inline-block;
-      border-radius: $ui-size;
+      border-radius: $ui-size - 15px;
       transition: 0.4s;
       box-sizing: border-box;
       &:after {
         content: '';
         position: absolute;
-        width: $ui-size;
-        height: $ui-size;
+        width: $ui-size - 15px;
+        height: $ui-size - 15px;
         border-radius: 100%;
         left: 0;
         top: 0;
@@ -596,7 +622,7 @@
       +label{
         background-color: #ff3c41;
         &:after{
-          left: 60 - $ui-size;
+          left: 65 - $ui-size;
         }
       }
     }

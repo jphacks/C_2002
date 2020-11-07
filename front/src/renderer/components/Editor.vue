@@ -4,16 +4,20 @@
     <div id="editor_frame__left">
       <MailEditer
         @updateBody="mailData.body = $event"
-        @updateSubject="mailData.subject = $event"/>
+        @updateSubject="mailData.subject = $event"
+        @proofread="proofreadMode = $event"/>
     </div>
     <!-- リサイズバー -->
     <div id="resize_bar"></div>
     <!-- 右側 -->
     <div id="editor_frame__right">
       <Preview
+        v-if="proofreadMode"
         :mailBody="mailData.body"
         :subject="mailData.subject"
         :sendUser="false"/>
+      <Start
+        v-else/>
     </div>
   </div>
 </template>
@@ -21,18 +25,21 @@
 <script>
   import MailEditer from './columns/MailEditer'
   import Preview from './columns/Preview'
+  import Start from './Start'
 
   export default {
     name: 'Editor',
     components: {
       MailEditer,
-      Preview
+      Preview,
+      Start
     },
     props: {
       draftID: ''
     },
     data () {
       return {
+        proofreadMode: true,
         mailData: {
           body: '',
           subject: ''
