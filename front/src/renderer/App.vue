@@ -179,6 +179,16 @@
         },
         this.mailCheck.interval
       )
+
+      // userInformation.JSONの取得をしてsettingにルーティングをする
+      // ファイルのパスを取得
+      const delimiter = OS.delimiterChar()
+      const filePath = OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json'
+
+      if (!fs.existsSync(filePath)) {
+        // 完了後ホームへ戻る
+        self.$router.push('setting')
+      }
     },
     beforeDestroy () {
       // 定期チェックを終了
