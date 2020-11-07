@@ -86,7 +86,7 @@
         users: {},
         mailCheck: {
           id: '',
-          interval: 20000,
+          interval: 60000,
           newestMsg: ''
         },
         authData: {}

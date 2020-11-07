@@ -52,10 +52,20 @@
         </div>
       </div>
     </div>
+
+    <div id="attach_list">
+      <div
+        v-for="file in attachmentFile.data"
+        :key="file"
+        class="file_box">
+        {{ file.name }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+  // for Vue
   import GitCommand from '../../utils/NodeGit'
   import FileAction from '../../utils/FileAction'
   import MailSend from '../../utils/MailSend'
@@ -63,6 +73,7 @@
   import DiffParser from '../../utils/DiffParser'
   import OS from '../../utils/OS'
   import ContactsList from '../../utils/ContactsList'
+
   const fs = require('fs')
 
   const isWindows = process.platform === 'win32'
@@ -71,6 +82,7 @@
   const HOMEDIR =
     process.env[isWindows ? 'USERPROFILE' : 'HOME']
 
+  // Vue.js
   export default {
     name: 'MailEditer',
     data () {
@@ -626,5 +638,10 @@
         }
       }
     }
+  }
+
+  // 添付ファイル一覧
+  #attach_list{
+
   }
 </style>

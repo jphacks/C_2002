@@ -22,6 +22,7 @@ async function mailReceive (authData, getMailCount) {
           if (err) {
             console.log(err)
           }
+          client.close()
           return resolve(messages)
         })
       })
@@ -48,7 +49,7 @@ async function mailReceiveUser (authData, targetAddress, getMailCount = 20) {
           if (err) {
             console.log(err)
           }
-          console.log(numbers)
+          client.close()
           return resolve(numbers)
         })
       })
@@ -79,9 +80,7 @@ async function getMailText (authData, messageUID) {
           console.log(body)
           const resultText = mailDataParser(body)
 
-          console.log('resultText : ')
-          console.log(resultText)
-
+          client.close()
           if (resultText !== '') {
             return resolve(resultText)
           }

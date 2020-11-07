@@ -2,7 +2,18 @@
   <div
     id="chat_tree">
     <div id="tree__title">
-      <h2>{{ targetUser.name }}</h2>
+      <input
+        type="text"
+        v-model="targetUser.name"
+        :readonly="nameEdit.flg">
+      <span
+        class="edit_button"
+        @click="editName"
+        v-if="nameEdit.flg">編集</span>
+      <span
+        class="edit_button"
+        @click="saveName"
+        v-else>保存</span>
       <p>{{ targetUser.mail }}</p>
     </div>
     <div
@@ -29,6 +40,7 @@
 <script>
   import MailReciver from '../../utils/MailReceive'
   import OS from '../../utils/OS'
+  import ContactsList from '../../utils/ContactsList'
   // モジュールをインポート
   const fs = require('fs')
   const isWindows = process.platform === 'win32'
@@ -48,7 +60,11 @@
           mail: '',
           name: ''
         },
-        authData: {}
+        authData: {},
+        nameEdit: {
+          flg: true,
+          prev: ''
+        }
       }
     },
     methods: {
@@ -83,6 +99,23 @@
       openMailData (mailData) {
         console.log(mailData)
         this.$emit('getMailData', mailData)
+      },
+      editName () {
+        this.nameEdit.prev = this.targetUser.name
+        this.nameEdit.flg = false
+      },
+      saveName () {
+        const self = this
+        this.nameEdit.flg = true
+        if (this.nameEdit.prev !== this.targetUser.name) {
+          ContactsList.getAddress().then((userObj) => {
+            // 名前を上書
+            userObj[self.targetUser.mail].name = self.targetUser.name
+
+            // 変更を保存
+            ContactsList.updateAddress(userObj)
+          })
+        }
       }
     },
     watch: {
@@ -144,16 +177,33 @@
     background: #222222;
     color: #ffffff;
     font-weight: bold;
-    h2{
+    input[type="text"]{
+      outline: none;
+      border: none;
+      background: none;
+
+      color: #ffffff;
       margin-top: 12px;
       font-size: 20px;
       line-height: 20px;
+      padding: 0;
+
+      &:focus{
+        outline: none;
+        border: none;
+      }
     }
     p{
       margin-top: 8px;
       font-size: 13px;
       line-height: 13px;
       color: #aaaaaa;
+    }
+    .edit_button{
+      display: inline-block;
+      text-decoration: underline;
+      color: #aaaaaa;
+      cursor: pointer;
     }
   }
 
