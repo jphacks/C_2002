@@ -1,81 +1,76 @@
 <template>
   <div id="setting_frame">
-    <div id="mail_cliant_frame" v-if="!flag.isOther && !flag.isEnroll">
+    <div id="select_service" class="mail_cliant_frame" v-if="!fileCheck">
+
+      <h2>メールサービスを選択してください</h2>
+
       <div class="mail_cliant" @click="dispInfoBox('gmail')">
-        <span>Google</span>
+        Gmail
       </div>
       <div class="mail_cliant" @click="dispInfoBox('yahoo')">
-        <span>Yahoo!</span>
+        Yahoo!
       </div>
       <div class="mail_cliant" @click="dispInfoBox('outlook')">
-        <span>Outlook</span>
+        Outlook.com
       </div>
       <div class="mail_cliant" @click="dispInfoBox('icloud')">
-        <span>iCloud</span>
+        iCloud
       </div>
       <div class="mail_cliant" @click="dispInfoBox('other')">
-        <span>その他</span>
+        その他
       </div>
     </div>
-    <div id="mail_cliant_frame" v-else-if="flag.isOther && !flag.isEnroll">
+    <div class="mail_cliant_frame" v-else-if="userObj['type'] === 'other'">
       <div class="input_frame">
-        <span class="client_title" style="margin-bottom: 10px">SMTP</span>
+        <h3 class="client_title" style="margin-bottom: 10px">SMTP</h3>
         <div>
-          <span>HOST</span>
+          <h3>HOST</h3>
           <input type="text" v-model="jsonData.smtp.host">
-          <span>PORT</span>
+          <h3>PORT</h3>
           <input type="number" v-model="jsonData.smtp.port">
         </div>
       </div>
       <div class="input_frame" v-if="flag.isIMAP">
-        <span class="client_title_imap" style="margin-bottom: 10px">IMAP</span>
+        <h3 class="client_title_imap" style="margin-bottom: 10px">IMAP</h3>
         <div>
-          <span>HOST</span>
+          <h3>HOST</h3>
           <input type="text" v-model="jsonData.imap.host">
-          <span>PORT</span>
+          <h3>PORT</h3>
           <input type="number" v-model="jsonData.imap.port">
         </div>
       </div>
       <div class="input_frame" v-else>
-        <span class="client_title_pop" style="margin-bottom: 10px">POP</span>
+        <h3 class="client_title_pop" style="margin-bottom: 10px">POP</h3>
         <div>
-          <span>HOST</span>
+          <h3>HOST</h3>
           <input type="text" v-model="jsonData.pop.host">
-          <span>PORT</span>
+          <h3>PORT</h3>
           <input type="number" v-model="jsonData.pop.port">
         </div>
       </div>
       <div class="switch_frame">
         <div class="btn" v-if="flag.isIMAP" @click="switchImapFlag">
-          <span class="client_title_pop">POP</span>
+          <h3 class="client_title_pop">POP</h3>
         </div>
         <div class="btn" v-else @click="switchImapFlag">
-          <span class="client_title_imap">IMAP</span>
+          <h3 class="client_title_imap">IMAP</h3>
         </div>
-        <div class="btn" @click="moveOn">
-          <span>登録</span>
+        <div class="btn" @click="updateUser">
+          登録
         </div>
       </div>
     </div>
-    <div id="mail_cliant_frame" v-else-if="flag.isEnroll">
-      <div class="user_content">
-        <span>ユーザー名</span>
-        <input type="text" v-model="jsonData.user.name">
-      </div>
-      <div class="user_content">
-        <span>所属</span>
-        <input type="text" v-model="jsonData.user.affiliation">
-      </div>
-      <div class="user_content">
-        <span>メールアドレス</span>
-        <input type="email" v-model="jsonData.auth.user">
-      </div>
-      <div class="user_content">
-        <span>パスワード</span>
-        <input type="password" v-model="jsonData.auth.pass">
-      </div>
-      <div class="submit_btn" @click="CreateJSON">
-          <span>登録</span>
+    <div class="mail_cliant_frame" v-else>
+      <h3>メールアドレス</h3>
+      <input type="email" v-model="userObj['auth'].user">
+      <h3>パスワード</h3>
+      <input type="password" v-model="userObj['auth'].pass">
+      <h3>氏 名</h3>
+      <input type="text" v-model="userObj['user'].name">
+      <h3>所属（学校 / 会社）</h3>
+      <input type="text" v-model="userObj['user'].affiliation">
+      <div class="btn" @click="updateUser">
+        登録
       </div>
     </div>
   </div>
@@ -84,17 +79,16 @@
 <script>
   import FileAction from '../utils/FileAction'
   import MailAuth from '../assets/json/MailAuth.json'
+  import OS from '../utils/OS'
   const fs = require('fs')
-  
-  const isWindows = process.platform === 'win32'
-  // デフォルトの実行ディレクトリの確認
-  const HOMEDIR =
-    process.env[isWindows ? 'USERPROFILE' : 'HOME']
 
   export default {
     name: 'Setting',
     data () {
       return {
+        fileCheck: true,
+        userObj: {},
+        mailAuth: MailAuth,
         infomation: {
           directory: '/frankfrut/data/',
           fileName: '/userInformation.json',
@@ -131,182 +125,209 @@
       }
     },
     methods: {
-      async CreateJSON () {
-        // Windows用のパス形式で指定
-        if (isWindows) {
-          this.infomation.directory = '\\frankfrut\\data\\'
-          this.infomation.delimiter = '\\'
-        }
-        // Win/Mac両対応のディレクトリを生成
-        const targetDirectory = HOMEDIR + this.infomation.directory
+      async UpdateJSON () {
+        return new Promise(resolve => {
+          // ファイルのパスを取得
+          const delimiter = OS.delimiterChar()
+          const filePath = OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json'
 
-        // 作業ディレクトリの作成
-        await FileAction.mkdir(targetDirectory)
-        fs.writeFileSync(targetDirectory + this.infomation.delimiter + this.infomation.fileName, JSON.stringify(this.jsonData, null, '    ', function (err) { // jsonファイル
-          if (err) { throw err }
-        }))
+          // オブジェクトをJSONへ変換
+          const userJSON = JSON.stringify(this.userObj)
 
-        this.$router.push('/')
+          // ファイルへの書き込み
+          const optionJson = { flag: 'w' }
+          fs.writeFile(filePath, userJSON, optionJson, function (err) {
+            if (err) {
+              console.log(err)
+            }
+            return resolve(0)
+          })
+        })
       },
-      moveOn () {
-        this.flag.isEnroll = true
+      updateUser () {
+        const self = this
+        // JSONをアップデート
+        this.UpdateJSON().then(() => {
+          // 完了後ホームへ戻る
+          self.$router.push('/')
+        })
       },
       switchImapFlag () {
         this.flag.isIMAP = !this.flag.isIMAP
       },
-      async dispInfoBox (client) {
-        console.log(client)
-        if (client === 'other') {
-          this.flag.isOther = true
-        } else {
-          this.flag.isEnroll = true
-          this.jsonData.smtp.host = MailAuth[client]['smtp']['host']
-          this.jsonData.smtp.port = MailAuth[client]['smtp']['port']
-          this.jsonData.imap.host = MailAuth[client]['imap']['host']
-          this.jsonData.imap.port = MailAuth[client]['imap']['port']
-          this.jsonData.pop.host = MailAuth[client]['pop']['host']
-          this.jsonData.pop.port = MailAuth[client]['pop']['port']
+      dispInfoBox (client) {
+        // メールサービスの確定
+        this.userObj['type'] = client
+        if (!(client === 'other')) {
+          console.log('start')
+          this.userObj['smtp'].host = this.mailAuth[client]['smtp'].host
+          this.userObj['smtp'].port = this.mailAuth[client]['smtp'].port
+          this.userObj['imap'].host = this.mailAuth[client]['imap'].host
+          this.userObj['imap'].port = this.mailAuth[client]['imap'].port
+          this.userObj['pop'].host = this.mailAuth[client]['pop'].host
+          this.userObj['pop'].port = this.mailAuth[client]['pop'].port
+          console.log('fin')
         }
+        // JSONのアップデート
+        this.UpdateJSON()
+        this.fileCheck = true
+      }
+    },
+    mounted () {
+      // ファイルのパスを取得
+      const delimiter = OS.delimiterChar()
+      const filePath = OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json'
+      const self = this
+
+      if (!fs.existsSync(filePath)) {
+        this.fileCheck = false
+
+        // ディレクトリの作成
+        FileAction.mkdir(OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'data').then(() => {
+          // ファイルの作成
+          fs.writeFile(filePath, '', '', function (err) {
+            if (err) {
+              console.log(err)
+            }
+            self.userObj = {
+              type: '',
+              smtp: {
+                host: '',
+                port: '',
+                secure: true
+              },
+              imap: {
+                host: '',
+                port: ''
+              },
+              pop: {
+                host: '',
+                port: ''
+              },
+              user: {
+                name: '',
+                affiliation: ''
+              },
+              auth: {
+                user: '',
+                pass: ''
+              }
+            }
+          })
+        })
+      } else {
+        this.fileCheck = true
+
+        // ファイルの読み込み
+        fs.readFile(filePath, 'utf8', function (err, addressJSON) {
+          // エラー処理
+          if (err) {
+            console.log(err)
+          }
+
+          // JSONからオブジェクトへの変換
+          self.userObj = JSON.parse(addressJSON)
+        })
       }
     }
   }
 </script>
 
 <style scoped lang="scss">
+  .mail_cliant_frame{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    overflow-y: scroll;
+
+    // ラベルスタイル
+    h3{
+      display: block;
+      text-align: center;
+      margin: 20px 0 10px;
+      color: #ffffff;
+    }
+    
+    // ボタンスタイル
+    .btn{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 85px;
+      margin: 15px 0 0;
+      padding: 10px;
+      color: #ffffff;
+      background: #222222;
+      cursor: pointer;
+
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all  0.3s ease;
+
+      &:hover{
+        background: #5645ff;
+      }
+    }
+
+    // 入力フォームスタイル
+    input[type="text"], input[type="email"], input[type="password"]{
+      // リセット
+      background: none;
+      outline: none;
+
+      border: solid 1px #ffffff;
+      border-radius: 7px;
+      margin: 0 5px 0 5px;
+      width: 350px;
+      height: 40px;
+      line-height: 40px;
+      font-size: 20px;
+      text-align: center;
+      color: #ffffff;
+    }
+  }
+
   #setting_frame{
     display: flex;
     align-items: center;
-    justify-content: center; 
+    justify-content: center;
     width: 100%;
     height: 100vh;
     background-color: #333333;
-    #mail_cliant_frame{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 90%;
-      height: 90vh;
-      margin-left: 60px;
-      border-radius: 5px;
-      background-color: #444444;
-      overflow-y: scroll;
-      color: #cccccc;
-      font-size: 2rem;
-      .input_frame{
-        width: auto;
-        height: auto;
-        padding: 15px;
-        border-radius: 5px;
-        background-color: #222222;
-        margin: 10px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        input{
-          margin: 0 5px 0 5px;
-          font-size: 1.5rem;
-          width: 30%;
-          border-radius: 7px;
-        }
-      }
-      .switch_frame{
-        width: auto;
-        height: auto;
-        margin: 10px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-around;
-        .btn{
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 85px;
-          margin: 15px;
-          padding: 10px;
-          border-radius: 7px;
-          border: solid 5px #222222;
-          background-color: #222222;
-          &:hover{
-            transition: 0.15s ;
-            border: solid 5px #80ffff;
-          }
-        }
-      }
-      .user_content{
-        font-size: 1.2rem;
-        min-width: 400px;
-        max-width: 700px;
-        width: auto;
-        height: auto;
-        padding: 15px;
-        border-radius: 5px;
-        background-color: #222222;
-        margin: 5px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content:flex-start;
-        input{
-          margin-top:10px;
-          font-size: 1.5rem;
-          height: auto;
-          width: 90%;
-          border-radius: 7px;
-        }
-      }
-      .submit_btn{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 85px;
-        margin: 15px;
-        padding: 10px;
-        border-radius: 7px;
-        border: solid 5px #222222;
-        background-color: #222222;
-        &:hover{
-          transition: 0.15s ;
-          border: solid 5px #80ffff;
-        }
-      }
+  }
+
+  // メールサービス選択のUI
+  #select_service{
+    h2{
+      text-align: center;
+      color: #ffffff;
+      font-size: 25px;
+      margin-bottom: 30px;
     }
-  }
-  .client_title{
-    color: #efefef;
-    font-weight: 600;
-  }
-  .client_title_imap{
-    color: #ffddcc;
-    font-weight: 600;
-  }
-  .client_title_pop{
-    color: #ccffee;
-    font-weight: 600;
-  }
-  .mail_cliant{
-    margin: 15px 0 15px 0; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 600px;
-    min-width: 400px;
-    width: 40%;
-    height: 200px;
-    border: solid 2px #777777;
-    border-radius: 5px;
-    background-color: #222222;
-    cursor: pointer;
-    span{
-      color: #efefef;
-      font-size: 2rem;
-      font-weight: 500;
-    }
-    &:hover{
-      transition: 0.15s ;
-      border: solid 7px #80ffff;
+
+    .mail_cliant{
+      margin: 15px 0 15px 0;
+      width: 300px;
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      border-radius: 10px;
+      color: #ffffff;
+      background-color: #222222;
+      font-size: 20px;
+      cursor: pointer;
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all  0.3s ease;
+
+      &:hover{
+        background: #5645ff;
+      }
     }
   }
 </style>

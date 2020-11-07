@@ -38,6 +38,12 @@
           type="file"
           @change="addFile">
       </label>
+      <span class="label">校正：</span>
+      <div class="toggle-switch">
+        <input id="toggle" class="toggle-input" type='checkbox' />
+        <label for="toggle" class="toggle-label"/>
+        <span></span>
+      </div>
     </div>
   </div>
 </template>
@@ -472,7 +478,7 @@
     border: none;
     resize: none;
     width: 94%;
-    height: calc(100vh - 10px - 130px);
+    height: calc(100vh - 10px - 140px);
     margin: 5px 0 0 3%;
     font-size: 17px;
     line-height: 26px;
@@ -485,15 +491,16 @@
   }
 
   // 下部メニューバー
+  $ui-size: 35px;
   #editor__contents{
     width: 100%;
-    height: 40px;
+    height: $ui-size + 10;
     border-top: solid 2px #888888;
 
     button{
       display: inline-block;
       width: 70px;
-      height: 30px;
+      height: $ui-size;
       margin: 7px 0 0 7px;
       vertical-align: top;
       border-radius: 5px;
@@ -513,19 +520,84 @@
 
     .attach_file{
       display: inline-block;
-      width: 30px;
-      height: 30px;
+      width: $ui-size;
+      height: $ui-size;
       margin: 7px 0 0 7px;
       vertical-align: top;
       overflow: hidden;
       background-image:  url('../../assets/img/clip_icon.png');
       background-repeat: no-repeat;
-      background-size: 30px;
+      background-size: $ui-size;
       cursor: pointer;
 
       input[type="file"]{
         opacity: 0;
         display: none;
+      }
+    }
+
+    // メニュー内のラベル
+    .label{
+      display: inline-block;
+      width: auto;
+      height: $ui-size + 10px;
+      line-height: $ui-size + 10px;
+      margin: 0 0 0 10px;
+      font-weight: bold;
+      color: #ffffff;
+      vertical-align: top;
+    }
+  }
+
+  // トグルスイッチ
+  .toggle-switch {
+    display: inline-block;
+    position: relative;
+    width: 60px;
+    height: $ui-size;
+    margin: 7px 0 0 0;
+    vertical-align: top;
+    input[type="checkbox"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    label {
+      width: 60px;
+      height: $ui-size;
+      background: #ccc;
+      position: relative;
+      display: inline-block;
+      border-radius: $ui-size;
+      transition: 0.4s;
+      box-sizing: border-box;
+      &:after {
+        content: '';
+        position: absolute;
+        width: $ui-size;
+        height: $ui-size;
+        border-radius: 100%;
+        left: 0;
+        top: 0;
+        z-index: 2;
+        background: #fff;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        transition: 0.4s;
+      }
+    }
+
+    input:checked {
+      +label{
+        background-color: #ff3c41;
+        &:after{
+          left: 60 - $ui-size;
+        }
       }
     }
   }
