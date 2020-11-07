@@ -20,10 +20,6 @@
           </div>
         </router-link>
       </div>
-      <router-link
-        :to="{ name: 'start' }">
-        デバッグ用のクソダサいボタン
-      </router-link>
       <div id="icons">
         <router-link
           id="plus_icon"

@@ -397,6 +397,7 @@
 
           MailSend.sendMail(authData['smtp'], mailData)
         })
+        this.$router.push('start')
       },
       addFile (event) {
         // 添付ファイル追加処理
