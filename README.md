@@ -217,6 +217,6 @@ SNSなどのチャットアプリケーションの利点の一つとして, ダ
 * [RyogaTakao](https://github.com/RyogaTakao): サーバーサイド, チームリーダー
 * [YoshiharuSenna](https://github.com/YoshiharuSenna): サーバーサイド
 * [ReERishun](https://github.com/ree-rishun): フロントエンド, 開発リーダー
-* [OkazakiTatsuya](https://github.com/TatsuyaOkazaki324): フロントエンド
-* [rappy-git](https://github.com/rappy-git): データサイエンティスト,  情報収集
-* [Miyu Oba](https://github.com/mlieynua): データサイエンティスト,  情報収集
+* [OkazakiTatsuya](https://github.com/TatsuyaOkazaki324): フロントエンド, 動画編集
+* [rappy-git](https://github.com/rappy-git): データサイエンティスト, 情報収集
+* [Miyu Oba](https://github.com/mlieynua): データサイエンティスト, 情報収集, ピッチ発表
