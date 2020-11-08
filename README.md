@@ -200,7 +200,7 @@ SNSなどのチャットアプリケーションの利点の一つとして, ダ
         * **[敬語への変換](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/NewHonorificsConvert.py)**（形態素解析API, 機械学習）
         * [人名と会社名の抽出](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/ExtractProperNoun.py)（固有表現抽出API）
         * [校正箇所の指摘](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/Proofreading_RECRUIT.py)（Proofreading API）
-        * [日時情報の抽出](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/getTime.py)(時刻情報正規化API)
+        * [日時情報の抽出](https://github.com/jphacks/C_2002/blob/master/server/FunctionTest/getTime.py)（時刻情報正規化API）
 
 #### 製品に取り入れた研究内容（データ・ソフトウェアなど）（※アカデミック部門の場合のみ提出必須）
 
