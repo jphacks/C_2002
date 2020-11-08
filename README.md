@@ -4,9 +4,9 @@
 
 [![IMAGE ALT TEXT HERE](https://github.com/jphacks/C_2002/wiki/images/pop-logo.png)](https://github.com/jphacks/C_2002/wiki/images/pop-logo.png)
 
-## 紹介動画〜デモ入り〜
+## 紹介動画
 
-[![DEMO](https://github.com/jphacks/C_2002/blob/master/%E3%83%97%E3%83%AC%E3%82%BC%E3%83%B3/StartDemo.png?raw=true)](https://youtu.be/GHsLTyOwET8)
+[![DEMO](https://github.com/jphacks/C_2002/blob/master/%E3%83%97%E3%83%AC%E3%82%BC%E3%83%B3/StartDemo.png?raw=true)](https://youtu.be/6h94DrLlfuI)
 
 ## アーキテクチャ
 
