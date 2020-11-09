@@ -10,7 +10,7 @@
 
 ## デモ動画
 
-[![DEMO](https://img.youtube.com/vi/OLFtc5xw_5k/0.jpg)](https://www.youtube.com/watch?v=OLFtc5xw_5k)
+[![DEMO](https://img.youtube.com/vi/OLFtc5xw_5k/0.jpg)](https://youtu.be/88J-mzy3lAU)
 
 ## アーキテクチャ
 
