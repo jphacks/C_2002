@@ -1,20 +1,29 @@
+// AuthFile.js
+// 認証ファイル用処理ライブラリ
+
 // モジュールの取得
 import OS from '../utils/OS'
 const fs = require('fs')
 
 // OS依存の文字列
 const delimiter = OS.delimiterChar()
-const JSONpath = OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'address.json'
+const JSONpath = OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json'
 
 // ユーザ認証情報用JSONの確認（存在/値）
 function checkAuthJSON () {
+  console.log('checkAuthJSON')
   // ファイルの存在チェック
   if (!fs.existsSync(JSONpath)) {
+    console.log('json none')
     return false
   }
 
   // JSONの取得
   getAuth().then((object) => {
+    // 出力
+    console.log('auth object:')
+    console.log(object)
+
     // オブジェクトの値の存在チェック
     if ('type' in object) {
       return false

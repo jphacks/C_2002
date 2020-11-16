@@ -47,6 +47,7 @@
   import MailReciver from './utils/MailReceive'
   import OS from './utils/OS'
   import ContactsList from './utils/ContactsList'
+  import AuthFile from './utils/AuthFile'
 
   // モジュールをインポート
   const fs = require('fs')
@@ -89,18 +90,20 @@
       }
     },
     methods: {
-      userMouseOver () {
+      userMouseOver () { // ユーザ一覧にカーソルが重なった時
         this.userColumn.openFlg = true
         this.userColumn.width = 300
       },
-      userMouseLeave () {
+      userMouseLeave () { // ユーザ一覧からカーソルが離れた時
         this.userColumn.width = 60
         this.userColumn.openFlg = false
       },
-      async getUser (authData) {
+      async getContactList (authData) { // メール相手一覧の取得
+        // 最新20件のメールを取得
         const messages = await MailReciver.mailReceive(authData, 20)
         const self = this
 
+        // 新規メールを先頭（古い順）に参照
         await messages.forEach(function (message) {
           // 新規ユーザであれば追加
           if (!(message['from'].address in self.users) && (message['from'].address !== authData['auth'].user)) {
@@ -111,9 +114,11 @@
             }
           }
         })
+
+        // 連絡先一覧を更新
         await ContactsList.updateAddress(this.users)
       },
-      async getMail (authData) {
+      async getMail (authData) { // メールの取得
         const messages = await MailReciver.mailReceive(authData, 1)
         const self = this
 
@@ -125,13 +130,19 @@
           // 最新メッセージに変更があったか確認
           if (self.mailCheck.newestMsg !== message.UID) {
             self.mailCheck.newestMsg = message.UID
-            self.getUser(authData)
+            self.getContactList(authData)
           }
         })
       }
     },
     mounted () {
       const self = this
+
+      // ユーザ認証情報が存在しない場合は setting.vue へ遷移
+      if (AuthFile.checkAuthJSON) {
+        // 完了後ホームへ戻る
+        self.$router.push('setting')
+      }
 
       // 連絡先一覧の作成（存在しない場合）
       ContactsList.contactInit().then(data => {
@@ -175,16 +186,6 @@
         },
         this.mailCheck.interval
       )
-
-      // userInformation.JSONの取得をしてsettingにルーティングをする
-      // ファイルのパスを取得
-      const delimiter = OS.delimiterChar()
-      const filePath = OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json'
-
-      if (!fs.existsSync(filePath)) {
-        // 完了後ホームへ戻る
-        self.$router.push('setting')
-      }
     },
     beforeDestroy () {
       // 定期チェックを終了
