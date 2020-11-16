@@ -25,10 +25,13 @@
         v-if="
           (message.from.address === targetUser.mail) ||
           ((message.from.address === authData['auth'].user) && (message.to[0].address === targetUser.mail))"
+        :class="[threadCheck(message.xGMThreadId) ? 'thread' : '']"
         :key="index">
         <div
           @click="openMailData(message)"
-          :class="[authData['auth'].user === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
+          :class="
+            [authData['auth'].user === message.from.address ? 'chat__send_me ' : ''] +
+            'chat__frame receive'">
           <p class="chat__title" v-if="message.title === ''">（件名なし）</p>
           <p class="chat__title" v-else>{{ message.title }}</p>
         </div>
@@ -65,6 +68,9 @@
         nameEdit: {
           flg: true,
           prev: ''
+        },
+        thread: {
+          prevID: ''
         }
       }
     },
@@ -117,6 +123,20 @@
             ContactsList.updateAddress(userObj)
           })
         }
+      },
+      threadCheck (xGMThreadId) { // メールがスレッドが確認
+        let result = false
+
+        console.log('xGMThreadId : ' + xGMThreadId)
+
+        // スレッドか判別
+        if (this.thread.prevID === xGMThreadId) {
+          result = true
+        }
+
+        // 更新して値を返す
+        this.thread.prevID = xGMThreadId
+        return result
       }
     },
     watch: {
@@ -223,6 +243,7 @@
       vertical-align: middle;
       word-wrap:break-word;
     }
+
     // 吹き出し風ボックス
     .chat__frame {
       display: inline-block;
@@ -252,14 +273,21 @@
         margin: 20px 40px 0 0;
       }
 
-      // 返信メール（スレッド）スタイル
-      &.thread{
-        margin: 0 10px 0 30px;
-      }
-
       // ホバー
       &:hover{
         opacity: .7;
+      }
+    }
+
+    // 返信メール（スレッド）スタイル
+    &.thread {
+      background-image: url('../../assets/img/thread.png');
+      background-position: top 10px left 4px;
+      background-repeat: no-repeat;
+      background-size: 13px;
+
+      .chat__frame{
+        margin: 5px 20px 0 20px;
       }
     }
   }

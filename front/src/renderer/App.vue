@@ -60,10 +60,6 @@
         transferData: {
           serchEmail: ''
         },
-        infomation: {
-          directory: '/frankfrut/data/',
-          fileName: '/userInformation.json'
-        },
         userInformation: {
           email: '',
           password: ''
