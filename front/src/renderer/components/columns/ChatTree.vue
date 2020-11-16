@@ -29,7 +29,8 @@
         <div
           @click="openMailData(message)"
           :class="[authData['auth'].user === message.from.address ? 'chat__send_me' : '', 'chat__frame receive']">
-          <p class="chat__title">{{ message.title }}</p>
+          <p class="chat__title" v-if="message.title === ''">（件名なし）</p>
+          <p class="chat__title" v-else>{{ message.title }}</p>
         </div>
         <span class="chat__time">{{ dateFormat(new Date(message.date)) }}</span><!-- 時間に関してはメールサーバからの情報によって変更 -->
       </div>

@@ -45,16 +45,8 @@
   import SettingIcon from './components/icons/Setting'
   import PlusIcon from './components/icons/Plus'
   import MailReciver from './utils/MailReceive'
-  import OS from './utils/OS'
   import ContactsList from './utils/ContactsList'
   import AuthFile from './utils/AuthFile'
-
-  // モジュールをインポート
-  const fs = require('fs')
-
-  // デフォルトの実行ディレクトリの確認
-  const HOMEDIR = OS.homeDirectory()
-  const DELIMITER = OS.delimiterChar()
 
   export default {
     name: 'c_2002',
@@ -143,50 +135,42 @@
       if (AuthFile.checkAuthJSON()) {
         // 完了後ホームへ戻る
         self.$router.push('setting')
-      }
-
-      // 連絡先一覧の作成（存在しない場合）
-      ContactsList.contactInit().then(data => {
-        // 連絡先一覧の取得
-        ContactsList.getAddress().then(Obj => {
-          console.log(Obj)
-          self.users = Obj
+      } else {
+        // 連絡先一覧の作成（存在しない場合）
+        ContactsList.contactInit().then(data => {
+          // 連絡先一覧の取得
+          ContactsList.getAddress().then(Obj => {
+            console.log(Obj)
+            self.users = Obj
+          })
         })
-      })
 
-      // メール一覧の取得
-      fs.readFile(HOMEDIR + DELIMITER + 'frankfrut' + DELIMITER + 'data' + DELIMITER + 'userInformation.json', 'utf8', function (err, data) {
-        // エラー処理
-        if (err) {
-          throw err
-        }
-
-        // JSONをオブジェクトに変換
-        const userData = JSON.parse(data)
-
-        // メール受信用の認証情報をオブジェクトに格納
-        self.authData = {
-          auth: {
-            user: userData['auth'].user,
-            pass: userData['auth'].pass
-          },
-          imap: {
-            host: userData['imap'].host,
-            port: userData['imap'].port
+        // メール一覧の取得
+        AuthFile.getAuth().then((userData) => {
+          // メール受信用の認証情報をオブジェクトに格納
+          self.authData = {
+            auth: {
+              user: userData['auth'].user,
+              pass: userData['auth'].pass
+            },
+            imap: {
+              host: userData['imap'].host,
+              port: userData['imap'].port
+            }
           }
-        }
 
-        // メールを受信
-        self.getMail(self.authData)
-      })
-
-      // 新規メール受信処理
-      this.mailCheck.id = setInterval(
-        function () {
+          // メールを受信
           self.getMail(self.authData)
-        },
-        this.mailCheck.interval
-      )
+        })
+
+        // 新規メール受信処理
+        this.mailCheck.id = setInterval(
+          function () {
+            self.getMail(self.authData)
+          },
+          this.mailCheck.interval
+        )
+      }
     },
     beforeDestroy () {
       // 定期チェックを終了
