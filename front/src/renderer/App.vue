@@ -138,8 +138,9 @@
     mounted () {
       const self = this
 
+      console.log('mounted')
       // ユーザ認証情報が存在しない場合は setting.vue へ遷移
-      if (AuthFile.checkAuthJSON) {
+      if (AuthFile.checkAuthJSON()) {
         // 完了後ホームへ戻る
         self.$router.push('setting')
       }
