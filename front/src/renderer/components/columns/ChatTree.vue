@@ -127,8 +127,6 @@
       threadCheck (xGMThreadId) { // メールがスレッドが確認
         let result = false
 
-        console.log('xGMThreadId : ' + xGMThreadId)
-
         // スレッドか判別
         if (this.thread.prevID === xGMThreadId) {
           result = true

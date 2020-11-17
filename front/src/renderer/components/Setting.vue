@@ -61,10 +61,13 @@
       </div>
     </div>
     <div class="mail_cliant_frame" v-else>
+      <h2>認証情報</h2>
       <h3>メールアドレス</h3>
       <input type="email" v-model="userObj['auth'].user">
       <h3>パスワード</h3>
       <input type="password" v-model="userObj['auth'].pass">
+
+      <h2>連絡先情報</h2>
       <h3>氏 名</h3>
       <input type="text" v-model="userObj['user'].name">
       <h3>所属（学校 / 会社）</h3>
@@ -243,6 +246,13 @@
     height: 100vh;
     overflow-y: scroll;
 
+    h2{
+      text-align: center;
+      color: #ffffff;
+      font-size: 25px;
+      margin-bottom: 30px;
+    }
+
     // ラベルスタイル
     h3{
       display: block;
@@ -302,13 +312,6 @@
 
   // メールサービス選択のUI
   #select_service{
-    h2{
-      text-align: center;
-      color: #ffffff;
-      font-size: 25px;
-      margin-bottom: 30px;
-    }
-
     .mail_cliant{
       margin: 15px 0 15px 0;
       width: 300px;
