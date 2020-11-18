@@ -67,6 +67,35 @@ def get_list_people_companies_time(sentence):
         datetime_list = [[int(date_str[0]), int(date_str[1]), int(date_str[2]), int(minutes_start_str[0]), int(minutes_start_str[1])], minutes_end - minutes_start]
     return people_name, companies_name, datetime_list
 
+def get_list_people(sentence):
+    response = gooAPI.entity(sentence=sentence)
+    people_name = list(set([people[0] for people in response['ne_list'] if people[1]=='PSN']))
+    # print(people_name)
+    return people_name
+
+def get_list_companies(sentence):
+    response = gooAPI.entity(sentence=sentence)
+    companies_name = list(set([company[0] for company in response['ne_list'] if company[1]=='ORG']))
+    # print(companies_name)
+    return companies_name
+
+def get_list_time(sentence):
+    response = gooAPI.entity(sentence=sentence)
+    date_list = list([time[0] for time in response['ne_list'] if time[1]=='DAT'])
+    time_list = list([time[0] for time in response['ne_list'] if time[1]=='TIM'])
+    # print(date_list)
+    # print(time_list)
+    datetime_list = []
+    if date_list and len(time_list)==2:
+        date = gooAPI.chrono(sentence=date_list[0])
+        date_str = date['datetime_list'][0][1].split('-')
+        minutes_start_str = time_list[0].split(':')
+        minutes_start = int(minutes_start_str[0])*60 + int(minutes_start_str[1])
+        minutes_end_str = time_list[1].split(':')
+        minutes_end = int(minutes_end_str[0])*60 + int(minutes_end_str[1])
+        datetime_list = [[int(date_str[0]), int(date_str[1]), int(date_str[2]), int(minutes_start_str[0]), int(minutes_start_str[1])], minutes_end - minutes_start]
+    return datetime_list
+
 # 校正支援をリストで取得する関数
 def get_list_roofreading(text):
     # print('get_list_roofreading Start')
@@ -220,7 +249,88 @@ def get_data():
     f.close()
     return result
 
-@app.route('/postdata', methods=['POST'])
+@app.route('/postpeople', methods=['POST'])
+def post_persons():
+    json_post = request.get_json()
+    commit_id = json_post['commit_id']
+    sentence = json_post['sentence']
+
+    # 文章が空だった場合
+    if sentence == '':
+        # 全て結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'people_name_list': []
+        }
+
+    else :
+        # 人名をリストで取得
+        people_name_list = get_list_people()
+        
+        # 結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'people_name_list': people_name_list
+        }
+    return result
+
+@app.route('/postcompanies', methods=['POST'])
+def post_data():
+    json_post = request.get_json()
+    commit_id = json_post['commit_id']
+    sentence = json_post['sentence']
+
+    # 文章が空だった場合
+    if sentence == '':
+        # 結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'companies_name_list': []
+        }
+
+    else :
+        # 会社名をリストで取得
+        companies_name_list = get_list_companies()
+        
+        # 結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'companies_name_list': companies_name_list
+        }
+    return result
+
+@app.route('/postdatetime', methods=['POST'])
+def post_data():
+    json_post = request.get_json()
+    commit_id = json_post['commit_id']
+    sentence = json_post['sentence']
+
+    # 文章が空だった場合
+    if sentence == '':
+        # 結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'datetime_list': []
+        }
+
+    else :
+        # 日時情報をリストで取得
+        time_list = get_list_time()
+        
+        # 結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'datetime_list': time_list
+        }
+    return result
+
+@app.route('/postcalibration', methods=['POST'])
 def post_data():
     json_post = request.get_json()
     commit_id = json_post['commit_id']
@@ -229,6 +339,91 @@ def post_data():
     # 文章が空だった場合
     if sentence == '':
         # 全て結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'before_sentence_calibration': []
+        }
+
+    else :
+        # 校正支援をリストで取得
+        result_before_text_calibration_list = get_list_roofreading()
+        
+        # 結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'before_sentence_calibration': result_before_text_calibration_list
+        }
+    return result
+
+@app.route('/postchange', methods=['POST'])
+def post_data():
+    json_post = request.get_json()
+    commit_id = json_post['commit_id']
+    sentence = json_post['sentence']
+
+    # 文章が空だった場合
+    if sentence == '':
+        # 全て結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'change_sentence': ''
+        }
+
+    else :
+        # 敬語変換
+        change_text = ChangeToHonorific()
+        
+        # 全て結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'change_sentence': change_text
+        }
+    return result
+
+@app.route('/postchangecalibration', methods=['POST'])
+def post_data():
+    json_post = request.get_json()
+    commit_id = json_post['commit_id']
+    sentence = json_post['sentence']
+
+    # 文章が空だった場合
+    if sentence == '':
+        # 全て結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'change_sentence_calibration': [],
+            'change_sentence': ''
+        }
+
+    else :
+        # 敬語変換
+        change_text = ChangeToHonorific()
+        # 校正支援をリストで取得
+        result_change_text_calibration_list = get_list_roofreading(change_text)
+        
+        # 全て結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'change_sentence_calibration': result_change_text_calibration_list,
+            'change_sentence': change_text
+        }
+    return result
+
+@app.route('/postdata', methods=['POST'])
+def post_data():
+    json_post = request.get_json()
+    commit_id = json_post['commit_id']
+    sentence = json_post['sentence']
+
+    # 文章が空だった場合
+    if sentence == '':
+        # 全ての結果をJSON形式にまとめて返す
         result = {
             'commit_id': commit_id,
             'before_sentence': sentence,
@@ -248,7 +443,7 @@ def post_data():
             # 敬語変換
             change_text = executor.submit(ChangeToHonorific, sentence).result()
         
-        # 全て結果をJSON形式にまとめて返す
+        # 全ての結果をJSON形式にまとめて返す
         result = {
             'commit_id': commit_id,
             'before_sentence': sentence,
