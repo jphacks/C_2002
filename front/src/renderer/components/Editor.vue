@@ -7,7 +7,8 @@
         :draftID="draftID"
         @updateBody="mailData.body = $event"
         @updateSubject="mailData.subject = $event"
-        @proofread="proofreadMode = $event"/>
+        @proofread="proofreadMode = $event"
+        @joinPeople="people = $event"/>
     </div>
     <!-- リサイズバー -->
     <div id="resize_bar"></div>
@@ -22,6 +23,11 @@
       <Start
         v-else/>
     </div>
+    <div id="editor_option_bar">
+      <Option
+        :people="people"
+      ></Option>
+    </div>
   </div>
 </template>
 
@@ -32,11 +38,13 @@
   import FileAction from '../utils/FileAction'
   import GitCommand from '../utils/NodeGit'
   import OS from '../utils/OS'
+  import Option from './columns/Option'
   const fs = require('fs')
 
   export default {
     name: 'Editor',
     components: {
+      Option,
       MailEditer,
       Preview,
       Start
@@ -48,7 +56,8 @@
         mailData: {
           body: '',
           subject: ''
-        }
+        },
+        people: []
       }
     },
     methods: {
@@ -129,5 +138,19 @@
   #editor_frame__right{
     height: 100%;
     width: 60%;
+    padding-right: 60px;
+  }
+  #editor_option_bar{
+    position: fixed;
+    z-index: 200;
+    top: 0;
+    right: 0;
+    display: inline-block;
+    width: auto;
+    height: 100vh;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all  0.2s ease;
   }
 </style>

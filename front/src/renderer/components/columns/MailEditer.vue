@@ -439,6 +439,9 @@
       proofread: function (newval, oldval) {
         this.$emit('proofread', newval)
         console.log(newval)
+      },
+      people: function (newval, oldval) {
+        this.$emit('joinPeople', newval)
       }
     },
     mounted () {
