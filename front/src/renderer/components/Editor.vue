@@ -86,7 +86,7 @@
         // git init
         await GitCommand.gitInit(targetDirectory)
 
-        const initText = '\n\n\n' + await this.createSign()
+        const initText = '\n\n' + await this.createSign()
 
         // ファイルの作成
         fs.writeFile(targetDirectory + draftFile, initText, function (err) { // 下書き管理ファイル
@@ -95,7 +95,7 @@
         fs.writeFile(targetDirectory + '.gitignore', resultFile, function (err) { // gitignore
           if (err) { throw err }
         })
-        fs.writeFile(targetDirectory + resultFile, '', function (err) { // 結果保存ファイル
+        fs.writeFile(targetDirectory + resultFile, initText, function (err) { // 結果保存ファイル
           if (err) { throw err }
         })
 
@@ -109,6 +109,9 @@
         await GitCommand.gitCommit(commitMessage, targetDirectory).then(function (result) {
           console.log(result)
         })
+
+        // 敬語変換プレビューへ署名の追加
+        this.mailData.body = initText
       },
       async createSign () {
         // 認証情報を取得

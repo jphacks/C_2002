@@ -113,7 +113,6 @@
     },
     methods: {
       async saveDraft () { // 下書きの上書き
-        // 作業ディレクトリの定義
         const draftDirectory = HOMEDIR + this.draft.directory + this.draftID
 
         // ファイルへの書き込み
@@ -139,7 +138,6 @@
         return diffObj
       },
       async convertHonorific (commitID, sentence, key) { // 校正処理
-        // APIのURL
         const API = 'http://54.64.167.36:5000/postdata'
         // 送信用のJSONの作成
         const sendJSON = {'commit_id': commitID, 'sentence': sentence}
@@ -306,7 +304,7 @@
           self.$emit('updateBody', self.mailData.resultBody)
         })
       },
-      sendMail () {
+      sendMail () { // メール送信処理
         const self = this
 
         // SMTP情報を取得
@@ -362,7 +360,7 @@
 
           MailSend.sendMail(authData['smtp'], mailData)
         })
-        this.$router.push('start')
+        this.$router.push({name: 'tray', query: { userData: this.addressList[this.mailData.destination] }})
       },
       addFile (event) {
         // 添付ファイル追加処理
