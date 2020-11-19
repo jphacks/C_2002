@@ -436,6 +436,11 @@
           this.userCtrCheck.time
         )
       },
+      'attachmentFile.count': function (newval, oldval) {
+        this.$emit('attachFile', this.attachmentFile.data)
+        console.log('new file val : ')
+        console.log(this.attachmentFile.data)
+      },
       proofread: function (newval, oldval) {
         this.$emit('proofread', newval)
         console.log(newval)

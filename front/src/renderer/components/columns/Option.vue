@@ -5,7 +5,7 @@
     v-on:mouseleave="optionMouseLeave"
     :style="'width: ' + optionColumn.width + 'px'">
 
-    <div class="number_sign">
+    <div class="number_sign" style="color: #ff3c41">
       <h2>{{ people.length }}</h2>
       people
     </div>
@@ -20,6 +20,22 @@
         </li>
       </ul>
     </div>
+
+    <div class="number_sign" style="color: #ff7100">
+      <h2>{{ Object.keys(files).length }}</h2>
+      files
+    </div>
+    <div
+      class="name_list"
+      v-if="optionColumn.mode === 'wide'">
+      <ul>
+        <li
+          v-for="file in files"
+          :key="file['name']">
+          {{ file['name'] }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -27,7 +43,8 @@
   export default {
     name: 'Option',
     props: {
-      people: []
+      people: [],
+      files: {}
     },
     data () {
       return {
@@ -79,7 +96,10 @@
 
   // 名称一覧
   .name_list{
-    padding-left: 20px;
+    display: block;
+    width: 80%;
+    padding-left: 10%;
+    word-break: break-all;
     li{
       margin-top: 10px;
     }

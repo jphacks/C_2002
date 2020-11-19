@@ -8,7 +8,8 @@
         @updateBody="mailData.body = $event"
         @updateSubject="mailData.subject = $event"
         @proofread="proofreadMode = $event"
-        @joinPeople="people = $event"/>
+        @joinPeople="people = $event"
+        @attachFile="attachmentFile = $event"/>
     </div>
     <!-- リサイズバー -->
     <div id="resize_bar"></div>
@@ -26,6 +27,7 @@
     <div id="editor_option_bar">
       <Option
         :people="people"
+        :files="attachmentFile"
       ></Option>
     </div>
   </div>
@@ -57,7 +59,8 @@
           body: '',
           subject: ''
         },
-        people: []
+        people: [],
+        attachmentFile: {}
       }
     },
     methods: {
