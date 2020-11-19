@@ -381,6 +381,24 @@
 
         // デバッグ用出力
         console.log(files)
+      },
+      getDraft () {
+        // 下書きのディレクトリを定義
+        const draftDirectory = HOMEDIR + this.draft.directory + this.draftID
+        const self = this
+
+        // 下書きファイルの取得
+        fs.readFile(draftDirectory + OS.delimiterChar() + 'draft.txt', 'utf8', function (err, draftText) {
+          if (err) {
+            console.log(err)
+            setTimeout(
+              self.getDraft,
+              200
+            )
+          }
+          // 代入
+          self.mailData.body = draftText
+        })
       }
     },
     watch: {
@@ -445,6 +463,9 @@
       this.breakChar = OS.breakChar()
 
       console.log('draft in Editor : ' + this.draftID)
+
+      // 下書きの取得
+      this.getDraft()
 
       // 連絡先の取得
       const self = this

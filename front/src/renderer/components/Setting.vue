@@ -250,7 +250,7 @@
       text-align: center;
       color: #ffffff;
       font-size: 25px;
-      margin-bottom: 30px;
+      margin: 15px 0;
     }
 
     // ラベルスタイル

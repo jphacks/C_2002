@@ -41,6 +41,7 @@
   import GitCommand from '../utils/NodeGit'
   import OS from '../utils/OS'
   import Option from './columns/Option'
+  import AuthFile from '../utils/AuthFile'
   const fs = require('fs')
 
   export default {
@@ -85,8 +86,10 @@
         // git init
         await GitCommand.gitInit(targetDirectory)
 
+        const initText = '\n\n\n' + await this.createSign()
+
         // ファイルの作成
-        fs.writeFile(targetDirectory + draftFile, '', function (err) { // 下書き管理ファイル
+        fs.writeFile(targetDirectory + draftFile, initText, function (err) { // 下書き管理ファイル
           if (err) { throw err }
         })
         fs.writeFile(targetDirectory + '.gitignore', resultFile, function (err) { // gitignore
@@ -106,6 +109,22 @@
         await GitCommand.gitCommit(commitMessage, targetDirectory).then(function (result) {
           console.log(result)
         })
+      },
+      async createSign () {
+        // 認証情報を取得
+        const userInfo = await AuthFile.getAuth()
+
+        console.log('Auth')
+        console.log(userInfo)
+
+        const sign =
+          '-----------------------------------------' + '\n' +
+          userInfo['user']['affiliation'] + '\n' +
+          userInfo['user']['name'] + '\n' +
+          'Mail：' + userInfo['auth']['user'] + '\n' +
+          '-----------------------------------------' + '\n'
+
+        return sign
       }
     },
     mounted () {
