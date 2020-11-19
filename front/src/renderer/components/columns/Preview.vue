@@ -21,11 +21,15 @@
 </template>
 
 <script>
+  import OS from '../../utils/OS'
+  const fs = require('fs')
+
   export default {
     name: 'Preview',
     props: {
       subject: '',
       mailBody: '',
+      draftID: '',
       sendUser: ''
     },
     data () {
@@ -34,7 +38,7 @@
       }
     },
     methods: {
-      dateFormat (date, format = 'YYYY-MM-DD hh:mm:ss') {
+      dateFormat (date, format = 'YYYY-MM-DD hh:mm:ss') { // 日付フォーマット
         // パース
         format = format.replace(/YYYY/g, date.getFullYear())
         format = format.replace(/MM/g, ('0' + (date.getMonth() + 1)).slice(-2))
@@ -51,10 +55,20 @@
 
         // 文字列を返す
         return format
+      },
+      saveResult () { // 変更結果の上書き
+        const delimiter = OS.delimiterChar()
+        const fullPath = OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json'
+        const optionJson = {flag: 'w'}
+        fs.writeFile(fullPath, this.mailBody, optionJson, function (err) {
+          if (err) {
+            console.log(err)
+          }
+        })
       }
     },
     watch: {
-      'mailBody': function () {
+      'mailBody': function () { // メール本文が変更された場合
         console.log(this.mailBody)
         console.log(this.subject)
         this.updated = this.dateFormat(new Date())

@@ -85,6 +85,9 @@
   // Vue.js
   export default {
     name: 'MailEditer',
+    props: {
+      draftID: ''
+    },
     data () {
       return {
         proofread: true,
@@ -99,7 +102,6 @@
           subject: '',
           destination: '',
           body: '',
-          draftID: '',
           bodyLINE: 0,
           bodyLength: 0,
           resultBody: '',
@@ -118,46 +120,7 @@
       }
     },
     methods: {
-      async draftInit () {
-        // Windows用のパス形式で指定
-        if (isWindows) {
-          this.draft.directory = '\\frankfrut\\draft\\'
-          this.draft.delimiter = '\\'
-        }
-
-        // 下書きごとのIDはUNIX時間を指定
-        this.draftID = Date.now()
-        const targetDirectory = HOMEDIR + this.draft.directory + this.draftID
-
-        // 作業ディレクトリの作成
-        await FileAction.mkdir(targetDirectory)
-
-        // git init
-        await GitCommand.gitInit(targetDirectory)
-
-        // ファイルの作成
-        fs.writeFile(targetDirectory + this.draft.delimiter + this.draft.fileName, '', function (err) { // 下書き管理ファイル
-          if (err) { throw err }
-        })
-        fs.writeFile(targetDirectory + this.draft.delimiter + '.gitignore', this.draft.resultName, function (err) { // gitignore
-          if (err) { throw err }
-        })
-        fs.writeFile(targetDirectory + this.draft.delimiter + this.draft.resultName, '', function (err) { // 結果保存ファイル
-          if (err) { throw err }
-        })
-
-        // git add
-        await GitCommand.gitAdd('.', targetDirectory).then(function (result) {
-          console.log(result)
-        })
-
-        // git commit
-        const commitMessage = Date.now() + ' draft commit'
-        await GitCommand.gitCommit(commitMessage, targetDirectory).then(function (result) {
-          console.log(result)
-        })
-      },
-      async saveDraft () {
+      async saveDraft () { // 下書きの上書き
         // 作業ディレクトリの定義
         const draftDirectory = HOMEDIR + this.draft.directory + this.draftID
 
@@ -183,7 +146,7 @@
 
         return diffObj
       },
-      async convertHonorific (commitID, sentence, key) {
+      async convertHonorific (commitID, sentence, key) { // 校正処理
         // APIのURL
         const API = 'http://54.64.167.36:5000/postdata'
         // 送信用のJSONの作成
@@ -471,8 +434,7 @@
       // 改行コードの設定
       this.breakChar = OS.breakChar()
 
-      // ドラフトディレクトリの作成
-      this.draftInit()
+      console.log('draft in Editor : ' + this.draftID)
 
       // 連絡先の取得
       const self = this
