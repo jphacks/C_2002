@@ -96,12 +96,15 @@
 
   // 名称一覧
   .name_list{
-    display: block;
-    width: 80%;
-    padding-left: 10%;
-    word-break: break-all;
     li{
       margin-top: 10px;
+      display: inline-block;
+      max-width: 80%;
+      margin-left: 5%;
+      padding: 5px 5%;
+      word-break: break-all;
+      background: #777777;
+      border-radius: 10px;
     }
   }
 </style>

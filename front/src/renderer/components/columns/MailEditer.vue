@@ -52,15 +52,6 @@
         </div>
       </div>
     </div>
-
-    <div id="attach_list">
-      <div
-        v-for="file in attachmentFile.data"
-        :key="file"
-        class="file_box">
-        {{ file.name }}
-      </div>
-    </div>
   </div>
 </template>
 
