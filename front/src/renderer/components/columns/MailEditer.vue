@@ -116,7 +116,8 @@
         userCtrCheck: {
           ID: '',
           time: 4000
-        }
+        },
+        people: []
       }
     },
     methods: {
@@ -161,11 +162,21 @@
           .then((res) => {
             // レスポンスが200の時の処理
             console.log(res)
+            // 新企業を追加
             FileAction.addLINE(
-              HOMEDIR + this.draft.directory + this.draftID + this.draft.delimiter + this.draft.resultName,
+              HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName,
               Number(key),
               res.data['change_sentence']
             ).then(self.updatePreview)
+
+            // 人物が返ってきた場合
+            if (res.data['people_name_list'].length) {
+              Object.keys(res.data['people_name_list']).forEach(function (key) {
+                if (self.people.indexOf(res.data['people_name_list'][key]) === -1) {
+                  self.people.push(res.data['people_name_list'][key])
+                }
+              })
+            }
           })
           .catch(err => {
             console.log(err)
