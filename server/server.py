@@ -321,7 +321,7 @@ def post_data():
     return result
 
 @app.route('/postnames', methods=['POST'])
-def post_persons():
+def post_names():
     json_post = request.get_json()
     commit_id = json_post['commit_id']
     sentence = json_post['sentence']
