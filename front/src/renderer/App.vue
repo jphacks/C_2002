@@ -96,6 +96,9 @@
         const messages = await MailReciver.mailReceive(authData, 20)
         const self = this
 
+        // 連絡先一覧を取得
+        this.users = await ContactsList.getAddress()
+
         // 新規メールを先頭（古い順）に参照
         await messages.forEach(function (message) {
           // 新規ユーザであれば追加
