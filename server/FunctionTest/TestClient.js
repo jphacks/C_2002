@@ -30,8 +30,8 @@ function readUserInput(question) {
 
         var options = {
             // uri: "http://0.0.0.0:5000/postdata",
-            uri: "http://0.0.0.0:5000/postnames",
-            // uri: "http://54.64.167.36:5000/postdata",
+            // uri: "http://54.64.167.36:5000/postnames",
+            uri: "http://54.64.167.36:5000/postdata",
             headers: {
                 "Content-type": "application/json",
             },
