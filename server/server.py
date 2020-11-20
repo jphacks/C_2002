@@ -286,7 +286,7 @@ def post_persons():
 
     else :
         # 人名をリストで取得
-        people_name_list = get_list_people()
+        people_name_list = get_list_people(sentence)
         
         # 結果をJSON形式にまとめて返す
         result = {
@@ -313,7 +313,7 @@ def post_companies():
 
     else :
         # 会社名をリストで取得
-        companies_name_list = get_list_companies()
+        companies_name_list = get_list_companies(sentence)
         
         # 結果をJSON形式にまとめて返す
         result = {
@@ -341,9 +341,9 @@ def post_names():
 
     else :
         # 人名をリストで取得
-        people_name_list = get_list_people()
+        people_name_list = get_list_people(sentence)
         # 会社名をリストで取得
-        companies_name_list = get_list_companies()
+        companies_name_list = get_list_companies(sentence)
         
         # 結果をJSON形式にまとめて返す
         result = {
@@ -371,7 +371,7 @@ def post_datetime():
 
     else :
         # 日時情報をリストで取得
-        time_list = get_list_time()
+        time_list = get_list_time(sentence)
         
         # 結果をJSON形式にまとめて返す
         result = {
@@ -398,7 +398,7 @@ def post_calibration():
 
     else :
         # 校正支援をリストで取得
-        result_before_text_calibration_list = get_list_roofreading()
+        result_before_text_calibration_list = get_list_roofreading(sentence)
         
         # 結果をJSON形式にまとめて返す
         result = {
@@ -425,7 +425,7 @@ def post_change():
 
     else :
         # 敬語変換
-        change_text = ChangeToHonorific()
+        change_text = ChangeToHonorific(sentence)
         
         # 全て結果をJSON形式にまとめて返す
         result = {
@@ -453,7 +453,7 @@ def post_changecalibration():
 
     else :
         # 敬語変換
-        change_text = ChangeToHonorific()
+        change_text = ChangeToHonorific(sentence)
         # 校正支援をリストで取得
         result_change_text_calibration_list = get_list_roofreading(change_text)
         
