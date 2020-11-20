@@ -9,6 +9,7 @@ import requests
 import re
 from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
+import operator
 
 
 app = Flask(__name__)
@@ -45,6 +46,18 @@ HumbleNounDict = json.load(json_open)
 # 探索の省略が可能な品詞（Part of speech to omit）
 Posto = ['句点', '読点', '空白', '格助詞', '終助詞', '括弧', '助数詞', '助助数詞', '冠数詞']
 
+# 名前を50音順にソートする関数
+def sort_name(list):
+    name_list = []
+    for name in list:
+       response = gooAPI.hiragana(sentence=name, output_type="hiragana")
+       response['before'] = name
+    #    print(response)
+       name_list.append(response)
+    name_sort_list = sorted(name_list, key=operator.itemgetter('converted'))
+    return name_sort_list
+
+# 人名と会社名,日時情報をリストで返す関数
 def get_list_people_companies_time(sentence):
     # print('get_list_people_companies Start')
     response = gooAPI.entity(sentence=sentence)
@@ -65,20 +78,23 @@ def get_list_people_companies_time(sentence):
         minutes_end_str = time_list[1].split(':')
         minutes_end = int(minutes_end_str[0])*60 + int(minutes_end_str[1])
         datetime_list = [[int(date_str[0]), int(date_str[1]), int(date_str[2]), int(minutes_start_str[0]), int(minutes_start_str[1])], minutes_end - minutes_start]
-    return people_name, companies_name, datetime_list
+    return sort_name(people_name), sort_name(companies_name), datetime_list
 
+# 人名をリストで返す関数
 def get_list_people(sentence):
     response = gooAPI.entity(sentence=sentence)
     people_name = list(set([people[0] for people in response['ne_list'] if people[1]=='PSN']))
     # print(people_name)
-    return people_name
+    return sort_name(people_name)
 
+# 会社名をリストで返す関数
 def get_list_companies(sentence):
     response = gooAPI.entity(sentence=sentence)
     companies_name = list(set([company[0] for company in response['ne_list'] if company[1]=='ORG']))
     # print(companies_name)
-    return companies_name
+    return sort_name(companies_name)
 
+# 時刻情報をリストで返す関数
 def get_list_time(sentence):
     response = gooAPI.entity(sentence=sentence)
     date_list = list([time[0] for time in response['ne_list'] if time[1]=='DAT'])
@@ -95,10 +111,6 @@ def get_list_time(sentence):
         minutes_end = int(minutes_end_str[0])*60 + int(minutes_end_str[1])
         datetime_list = [[int(date_str[0]), int(date_str[1]), int(date_str[2]), int(minutes_start_str[0]), int(minutes_start_str[1])], minutes_end - minutes_start]
     return datetime_list
-
-# 名前を50音順にソートする関数
-def sort_name(list):
-    
 
 # 校正支援をリストで取得する関数
 def get_list_roofreading(text):
@@ -304,6 +316,37 @@ def post_data():
         result = {
             'commit_id': commit_id,
             'before_sentence': sentence,
+            'companies_name_list': companies_name_list
+        }
+    return result
+
+@app.route('/postnames', methods=['POST'])
+def post_persons():
+    json_post = request.get_json()
+    commit_id = json_post['commit_id']
+    sentence = json_post['sentence']
+
+    # 文章が空だった場合
+    if sentence == '':
+        # 全て結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'people_name_list': [],
+            'companies_name_list': []
+        }
+
+    else :
+        # 人名をリストで取得
+        people_name_list = get_list_people()
+        # 会社名をリストで取得
+        companies_name_list = get_list_companies()
+        
+        # 結果をJSON形式にまとめて返す
+        result = {
+            'commit_id': commit_id,
+            'before_sentence': sentence,
+            'people_name_list': people_name_list,
             'companies_name_list': companies_name_list
         }
     return result
