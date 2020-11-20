@@ -342,7 +342,7 @@ def post_data():
         result = {
             'commit_id': commit_id,
             'before_sentence': sentence,
-            'before_sentence_calibration': []
+            'calibration_sentence': []
         }
 
     else :
@@ -353,7 +353,7 @@ def post_data():
         result = {
             'commit_id': commit_id,
             'before_sentence': sentence,
-            'before_sentence_calibration': result_before_text_calibration_list
+            'calibration_sentence': result_before_text_calibration_list
         }
     return result
 
@@ -424,33 +424,49 @@ def post_data():
     # 文章が空だった場合
     if sentence == '':
         # 全ての結果をJSON形式にまとめて返す
+        # result = {
+        #     'commit_id': commit_id,
+        #     'before_sentence': sentence,
+        #     'people_name_list': [],
+        #     'companies_name_list': [],
+        #     'datetime_list': [],
+        #     'before_sentence_calibration': [],
+        #     'change_sentence': ''
+        # }
         result = {
             'commit_id': commit_id,
             'before_sentence': sentence,
             'people_name_list': [],
             'companies_name_list': [],
             'datetime_list': [],
-            'before_sentence_calibration': [],
             'change_sentence': ''
         }
 
     else :
         with ThreadPoolExecutor(max_workers=3, thread_name_prefix="thread") as executor:
-            # 人名と会社名をリストで取得
+            # 人名と会社名,日時情報をリストで取得
             people_name_list, companies_name_list, time_list = executor.submit(get_list_people_companies_time, sentence).result()
             # 校正支援をリストで取得
-            result_before_text_calibration_list = executor.submit(get_list_roofreading, sentence).result()
+            # result_before_text_calibration_list = executor.submit(get_list_roofreading, sentence).result()
             # 敬語変換
             change_text = executor.submit(ChangeToHonorific, sentence).result()
         
         # 全ての結果をJSON形式にまとめて返す
+        # result = {
+        #     'commit_id': commit_id,
+        #     'before_sentence': sentence,
+        #     'people_name_list': people_name_list,
+        #     'companies_name_list': companies_name_list,
+        #     'datetime_list': time_list,
+        #     'before_sentence_calibration': result_before_text_calibration_list,
+        #     'change_sentence': change_text
+        # }
         result = {
             'commit_id': commit_id,
             'before_sentence': sentence,
             'people_name_list': people_name_list,
             'companies_name_list': companies_name_list,
             'datetime_list': time_list,
-            'before_sentence_calibration': result_before_text_calibration_list,
             'change_sentence': change_text
         }
     return result
