@@ -34,7 +34,7 @@ async function mailReceive (authData, getMailCount) {
 }
 
 // 特定ユーザのメール受信
-async function mailReceiveUser (authData, targetAddress, getMailCount = 20) {
+async function mailReceiveUser (authData, targetAddress) {
   return new Promise(resolve => {
     const client = inbox.createConnection(authData['imap'].port, authData['imap'].host, {
       secureConnection: true,
@@ -60,7 +60,7 @@ async function mailReceiveUser (authData, targetAddress, getMailCount = 20) {
   })
 }
 
-// メール内容の取得
+// メールソースの取得
 async function getMailText (authData, messageUID) {
   return new Promise(resolve => {
     const client = inbox.createConnection(authData['imap'].port, authData['imap'].host, {
@@ -104,7 +104,7 @@ async function getMailText (authData, messageUID) {
   })
 }
 
-// Base64の本文をパースしてデコード
+// メール本文をパース
 function mailDataParser (targetSource) {
   // 区切り文字の取得
   let delimiterPrevText = 'Content-Type: multipart/alternative; boundary="'
@@ -132,16 +132,11 @@ function mailDataParser (targetSource) {
       console.log('mimetext result : -1')
       return -1
     } else {
+      // デコードする部分をパース
       const decodeTarget = targetSource.substr(targetSource.indexOf(mimeText) + mimeText.length)
-      let decodedText = ''
-      // Base64の場合
-      if (encodeType === 'base64') {
-        decodedText = decodeURIComponent(escape(atob(decodeTarget)))
-      } else if (encodeType === 'quoted-printable') {
-        decodedText = utf8.decode(quotedPrintable.decode(decodeTarget))
-      }
-      console.log('デコード結果：' + decodedText)
-      return decodedText
+
+      // デコードして返す
+      return decodeBody(decodeTarget, encodeType)
     }
   }
 
@@ -160,24 +155,31 @@ function mailDataParser (targetSource) {
   const base64HeadPosition = targetSource.substr(delimiterPosition).indexOf(breakChar + breakChar) + delimiterPosition + (breakChar.length * 2)
   const base64TailPosition = targetSource.substr(base64HeadPosition).indexOf(breakChar + '--' + delimiterText)
 
-  console.log('base64TailPosition : ' + base64TailPosition)
-
   // 終端部分が見つからない場合はエラーを返す
   if (base64TailPosition === -1) {
     return -1
   }
 
-  // Base64にエンコードされた本文を取得
+  // デコードする部分をパース
   const decodeTarget = targetSource.substr(base64HeadPosition, base64TailPosition)
 
+  // デコードして返す
+  return decodeBody(decodeTarget, encodeType)
+}
+
+// メール本文のデコード
+function decodeBody (decodeTarget, encodeType) {
   let decodedText = ''
-  // Base64の場合
+
   if (encodeType === 'base64') {
+    // Base64の場合
     decodedText = decodeURIComponent(escape(atob(decodeTarget)))
   } else if (encodeType === 'quoted-printable') {
+    // Quoted-Printableの場合
     decodedText = utf8.decode(quotedPrintable.decode(decodeTarget))
   }
-  console.log('デコード結果：' + decodedText)
+
+  // デコード結果を返す
   return decodedText
 }
 
@@ -199,4 +201,5 @@ function disconnectServer (authData) {
   })
 }
 
+// エクスポート
 export default {mailReceive, mailReceiveUser, getMailText, disconnectServer}
