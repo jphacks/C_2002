@@ -49,13 +49,16 @@ Posto = ['句点', '読点', '空白', '格助詞', '終助詞', '括弧', '助�
 # 名前を50音順にソートする関数
 def sort_name(list):
     name_list = []
+    result_list = []
     for name in list:
        response = gooAPI.hiragana(sentence=name, output_type="hiragana")
        response['before'] = name
     #    print(response)
        name_list.append(response)
     name_sort_list = sorted(name_list, key=operator.itemgetter('converted'))
-    return name_sort_list
+    for result in name_sort_list:
+        result_list.append(result['before'])
+    return result_list
 
 # 人名と会社名,日時情報をリストで返す関数
 def get_list_people_companies_time(sentence):
