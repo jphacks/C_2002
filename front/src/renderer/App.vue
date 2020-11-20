@@ -320,6 +320,7 @@
       h3, p{
         line-height: $icon-size / 2;
         height: $icon-size / 2;
+        word-break: break-all;
       }
     }
 
