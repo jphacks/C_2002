@@ -96,6 +96,10 @@ def get_list_time(sentence):
         datetime_list = [[int(date_str[0]), int(date_str[1]), int(date_str[2]), int(minutes_start_str[0]), int(minutes_start_str[1])], minutes_end - minutes_start]
     return datetime_list
 
+# 名前を50音順にソートする関数
+def sort_name(list):
+    
+
 # 校正支援をリストで取得する関数
 def get_list_roofreading(text):
     # print('get_list_roofreading Start')
@@ -184,6 +188,7 @@ def ChangeToHonorific(original):
         ConvertedSentence += word[0]
     # 整形したデータを返す
     return ConvertedSentence
+
 
 # ローカルGETテスト用
 @app.route('/')
