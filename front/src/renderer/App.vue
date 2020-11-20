@@ -21,18 +21,24 @@
         </router-link>
       </div>
       <div id="icons">
-        <router-link
-          id="plus_icon"
-          title="新規メールを作成"
-          :to="{ name: 'editor' }">
-          <PlusIcon/>
-        </router-link>
-        <router-link
-          id="setting_icon"
-          :to="{ name: 'setting' }"
-          title="設定を開く">
-          <SettingIcon/>
-        </router-link>
+        <div class="icons_content">
+          <router-link
+            title="新規メールを作成"
+            :to="{ name: 'editor' }">
+            <span id="plus_icon">
+              <PlusIcon/>
+            </span>
+          </router-link>
+        </div>
+        <div class="icons_content">
+          <router-link
+            :to="{ name: 'setting' }"
+            title="設定を開く">
+            <span id="setting_icon">
+              <SettingIcon/>
+            </span>
+          </router-link>
+        </div>
       </div>
     </div>
     <router-view/>
@@ -329,20 +335,24 @@
   #icons{
     z-index: 200;
     position: absolute; // 絶対位置指定することを定義
-    bottom: 0; // 絶対位置指定(左0px,下0px)
+    left: 0;
+    bottom: 0;
+    height: auto;
 
     // 新規作成アイコン
     #plus_icon{
       display: inline-block;
       width: $icon-size + 10px;
       height: $icon-size + 10px;
-      margin: 0 0 0 ($usercolumn__size - $icon-size - 10) / 2;
+      margin-left: -2px;
+      // margin: 0 0 0 ($usercolumn__size - $icon-size - 10) / 2;
       fill: #ffffff;
       cursor: pointer;
       -webkit-transition: all 0.3s ease;
       -moz-transition: all 0.3s ease;
       -o-transition: all 0.3s ease;
       transition: all  0.3s ease;
+      vertical-align: top;
       &:hover{
         opacity: .8;
       }
@@ -350,13 +360,13 @@
 
     // 設定アイコン
     #setting_icon{
-      display: block;
-      margin: 8px 8px 8px 8px;
+      display: inline-block;
       width: $icon-size;
       height: $icon-size;
       border-radius: $icon-size;
       border: solid 2px #ffffff;
       cursor: pointer;
+      vertical-align: top;
       path{
         fill: #ffffff;
       }
@@ -369,6 +379,20 @@
           100% { transform: rotate(135deg); }
         }
       }
+    }
+
+    .icons_content{
+      display: block;
+      height: $icon-size + 2px;
+      width: 100%;
+      padding: 8px;
+    }
+
+    p{
+      display: inline-block;
+      width: auto;
+      height: $icon-size;
+      vertical-align: middle;
     }
   }
 </style>
