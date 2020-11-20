@@ -294,7 +294,7 @@ def post_persons():
     return result
 
 @app.route('/postcompanies', methods=['POST'])
-def post_data():
+def post_companies():
     json_post = request.get_json()
     commit_id = json_post['commit_id']
     sentence = json_post['sentence']
@@ -352,7 +352,7 @@ def post_names():
     return result
 
 @app.route('/postdatetime', methods=['POST'])
-def post_data():
+def post_datetime():
     json_post = request.get_json()
     commit_id = json_post['commit_id']
     sentence = json_post['sentence']
@@ -379,7 +379,7 @@ def post_data():
     return result
 
 @app.route('/postcalibration', methods=['POST'])
-def post_data():
+def post_calibration():
     json_post = request.get_json()
     commit_id = json_post['commit_id']
     sentence = json_post['sentence']
@@ -406,7 +406,7 @@ def post_data():
     return result
 
 @app.route('/postchange', methods=['POST'])
-def post_data():
+def post_change():
     json_post = request.get_json()
     commit_id = json_post['commit_id']
     sentence = json_post['sentence']
@@ -433,7 +433,7 @@ def post_data():
     return result
 
 @app.route('/postchangecalibration', methods=['POST'])
-def post_data():
+def post_changecalibration():
     json_post = request.get_json()
     commit_id = json_post['commit_id']
     sentence = json_post['sentence']
