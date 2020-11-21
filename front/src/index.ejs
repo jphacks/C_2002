@@ -5,11 +5,11 @@
     <meta http-equiv="Content-Security-Policy"
           content="
           default-src *;
-          script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:9080;
-          frame-src 'self' platform.twitter.com social-plugins.line.me staticxx.facebook.com www.facebook.com;
-          style-src 'self' 'unsafe-inline';
-          img-src 'self' data:;
-          font-src 'self';
+          script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:9080/*;
+          frame-src 'self' http://localhost:9080/*;
+          style-src 'self' 'unsafe-inline' http://localhost:9080/*;
+          img-src 'self' data: http://localhost:9080/*;
+          font-src 'self' http://localhost:9080/*;
     " />
     <title>Frankfrut</title>
     <% if (htmlWebpackPlugin.options.nodeModules) { %>
