@@ -39,5 +39,6 @@ result = {
     'people_name': people_name_json,
     'companies_name': companies_name_json
 }
-res = requests.post('http://localhost:5000/test', result, headers)
-print(res.text)
+print(result)
+# res = requests.post('http://localhost:5000/test', result, headers)
+# print(res.text)

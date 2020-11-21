@@ -19,7 +19,7 @@ function exe (command, pwd = HOMEDIR) { // コマンド実行関数
 }
 
 // git init
-function gitInit (pwd) {
+async function gitInit (pwd) {
   return new Promise(resolve => {
     const child = exe('git init', pwd)
 
@@ -109,13 +109,14 @@ function gitDiff (prevID, pwd) {
     const child = exe(command, pwd)
 
     // 標準出力受け取り
-    child.stdout.on('close', data => {
+    child.stdout.on('data', data => {
       // 差分を抜き出す
+      console.log(data)
       return resolve(data)
     })
 
     // 標準エラー受け取り
-    child.stderr.on('close', data => {
+    child.stderr.on('data', data => {
       console.log(data)
       return resolve(data)
     })
