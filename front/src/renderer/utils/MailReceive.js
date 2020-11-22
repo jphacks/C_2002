@@ -1,4 +1,7 @@
 // モジュールのインポート
+import FileAction from './FileAction'
+import OS from './OS'
+
 const inbox = require('inbox')
 const iconv = require('iconv')
 const utf8 = require('utf8')
@@ -201,5 +204,14 @@ function disconnectServer (authData) {
   })
 }
 
+// メール内容をローカルに保存
+function saveMail (userID) {
+  // メールの保存先ディレクトリ
+  const mailDirectory = OS.homeDirectory() + OS.delimiterChar() + 'mailbox' + OS.delimiterChar()
+
+  // 保存用ファイルの存在確認
+  FileAction.mkdir(mailDirectory)
+}
+
 // エクスポート
-export default {mailReceive, mailReceiveUser, getMailText, disconnectServer}
+export default {mailReceive, mailReceiveUser, getMailText, disconnectServer, saveMail}
