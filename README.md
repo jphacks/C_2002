@@ -224,5 +224,5 @@ SNSなどのチャットアプリケーションの利点の一つとして, ダ
 * [YoshiharuSenna](https://github.com/YoshiharuSenna): サーバーサイド
 * [ReERishun](https://github.com/ree-rishun): フロントエンド, 開発リーダー
 * [OkazakiTatsuya](https://github.com/TatsuyaOkazaki324): フロントエンド, 動画編集
-* [rappy-git](https://github.com/rappy-git): データサイエンティスト, 情報収集
-* [Miyu Oba](https://github.com/mlieynua): データサイエンティスト, 情報収集, ピッチ発表
+* [rappy-git](https://github.com/rappy-git): 開発サポート, 情報収集
+* [Miyu Oba](https://github.com/mlieynua): 開発サポート, 情報収集, ピッチ発表
