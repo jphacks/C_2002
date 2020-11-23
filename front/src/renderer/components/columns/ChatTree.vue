@@ -77,7 +77,7 @@
       }
     },
     methods: {
-      async getRoomMail (authData, targetAddress) {
+      async updateRoomMail (authData, targetAddress) {
         // 自身が送信したメールを取得
         const sendMeNumbers = await MailReceive.mailReceiveUser(authData, authData['auth'].user)
 
@@ -88,15 +88,23 @@
         const numbers = sendMeNumbers.concat(targetNumbers)
         console.log(numbers)
 
-        // メールを取得
-        console.log('サーバからのやつ')
-        console.log(await MailReceive.mailReceive(authData, numbers[numbers.length - 10]))
-
-        console.log('ローカルのやつ')
-        console.log(this.messages)
+        const newMail = await MailReceive.mailReceive(authData, numbers[numbers.length - 10])
 
         // メールをJSONへ保存
-        await MailReceive.saveLocalMail(this.targetUser.mail, this.messages)
+        await MailReceive.saveLocalMail(this.targetUser.mail, newMail)
+
+        // メール一覧をアップデート
+        this.getRoomMail()
+      },
+      async getRoomMail () { // ローカルのメール一覧を取得
+        const self = this
+        return new Promise(resolve => {
+          MailReceive.getLocalMail(this.targetUser.mail).then(mailObj => {
+            // メールをオブジェクトへ格納
+            self.messages = mailObj
+            return resolve(self.messages.length)
+          })
+        })
       },
       dateFormat (date, format = 'YYYY-MM-DD hh:mm:ss') {
         // パース
@@ -157,11 +165,12 @@
       const self = this
 
       // ローカルのメール一覧を取得
-      MailReceive.getLocalMail(this.targetUser.mail).then(mailObj => {
-        console.log('ローカルのやつ：')
-        console.log(mailObj)
-        // メールをオブジェクトへ格納
-        this.messages = mailObj
+      this.getRoomMail().then(objNum => {
+        console.log(objNum)
+        // チャット履歴を最新にスクロール
+        const chatLog = self.$refs.tree_frame
+        if (!chatLog) return
+        chatLog.scrollTop = chatLog.scrollHeight
       })
 
       // サーバからメール一覧を取得
@@ -186,11 +195,7 @@
         }
 
         // メールを受信
-        self.getRoomMail(self.authData, self.targetUser.mail).then(function () {
-          const chatLog = self.$refs.tree_frame
-          if (!chatLog) return
-          chatLog.scrollTop = chatLog.scrollHeight
-        })
+        self.updateRoomMail(self.authData, self.targetUser.mail)
       })
     }
   }

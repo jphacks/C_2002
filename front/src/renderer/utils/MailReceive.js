@@ -227,7 +227,7 @@ async function saveLocalMail (roomID, newMails) {
     }
 
     // メール保存用連想配列
-    let mailObj = []
+    let mailObj = {}
 
     // JSONを連想配列へ変換
     if (mailJSON !== '') {
@@ -236,13 +236,13 @@ async function saveLocalMail (roomID, newMails) {
 
     // メールをJSONへ保存
     for (let mailUID in newMails) {
-      // メールを1件取得
-      const mail = newMails[mailUID]
-
       // オブジェクトが存在する場合は何もしない
-      if (mail['UID'] in mailObj) {
+      if (mailUID in mailObj) {
         continue
       }
+
+      // メールを1件取得
+      const mail = newMails[mailUID]
 
       // 新規メールの追加
       mailObj[mail['UID']] = {
@@ -260,9 +260,6 @@ async function saveLocalMail (roomID, newMails) {
         'title': mail['title']
       }
     }
-
-    console.log('mailObj :')
-    console.log(mailObj)
 
     // 上書保存
     const optionJson = { flag: 'w' }
@@ -289,17 +286,12 @@ async function getLocalMail (roomID) {
         console.log(err)
       }
 
-      console.log('JSONのままのやつ')
-      console.log(mailJSON)
-
       // メール保存用オブジェクト
       let mailObj = {}
 
       // JSONをオブジェクトへ変換
       if (mailJSON !== '') {
         mailObj = JSON.parse(mailJSON)
-        console.log('パース')
-        console.log(mailObj)
       }
 
       return resolve(mailObj)
