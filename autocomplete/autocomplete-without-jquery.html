@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+
+  <meta charset="UTF-8">  
+  <title>Autocomplete</title>
+
+<style>
+body {
+  height: 100%;
+  min-height: 800px;
+}
+
+html {
+  position: relative;
+  width: 100%;
+  min-height: 800px;
+  height: 100%;
+}
+html:after, html:before {
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  content: '';
+  z-index: 5;
+}
+html:after {
+  top: 0;
+  background-color: #4fc08d;
+}
+html:before {
+  bottom: 0;
+  background-color: #35495e;
+}
+
+#app {
+  height: 100%;
+  margin: 0;
+}
+#app h2 {
+  margin: 0;
+  font-weight: 100;
+}
+#app p {
+  margin: 5px 0 30px;
+  color: #999;
+  font-weight: 100;
+  line-height: 24px;
+  font-size: 15px;
+}
+
+.container {
+  display: -webkit-box;
+  display: flex;
+  height: 100%;
+  -webkit-box-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+          justify-content: center;
+}
+.container-row {
+  width: auto;
+  padding: 25px;
+  border-radius: 5px;
+  background-color: #f7f7f7;
+  box-shadow: 0px 40px 100px -20px rgba(0, 0, 0, 0.1);
+}
+.container-item {
+  width: 100%;
+}
+
+.autocomplete {
+  position: relative;
+}
+.autocomplete label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 100;
+}
+.autocomplete-input {
+  padding: 7px 10px;
+  width: 93%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+.autocomplete-input:focus {
+  border-color: #000;
+}
+.autocomplete-list {
+  position: absolute;
+  z-index: 2;
+  overflow: auto;
+  min-width: 250px;
+  max-height: 150px;
+  margin: 0;
+  margin-top: 5px;
+  padding: 0;
+  border: 1px solid #eee;
+  list-style: none;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+}
+.autocomplete-list li {
+  margin: 0;
+  padding: 8px 15px;
+  border-bottom: 1px solid #f5f5f5;
+}
+.autocomplete-list li:last-child {
+  border-bottom: 0;
+}
+.autocomplete-list li:hover, .autocomplete-list li.active {
+  background-color: #f5f5f5;
+}
+</style>
+
+</head>
+
+<body translate="no" >
+  <script type="text/x-template" id="autocomplete-tpl">
+    <div class="autocomplete">
+      <label :for="id">{{label}}</label>
+      <textarea v-if="textarea" :id="id" :rows="rows" :cols="cols" class="autocomplete-input" :placeholder="placeholder" @focusout="focusout" @focus="focus" @keydown.13="chooseItem" @keydown.tab="chooseItem" @keydown.40="moveDown" @keydown.38="moveUp" v-model="inputValue"
+        type="text"></textarea>
+      <input v-else :id="id" class="autocomplete-input" :placeholder="placeholder" @focusout="focusout" @focus="focus" @keydown.13="chooseItem" @keydown.tab="chooseItem" @keydown.40="moveDown" @keydown.38="moveUp" v-model="inputValue" type="text">
+
+
+      <ul :class="{
+        'autocomplete-list': true,
+        [id+'-list']: true
+      }" v-if="searchMatch.length > 0">
+        <li :class="{active: selectedIndex === index}" v-for="(result, index) in searchMatch" @click="selectItem(index), chooseItem()" v-html="highlightWord(result)">
+
+        </li>
+      </ul>
+    </div>
+  </script>
+
+
+  <div id="app">
+    <div class="container">
+      <div class="container-row">
+        <div class="container-item">
+          <br />
+          <br />
+          <autocomplete label="Textarea" rows="5" placeholder="Your text..." textarea="true" />
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.3/vue.js'></script>
+  <script src="tiny_segmenter-0.2.js" type="text/javascript"></script>
+  <script id="rendered-js" >
+    
+    const yomikataDict = {"ありがとうございました":"有難うございました",
+                          "おせわになっております":"お世話になっております",
+                          "いつもおせわになっております":"いつもお世話になっております",
+                          "おせわになります":"お世話になります",
+                          "さっそくのおへんじありがとうございました":"早速のお返事ありがとうございました",
+                          "よろしくおねがいいたします":"よろしくお願いいたします",
+                          "おへんじおまちしております":"お返事お待ちしております",
+                          "おてすうをおかけしますが":"お手数をおかけしますが",
+                          "ひきつづきよろしくおねがいいいたします":"引き続きよろしくお願いいたします",
+                          "ますますのごかつやくをおいのりもうしあげます":"ますますのご活躍をお祈り申し上げます",
+                          "もうしわけございません":"申し訳ございません",
+                          "こんごともよろしくおねがいもうしあげます":"今後ともよろしくお願い申し上げます",
+                          "ごぶさたしております":"ご無沙汰しております",
+                          "ひきつづき、どうぞよろしくおねがいいたします":"引き続き、どうぞよろしくお願いいたします",
+                        }
+
+    const Autocomplete = Vue.component("autocomplete", {
+      template: "#autocomplete-tpl",
+      props: ["items", "placeholder", "label", "textarea", "rows", "cols"],
+      data() {
+        return {
+          id: 'input-' + parseInt(Math.random() * 1000),
+          inputValue: "",
+          searchMatch: [],
+          selectedIndex: 0,
+          clickedChooseItem: false,
+          wordIndex: 0 };
+      },
+      mounted() {
+        const _self = this;
+        document.querySelector('#' + this.id).
+        addEventListener('input', function () {
+          const caret = getCaretCoordinates(this, this.selectionEnd);
+
+          if (_self.searchMatch.length > 0) {
+            const element = document.querySelectorAll('.' + _self.id + '-list');
+
+            if (element[0]) {
+              element[0].style.top = caret.top -130 + 'px';
+              element[0].style.left = caret.left + 'px';
+            }
+          }
+        });
+      },
+      computed: {
+        listToSearch() {
+          if (typeof this.items !== "undefined" && this.items.length > 0) {
+            return this.items;
+          } else {
+            return Object.keys(yomikataDict);
+          }
+        },
+        currentWord() {
+          segForSuggestion = new TinySegmenter();
+          morphForSuggestion = segForSuggestion.segment(this.inputValue.replace(/(\n)/gm, ' ').split('。')[this.wordIndex]);
+          unfinishedWord = morphForSuggestion.slice(-1)[0]
+          return unfinishedWord
+        },
+        // this.inputSplitted.length - 1
+        inputSplitted() {
+          return this.inputValue.replace(/(\n)/gm, ' ').split("。");
+          // 句読点で区切った文章と変換前
+        } },
+
+      watch: {
+        inputValue() {
+          this.focus();
+          this.selectedIndex = 0;
+          this.wordIndex = this.inputSplitted.length - 1;
+        } },
+
+      methods: {
+        highlightWord(word) {
+          console.log(this.currentWord)
+          const regex = new RegExp("(" + this.currentWord + ")", "g");
+          return word.replace(regex, '<mark>$1</mark>');
+        },
+        setWord(word) {
+          let currentWords = this.inputValue.replace(/(\r\n|\n|\r)/gm, '__br__ ').split('。');
+          currentWords[this.wordIndex] = currentWords[this.wordIndex].replace(this.currentWord, word);
+          // あり→ありがとうに変更する
+          // word:選択肢してエンター押したやつ（ありがとう）
+          // currentWords:["あり"] 
+          // wordIndex:多分ゼロ
+          // あり→ありがとうに変更する
+
+          this.wordIndex += 1;
+          this.inputValue = currentWords.join('。').replace(/__br__\s/g, '\n');
+        },
+        moveDown() {
+          if (this.selectedIndex < this.searchMatch.length - 1) {
+            this.selectedIndex++;
+          }
+        },
+        moveUp() {
+          if (this.selectedIndex !== -1) {
+            this.selectedIndex--;
+          }
+        },
+        selectItem(index) {
+          this.selectedIndex = index;
+          this.chooseItem();
+        },
+        chooseItem(e) {
+          this.clickedChooseItem = true;
+
+          if (this.selectedIndex !== -1 && this.searchMatch.length > 0) {
+            if (e) {
+              e.preventDefault();
+            }
+            this.setWord(this.searchMatch[this.selectedIndex]);
+            this.selectedIndex = -1;
+          }
+        },
+        focusout(e) {
+          setTimeout(() => {
+            if (!this.clickedChooseItem) {
+              this.searchMatch = [];
+              this.selectedIndex = -1;
+            }
+            this.clickedChooseItem = false;
+          }, 100);
+        },
+        focus() {
+          this.searchMatch = [];
+          // if (this.currentWord !== "") {
+          console.log(this.currentWord)
+          if (this.currentWord.length > 1) {
+            // searchMatch:["ありがとうございます", "ありがとさん", __ob__: Observer]
+            // currentword:まるよりうしろの変換前
+            // ひらがな必須
+            regexp1 = new RegExp('^' + this.currentWord + '.*$');
+            regexp2 = new RegExp('^.*' + this.currentWord + '$');
+            regexp3 = new RegExp('^.*' + this.currentWord + '.*$');
+            this.searchMatchHiragana = this.listToSearch.filter(
+            hiragana => hiragana.match(regexp1) || hiragana.match(regexp2)|| hiragana.match(regexp3))
+            console.log(this.searchMatchHiragana)
+            this.searchMatch = this.searchMatchHiragana.map(hiragana => yomikataDict[hiragana])
+            
+            
+          }
+          // 全くおんなじだったら
+          if (
+          this.searchMatch.length === 1 &&
+          this.currentWord === this.searchMatch[0])
+          {
+            this.searchMatch = [];
+          }
+        } } });
+
+
+
+    new Vue({
+      el: "#app" });
+
+  </script>
+</body>
+
+</html>
