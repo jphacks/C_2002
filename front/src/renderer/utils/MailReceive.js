@@ -208,7 +208,7 @@ function disconnectServer (authData) {
 }
 
 // メール内容をローカルに保存
-async function saveMail (roomID, newMails) {
+async function saveLocalMail (roomID, newMails) {
   // メールの保存先ディレクトリ
   const mailDirectory = OS.homeDirectory() + OS.delimiterChar() + 'frankfrut' + OS.delimiterChar() + 'mailbox'
   const mailJSONfile = mailDirectory + OS.delimiterChar() + roomID + '.json'
@@ -226,10 +226,10 @@ async function saveMail (roomID, newMails) {
       console.log(err)
     }
 
-    // メール保存用オブジェクト
-    let mailObj = {}
+    // メール保存用連想配列
+    let mailObj = []
 
-    // JSONをオブジェクトへ変換
+    // JSONを連想配列へ変換
     if (mailJSON !== '') {
       mailObj = JSON.parse(mailJSON)
     }
@@ -247,8 +247,17 @@ async function saveMail (roomID, newMails) {
       // 新規メールの追加
       mailObj[mail['UID']] = {
         'UID': mail['UID'],
-        'from': mail['from']['address'],
-        'subject': mail['title']
+        'from': {
+          'address': mail['from']['address']
+        },
+        'to': {
+          '0': {
+            'address': mail['to']['0']['address']
+          }
+        },
+        'xGMThreadId': mail['xGMThreadId'],
+        'date': mail['date'],
+        'title': mail['title']
       }
     }
 
@@ -266,5 +275,37 @@ async function saveMail (roomID, newMails) {
   })
 }
 
+// ローカルに保存されたメールを取得
+async function getLocalMail (roomID) {
+  return new Promise(resolve => {
+    // メールの保存先ディレクトリ
+    const mailDirectory = OS.homeDirectory() + OS.delimiterChar() + 'frankfrut' + OS.delimiterChar() + 'mailbox'
+    const mailJSONfile = mailDirectory + OS.delimiterChar() + roomID + '.json'
+
+    // 保存先ディレクトリの内容を取得
+    fs.readFile(mailJSONfile, 'utf8', function (err, mailJSON) {
+      // エラー処理
+      if (err) {
+        console.log(err)
+      }
+
+      console.log('JSONのままのやつ')
+      console.log(mailJSON)
+
+      // メール保存用オブジェクト
+      let mailObj = {}
+
+      // JSONをオブジェクトへ変換
+      if (mailJSON !== '') {
+        mailObj = JSON.parse(mailJSON)
+        console.log('パース')
+        console.log(mailObj)
+      }
+
+      return resolve(mailObj)
+    })
+  })
+}
+
 // エクスポート
-export default {mailReceive, mailReceiveUser, getMailText, disconnectServer, saveMail}
+export default {mailReceive, mailReceiveUser, getMailText, disconnectServer, saveLocalMail, getLocalMail}

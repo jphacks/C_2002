@@ -42,12 +42,14 @@
 </template>
 
 <script>
+  // モジュールをインポート
   import MailReceive from '../../utils/MailReceive'
   import OS from '../../utils/OS'
   import ContactsList from '../../utils/ContactsList'
-  // モジュールをインポート
+
   const fs = require('fs')
   const isWindows = process.platform === 'win32'
+
   // デフォルトの実行ディレクトリの確認
   const HOMEDIR =
     process.env[isWindows ? 'USERPROFILE' : 'HOME']
@@ -87,10 +89,14 @@
         console.log(numbers)
 
         // メールを取得
-        this.messages = await MailReceive.mailReceive(authData, numbers[numbers.length - 10])
+        console.log('サーバからのやつ')
+        console.log(await MailReceive.mailReceive(authData, numbers[numbers.length - 10]))
+
+        console.log('ローカルのやつ')
+        console.log(this.messages)
 
         // メールをJSONへ保存
-        await MailReceive.saveMail(this.targetUser.mail, this.messages)
+        await MailReceive.saveLocalMail(this.targetUser.mail, this.messages)
       },
       dateFormat (date, format = 'YYYY-MM-DD hh:mm:ss') {
         // パース
@@ -149,7 +155,16 @@
     mounted () {
       const delimiter = OS.delimiterChar()
       const self = this
-      // メール一覧の取得
+
+      // ローカルのメール一覧を取得
+      MailReceive.getLocalMail(this.targetUser.mail).then(mailObj => {
+        console.log('ローカルのやつ：')
+        console.log(mailObj)
+        // メールをオブジェクトへ格納
+        this.messages = mailObj
+      })
+
+      // サーバからメール一覧を取得
       fs.readFile(HOMEDIR + delimiter + 'frankfrut' + delimiter + 'data' + delimiter + 'userInformation.json', 'utf8', function (err, data) {
         // エラー処理
         if (err) {
