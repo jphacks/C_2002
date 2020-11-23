@@ -14,22 +14,25 @@ async function mkdir (fullPath) {
   // ディレクトリの作成
   for (let i = 0; i < directories.length; i++) {
     createPath += directories[i] + delimiter
-    console.log(createPath)
+    // ディレクトリが存在しない場合のみ作成
     if (!fs.existsSync(createPath)) {
       await fs.mkdir(createPath, (err) => {
         if (err) { throw err }
-        console.log('testディレクトリが作成されました')
+        console.log('mkdir : ' + createPath)
       })
     }
   }
 }
 
+// ファイル作成コマンド（存在しない場合のみ）
 async function touch (fullPath) {
   // ファイルが存在しない場合のみ処理
   if (!fs.existsSync(fullPath)) {
     // ファイルの作成
     fs.writeFile(fullPath, '', function (err) { // 下書き管理ファイル
-      if (err) { throw err }
+      if (err) {
+        console.log(err)
+      }
     })
   }
 }

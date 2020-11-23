@@ -7,6 +7,8 @@ const iconv = require('iconv')
 const fs = require('fs')
 const utf8 = require('utf8')
 const quotedPrintable = require('quoted-printable')
+
+// conv
 const conv = new iconv.Iconv('ISO-2022-JP', 'UTF-8')
 
 // メール受信関数
@@ -206,16 +208,16 @@ function disconnectServer (authData) {
 }
 
 // メール内容をローカルに保存
-function saveMail (roomID, newMail) {
+async function saveMail (roomID, newMails) {
   // メールの保存先ディレクトリ
-  const mailDirectory = OS.homeDirectory() + OS.delimiterChar() + 'mailbox'
+  const mailDirectory = OS.homeDirectory() + OS.delimiterChar() + 'frankfrut' + OS.delimiterChar() + 'mailbox'
   const mailJSONfile = mailDirectory + OS.delimiterChar() + roomID + '.json'
 
-  // 保存用ディレクトリの作成
-  FileAction.mkdir(mailDirectory)
+  // 保存用ディレクトリの作成（存在しない場合のみ）
+  await FileAction.mkdir(mailDirectory)
 
-  // 保存用ファイルの作成
-
+  // 保存用ファイルの作成（存在しない場合のみ）
+  await FileAction.touch(mailJSONfile)
 
   // 保存先ディレクトリの内容を取得
   fs.readFile(mailJSONfile, 'utf8', function (err, mailJSON) {
@@ -232,13 +234,26 @@ function saveMail (roomID, newMail) {
       mailObj = JSON.parse(mailJSON)
     }
 
-    // 新規メールの追加
-    mailObj[newMail['uid']] = {
-      'uid': newMail['uid'],
-      'from': newMail['from'],
-      'subject': newMail['subject'],
-      'body': newMail['body']
+    // メールをJSONへ保存
+    for (let mailUID in newMails) {
+      // メールを1件取得
+      const mail = newMails[mailUID]
+
+      // オブジェクトが存在する場合は何もしない
+      if (mail['UID'] in mailObj) {
+        continue
+      }
+
+      // 新規メールの追加
+      mailObj[mail['UID']] = {
+        'UID': mail['UID'],
+        'from': mail['from']['address'],
+        'subject': mail['title']
+      }
     }
+
+    console.log('mailObj :')
+    console.log(mailObj)
 
     // 上書保存
     const optionJson = { flag: 'w' }

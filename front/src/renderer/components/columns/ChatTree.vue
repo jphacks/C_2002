@@ -42,7 +42,7 @@
 </template>
 
 <script>
-  import MailReciver from '../../utils/MailReceive'
+  import MailReceive from '../../utils/MailReceive'
   import OS from '../../utils/OS'
   import ContactsList from '../../utils/ContactsList'
   // モジュールをインポート
@@ -75,15 +75,22 @@
       }
     },
     methods: {
-      async searchMail (authData, targetAddress) {
-        console.log(targetAddress)
-        const myNumbers = await MailReciver.mailReceiveUser(authData, authData['auth'].user)
-        const targetNumbers = await MailReciver.mailReceiveUser(authData, targetAddress)
-        const numbers = myNumbers.concat(targetNumbers)
+      async getRoomMail (authData, targetAddress) {
+        // 自身が送信したメールを取得
+        const sendMeNumbers = await MailReceive.mailReceiveUser(authData, authData['auth'].user)
+
+        // メール相手が送信したメールを取得
+        const targetNumbers = await MailReceive.mailReceiveUser(authData, targetAddress)
+
+        // 送受信メールを結合
+        const numbers = sendMeNumbers.concat(targetNumbers)
         console.log(numbers)
 
         // メールを取得
-        this.messages = await MailReciver.mailReceive(authData, numbers[numbers.length - 10])
+        this.messages = await MailReceive.mailReceive(authData, numbers[numbers.length - 10])
+
+        // メールをJSONへ保存
+        await MailReceive.saveMail(this.targetUser.mail, this.messages)
       },
       dateFormat (date, format = 'YYYY-MM-DD hh:mm:ss') {
         // パース
@@ -107,11 +114,11 @@
         console.log(mailData)
         this.$emit('getMailData', mailData)
       },
-      editName () {
+      editName () { // 名前編集の切り替え
         this.nameEdit.prev = this.targetUser.name
         this.nameEdit.flg = false
       },
-      saveName () {
+      saveName () { // 連絡先名変更
         const self = this
         this.nameEdit.flg = true
         if (this.nameEdit.prev !== this.targetUser.name) {
@@ -164,7 +171,7 @@
         }
 
         // メールを受信
-        self.searchMail(self.authData, self.targetUser.mail).then(function () {
+        self.getRoomMail(self.authData, self.targetUser.mail).then(function () {
           const chatLog = self.$refs.tree_frame
           if (!chatLog) return
           chatLog.scrollTop = chatLog.scrollHeight
