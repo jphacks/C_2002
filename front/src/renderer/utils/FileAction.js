@@ -4,10 +4,7 @@ const fs = require('fs')
 // ディレクトリ作成関数
 async function mkdir (fullPath) {
   // 区切り文字の指定
-  let delimiter = '/'
-  if (fullPath.indexOf('\\') > -1) {
-    delimiter = '\\'
-  }
+  let delimiter = OS.delimiterChar()
   console.log(fullPath)
 
   // 区切り文字
@@ -24,6 +21,16 @@ async function mkdir (fullPath) {
         console.log('testディレクトリが作成されました')
       })
     }
+  }
+}
+
+async function touch (fullPath) {
+  // ファイルが存在しない場合のみ処理
+  if (!fs.existsSync(fullPath)) {
+    // ファイルの作成
+    fs.writeFile(fullPath, '', function (err) { // 下書き管理ファイル
+      if (err) { throw err }
+    })
   }
 }
 
@@ -118,4 +125,4 @@ async function deleteLINE (fullPath, LINE) {
   })
 }
 
-export default { mkdir, deleteLINE, addLINE }
+export default { mkdir, deleteLINE, addLINE, touch }

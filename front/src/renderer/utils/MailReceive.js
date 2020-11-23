@@ -4,6 +4,7 @@ import OS from './OS'
 
 const inbox = require('inbox')
 const iconv = require('iconv')
+const fs = require('fs')
 const utf8 = require('utf8')
 const quotedPrintable = require('quoted-printable')
 const conv = new iconv.Iconv('ISO-2022-JP', 'UTF-8')
@@ -205,12 +206,49 @@ function disconnectServer (authData) {
 }
 
 // メール内容をローカルに保存
-function saveMail (userID) {
+function saveMail (roomID, newMail) {
   // メールの保存先ディレクトリ
-  const mailDirectory = OS.homeDirectory() + OS.delimiterChar() + 'mailbox' + OS.delimiterChar()
+  const mailDirectory = OS.homeDirectory() + OS.delimiterChar() + 'mailbox'
+  const mailJSONfile = mailDirectory + OS.delimiterChar() + roomID + '.json'
 
-  // 保存用ファイルの存在確認
+  // 保存用ディレクトリの作成
   FileAction.mkdir(mailDirectory)
+
+  // 保存用ファイルの作成
+
+
+  // 保存先ディレクトリの内容を取得
+  fs.readFile(mailJSONfile, 'utf8', function (err, mailJSON) {
+    // エラー処理
+    if (err) {
+      console.log(err)
+    }
+
+    // メール保存用オブジェクト
+    let mailObj = {}
+
+    // JSONをオブジェクトへ変換
+    if (mailJSON !== '') {
+      mailObj = JSON.parse(mailJSON)
+    }
+
+    // 新規メールの追加
+    mailObj[newMail['uid']] = {
+      'uid': newMail['uid'],
+      'from': newMail['from'],
+      'subject': newMail['subject'],
+      'body': newMail['body']
+    }
+
+    // 上書保存
+    const optionJson = { flag: 'w' }
+    const updateMailJSON = JSON.stringify(mailObj)
+    fs.writeFile(mailJSONfile, updateMailJSON, optionJson, function (err) {
+      if (err) {
+        console.log(err)
+      }
+    })
+  })
 }
 
 // エクスポート
