@@ -21,6 +21,22 @@
       </ul>
     </div>
 
+    <div class="number_sign" style="color: #0080ff">
+      <h2>{{ companies.length }}</h2>
+      companies
+    </div>
+    <div
+      class="name_list"
+      v-if="optionColumn.mode === 'wide'">
+      <ul>
+        <li
+          v-for="company in companies"
+          :key="company">
+          {{ company }}
+        </li>
+      </ul>
+    </div>
+
     <div class="number_sign" style="color: #ff7100">
       <h2>{{ Object.keys(files).length }}</h2>
       files
@@ -44,6 +60,7 @@
     name: 'Option',
     props: {
       people: [],
+      companies: [],
       files: {}
     },
     data () {

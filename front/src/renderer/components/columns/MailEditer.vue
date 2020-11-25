@@ -108,7 +108,8 @@
           ID: '',
           time: 4000
         },
-        people: []
+        people: [],
+        companies: []
       }
     },
     methods: {
@@ -324,6 +325,12 @@
               // 上書き
               self.people = res.data['people_name_list']
             }
+
+            // 会社・団体名が返ってきた場合
+            if (res.data['companies_name_list'].length) {
+              // 上書き
+              self.companies = res.data['companies_name_list']
+            }
           })
           .catch(err => {
             console.log(err)
@@ -482,6 +489,9 @@
       },
       people: function (newval, oldval) {
         this.$emit('joinPeople', newval)
+      },
+      companies: function (newval, oldval) {
+        this.$emit('joinCompanies', newval)
       }
     },
     mounted () {

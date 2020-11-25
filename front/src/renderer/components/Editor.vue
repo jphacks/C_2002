@@ -9,6 +9,7 @@
         @updateSubject="mailData.subject = $event"
         @proofread="proofreadMode = $event"
         @joinPeople="people = $event"
+        @joinCompanies="companies = $event"
         @attachFile="attachmentFile = $event"/>
     </div>
     <!-- リサイズバー -->
@@ -27,6 +28,7 @@
     <div id="editor_option_bar">
       <Option
         :people="people"
+        :companies="companies"
         :files="attachmentFile"
       ></Option>
     </div>
@@ -61,6 +63,7 @@
           subject: ''
         },
         people: [],
+        companies: [],
         attachmentFile: {}
       }
     },
