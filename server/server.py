@@ -85,15 +85,33 @@ def get_list_people_companies_time(sentence):
 
 # 人名をリストで返す関数
 def get_list_people(sentence):
-    response = gooAPI.entity(sentence=sentence)
-    people_name = list(set([people[0] for people in response['ne_list'] if people[1]=='PSN']))
+    text = sentence.split('\n')
+    print(text)
+    names = []
+    for char in text:
+        print(char)
+        if char == "":
+            continue
+        response = gooAPI.entity(sentence=char)
+        for people in response['ne_list']:
+            if people[1]=='PSN':
+                names.append(people[0])
+    people_name = list(names)
     # print(people_name)
     return sort_name(people_name)
 
 # 会社名をリストで返す関数
 def get_list_companies(sentence):
-    response = gooAPI.entity(sentence=sentence)
-    companies_name = list(set([company[0] for company in response['ne_list'] if company[1]=='ORG']))
+    text = sentence.split('\n')
+    names = []
+    for char in text:
+        if char == "":
+            continue
+        response = gooAPI.entity(sentence=char)
+        for company in response['ne_list']:
+            if company[1]=='ORG':
+                names.append(company[0])
+    companies_name = list(names)
     # print(companies_name)
     return sort_name(companies_name)
 
@@ -326,28 +344,26 @@ def post_companies():
 @app.route('/postnames', methods=['POST'])
 def post_names():
     json_post = request.get_json()
-    commit_id = json_post['commit_id']
     sentence = json_post['sentence']
 
     # 文章が空だった場合
     if sentence == '':
         # 全て結果をJSON形式にまとめて返す
         result = {
-            'commit_id': commit_id,
             'before_sentence': sentence,
             'people_name_list': [],
             'companies_name_list': []
         }
 
     else :
-        # 人名をリストで取得
-        people_name_list = get_list_people(sentence)
-        # 会社名をリストで取得
-        companies_name_list = get_list_companies(sentence)
+        with ThreadPoolExecutor(max_workers=2, thread_name_prefix="thread") as executor:
+            # 人名をリストで取得
+            people_name_list = executor.submit(get_list_people, sentence).result()
+            # 会社名をリストで取得
+            companies_name_list = executor.submit(get_list_companies, sentence).result()
         
         # 結果をJSON形式にまとめて返す
         result = {
-            'commit_id': commit_id,
             'before_sentence': sentence,
             'people_name_list': people_name_list,
             'companies_name_list': companies_name_list
@@ -494,7 +510,7 @@ def post_data():
         }
 
     else :
-        with ThreadPoolExecutor(max_workers=3, thread_name_prefix="thread") as executor:
+        with ThreadPoolExecutor(max_workers=2, thread_name_prefix="thread") as executor:
             # 人名と会社名,日時情報をリストで取得
             people_name_list, companies_name_list, time_list = executor.submit(get_list_people_companies_time, sentence).result()
             # 校正支援をリストで取得
