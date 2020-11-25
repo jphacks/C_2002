@@ -48,14 +48,15 @@
       v-if="optionColumn.mode === 'wide'">
       <ul>
         <li
-          v-for="file in files"
-          :key="file['name']"
+          v-for="(file, index) in files"
+          :key="index"
           title="ファイルを開く"
           @click="openFile(file['path'])">
           {{ file['name'] }}
           <span
             class="remove_file"
-            title="ファイルを削除">
+            title="ファイルを削除"
+            @click.stop="removeFile(index)">
           </span>
         </li>
       </ul>
@@ -121,6 +122,11 @@
         } else {
           this.exe('open ' + path, OS.homeDirectory())
         }
+      },
+      removeFile (fileKey) {
+        // 添付ファイルの削除
+        delete this.files[fileKey]
+        console.log(this.files)
       },
       exe (command, pwd = OS.homeDirectory()) { // コマンド実行関数
         console.log('実行コマンド：' + command)
