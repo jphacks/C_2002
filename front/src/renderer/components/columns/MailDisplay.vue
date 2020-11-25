@@ -14,6 +14,12 @@
       v-model="mailBody"
       readonly>
     </textarea>
+
+    <div
+      id="reply_button"
+      @click="sendReply"
+      title="返信">
+    </div>
   </div>
 </template>
 
@@ -31,6 +37,26 @@
       }
     },
     methods: {
+      sendReply () {
+        console.log('sendUser')
+        console.log(this.sendUser)
+
+        let replySubject = this.subject
+
+        console.log('replySubject.indexOf(\'Re:\')')
+        console.log(replySubject.indexOf('Re:'))
+        if (replySubject.indexOf('Re:') !== 0) {
+          replySubject = 'Re:' + replySubject
+        }
+
+        this.$router.push({
+          name: 'editor',
+          query: {
+            subject: replySubject,
+            address: this.sendUser.mail
+          }
+        })
+      }
     },
     watch: {
     },
@@ -74,6 +100,33 @@
     color: #ffffff;
     &:focus{
       outline: none;
+    }
+  }
+
+  // 返信ボタン
+  #reply_button{
+    position: absolute;
+    z-index: 100;
+    bottom: 30px;
+    right: 30px;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    border-radius: 60px;
+    cursor: pointer;
+    // 背景
+    background-color: #ff3c41;
+    background-image:  url('../../assets/img/reply.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 30px;
+    // アニメーション
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all  0.3s ease;
+    &:hover{
+      opacity: .7;
     }
   }
 </style>

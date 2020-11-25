@@ -82,7 +82,8 @@
         target: '',
         update: '',
         timestamp: 0
-      }
+      },
+      initParam: {}
     },
     data () {
       return {
@@ -438,6 +439,13 @@
     },
     watch: {
       'mailData.subject': function (val, oldVal) {
+        // 初期パラメータが存在する場合タイトルの校正はしない
+        if ('subject' in this.initParam) {
+          this.mailData.resultSubject = this.mailData.subject
+          this.$emit('updateSubject', this.mailData.subject)
+          return
+        }
+
         // APIのURL
         const API = 'http://54.64.167.36:5000/postchange'
         const self = this
@@ -502,10 +510,14 @@
       // 改行コードの設定
       this.breakChar = OS.breakChar()
 
-      console.log('draft in Editor : ' + this.draftID)
-
       // 下書きの取得
       this.getDraft()
+
+      // 初期パラメータが存在する場合は設定
+      if ('subject' in this.initParam) {
+        this.mailData.subject = this.initParam.subject
+        this.mailData.destination = this.initParam.address
+      }
 
       // 連絡先の取得
       const self = this

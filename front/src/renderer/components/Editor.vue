@@ -6,6 +6,7 @@
         v-if="draftID"
         :draftID="draftID"
         :replace="replace"
+        :initParam="initParam"
         @updateBody="mailData.body = $event"
         @updateSubject="mailData.subject = $event"
         @proofread="proofreadMode = $event"
@@ -67,7 +68,8 @@
         replace: {},
         people: [],
         companies: [],
-        attachmentFile: {}
+        attachmentFile: {},
+        initParam: {}
       }
     },
     methods: {
@@ -137,6 +139,11 @@
       }
     },
     mounted () {
+      // クエリパラメータの有無を確認
+      if ('subject' in this.$route.query) {
+        console.log(this.$route.query)
+        this.initParam = this.$route.query
+      }
       // 新規下書きの作成
       this.draftInit()
     }
