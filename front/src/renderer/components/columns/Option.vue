@@ -49,8 +49,14 @@
       <ul>
         <li
           v-for="file in files"
-          :key="file['name']">
+          :key="file['name']"
+          title="ファイルを開く"
+          @click="openFile(file['path'])">
           {{ file['name'] }}
+          <span
+            class="remove_file"
+            title="ファイルを削除">
+          </span>
         </li>
       </ul>
     </div>
@@ -66,6 +72,9 @@
 </template>
 
 <script>
+  import OS from '../../utils/OS'
+  const childProcess = require('child_process')
+
   export default {
     name: 'Option',
     props: {
@@ -104,6 +113,26 @@
           update: this.replace.update,
           timestamp: new Date()
         })
+      },
+      openFile (path) {
+        // OS毎に処理を変更
+        if (OS.isWindows()) {
+          this.exe('start ' + path, OS.homeDirectory())
+        } else {
+          this.exe('open ' + path, OS.homeDirectory())
+        }
+      },
+      exe (command, pwd = OS.homeDirectory()) { // コマンド実行関数
+        console.log('実行コマンド：' + command)
+        console.log('実行ディレクトリ：' + pwd)
+
+        // 実行部分 https://nodejs.org/api/childProcess.html
+        const child = childProcess.exec(command, {
+          cwd: pwd, // 子プロセスの現在の作業ディレクトリ（デフォルト：null）
+          shell: true // コマンドを実行するシェル（デフォルト： [Unix]/bin/sh [Windows]process.env.ComSpec）
+        })
+
+        return child
       }
     }
   }
@@ -147,6 +176,7 @@
       word-break: break-all;
       background: #777777;
       border-radius: 10px;
+      font-size: 15px;
       cursor: pointer;
 
       -webkit-transition: all 0.3s ease;
@@ -157,6 +187,27 @@
       &:hover{
         opacity: .7;
       }
+    }
+  }
+
+  // 添付ファイル削除ボタン
+  .remove_file{
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    vertical-align: middle;
+    background-image:  url('../../assets/img/removeFile.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all  0.3s ease;
+
+    &:hover{
+      background-image:  url('../../assets/img/removeFileActive.png');
     }
   }
 

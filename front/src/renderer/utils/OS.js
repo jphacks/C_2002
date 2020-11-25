@@ -1,10 +1,10 @@
 // Windowsか確認
-const isWindows = process.platform === 'win32'
+const isWindowsOS = process.platform === 'win32'
 
 // 改行文字関数
 function breakChar () {
   let delimiter
-  if (isWindows) {
+  if (isWindowsOS) {
     delimiter = '\n'
   } else {
     delimiter = '\n'
@@ -15,7 +15,7 @@ function breakChar () {
 // 区切り文字
 function delimiterChar () {
   let delimiter
-  if (isWindows) {
+  if (isWindowsOS) {
     delimiter = '\\'
   } else {
     delimiter = '/'
@@ -26,8 +26,12 @@ function delimiterChar () {
 // ホームディレクトリの取得
 function homeDirectory () {
   // デフォルトの実行ディレクトリの確認
-  return process.env[isWindows ? 'USERPROFILE' : 'HOME']
+  return process.env[isWindowsOS ? 'USERPROFILE' : 'HOME']
+}
+
+function isWindows () {
+  return isWindows
 }
 
 // エクスポート
-export default { breakChar, delimiterChar, homeDirectory }
+export default { breakChar, delimiterChar, homeDirectory, isWindows }

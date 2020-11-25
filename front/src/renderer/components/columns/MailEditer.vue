@@ -489,6 +489,8 @@
         )
       },
       'attachmentFile.count': function (newval, oldval) {
+        console.log('FILE DATA')
+        console.log(this.attachmentFile.data)
         this.$emit('attachFile', this.attachmentFile.data)
       },
       'replace.timestamp': function (newval, oldval) {
@@ -698,10 +700,5 @@
         }
       }
     }
-  }
-
-  // 添付ファイル一覧
-  #attach_list{
-
   }
 </style>
