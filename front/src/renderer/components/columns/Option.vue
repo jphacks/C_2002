@@ -184,8 +184,8 @@
     button{
       display: block;
       width: 80px;
-      height: 30px;
-      margin: 2px calc(200px - 80px);
+      height: 28px;
+      margin: 4px calc((200px - 80px) / 2) 10px;
       background: #ff4441;
       border-radius: 30px;
       color: #ffffff;
