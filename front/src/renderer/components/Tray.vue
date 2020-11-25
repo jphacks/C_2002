@@ -13,7 +13,7 @@
     <div id="resize_bar"></div>
     <!-- 右側 -->
     <div id="tree_frame__right">
-      <Preview
+      <MailDisplay
         :subject="mailData.title"
         :mailBody="mailText"
         :sendUser="$route.query['userData']"
@@ -27,7 +27,7 @@
 <script>
   import MailReceive from '../utils/MailReceive'
   import ChatTree from './columns/ChatTree'
-  import Preview from './columns/Preview'
+  import MailDisplay from './columns/MailDisplay'
   import OS from '../utils/OS'
   import Start from './Start'
 
@@ -44,7 +44,7 @@
     components: {
       Start,
       ChatTree,
-      Preview
+      MailDisplay
     },
     props: {
       users: {},

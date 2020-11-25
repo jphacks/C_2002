@@ -1,10 +1,7 @@
 <template>
   <div id="preview">
 
-    <div class="upbar_list" v-if="sendUser">
-      差出人：{{ sendUser.name }}
-    </div>
-    <div class="upbar_list" v-else>
+    <div class="upbar_list">
       UPDATED {{ updated }}
     </div>
 
@@ -14,8 +11,7 @@
 
     <textarea
       id="main_message"
-      v-model="mailBody"
-      v-bind:readonly="sendUser">
+      v-model="mailBody">
     </textarea>
   </div>
 </template>
