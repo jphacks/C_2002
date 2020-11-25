@@ -95,7 +95,8 @@ def get_list_people(sentence):
         response = gooAPI.entity(sentence=char)
         for people in response['ne_list']:
             if people[1]=='PSN':
-                names.append(people[0])
+                if people[0] not in names:
+                    names.append(people[0])
     people_name = list(names)
     # print(people_name)
     return sort_name(people_name)
@@ -110,7 +111,8 @@ def get_list_companies(sentence):
         response = gooAPI.entity(sentence=char)
         for company in response['ne_list']:
             if company[1]=='ORG':
-                names.append(company[0])
+                if company[0] not in names:
+                    names.append(company[0])
     companies_name = list(names)
     # print(companies_name)
     return sort_name(companies_name)
