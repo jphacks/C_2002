@@ -156,16 +156,7 @@
               HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName,
               Number(key),
               res.data['change_sentence']
-            ).then(self.updatePreview)
-
-            // 人物が返ってきた場合
-            if (res.data['people_name_list'].length) {
-              Object.keys(res.data['people_name_list']).forEach(function (key) {
-                if (self.people.indexOf(res.data['people_name_list'][key]) === -1) {
-                  self.people.push(res.data['people_name_list'][key])
-                }
-              })
-            }
+            )
           })
           .catch(err => {
             console.log(err)
@@ -204,10 +195,14 @@
             self.convertHonorific(diffObj['commit_id'], diffObj.add[key], key)
           }
         })
+
+        // 人物一覧の取得
+        this.updateNumbers(diffObj['commit_id'], this.mailData.body)
+
         // プレビューの更新
         this.updatePreview()
       },
-      async bodyEnterAction () {
+      async bodyEnterAction () { // Enterキーが押されたときの処理
         const regexp = new RegExp(this.breakChar + '(.*?)', 'g')
         if (this.mailData.bodyLength + 1 < this.mailData.body.length) {
           if (this.mailData.bodyLINE !== (this.mailData.body.match(regexp) || []).length) {
@@ -227,6 +222,9 @@
                 self.convertHonorific(diffObj['commit_id'], diffObj.add[key], key)
               }
             })
+
+            // 人物一覧の取得
+            this.updateNumbers(diffObj['commit_id'], this.mailData.body)
           }
         } else {
           // 作業ディレクトリの定義
@@ -250,7 +248,7 @@
         // プレビューの更新
         this.updatePreview()
       },
-      async bodyDeleteAction () {
+      async bodyDeleteAction () { // デリートキーが押されたときの処理
         const regexp = new RegExp(this.breakChar + '(.*?)', 'g')
         const breakPoints = (this.mailData.body.match(regexp) || []).length
 
@@ -284,6 +282,9 @@
               self.convertHonorific(diffObj['commit_id'], diffObj.add[key], key)
             }
           })
+
+          // 人物一覧の取得
+          this.updateNumbers(diffObj['commit_id'], this.mailData.body)
         }
 
         // プレビューの更新
@@ -303,6 +304,33 @@
           // 親コンポーネントへ渡す
           self.$emit('updateBody', self.mailData.resultBody)
         })
+      },
+      updateNumbers (commitID, mailBody) { // 数値データのアップデート
+        const API = 'http://54.64.167.36:5000/postnames'
+        // 送信用のJSONの作成
+        const sendJSON = {'commit_id': commitID, 'sentence': mailBody}
+        const self = this
+        // APIへPOST
+        axios.post(API, sendJSON, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then((res) => {
+            // レスポンスが200の時の処理
+            console.log(res)
+            // 人物が返ってきた場合
+            if (res.data['people_name_list'].length) {
+              // 上書き
+              self.people = res.data['people_name_list']
+            }
+          })
+          .catch(err => {
+            console.log(err)
+            if (err.response) {
+              // レスポンスが200以外の時の処理
+            }
+          })
       },
       sendMail () { // メール送信処理
         const self = this
