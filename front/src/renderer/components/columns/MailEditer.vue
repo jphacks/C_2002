@@ -77,7 +77,12 @@
   export default {
     name: 'MailEditer',
     props: {
-      draftID: ''
+      draftID: '',
+      replace: {
+        target: '',
+        update: '',
+        timestamp: 0
+      }
     },
     data () {
       return {
@@ -477,12 +482,14 @@
       },
       'attachmentFile.count': function (newval, oldval) {
         this.$emit('attachFile', this.attachmentFile.data)
-        console.log('new file val : ')
-        console.log(this.attachmentFile.data)
+      },
+      'replace.timestamp': function (newval, oldval) {
+        while (this.mailData.body.indexOf(this.replace.target) !== -1) {
+          this.mailData.body = this.mailData.body.replace(this.replace.target, this.replace.update)
+        }
       },
       proofread: function (newval, oldval) {
         this.$emit('proofread', newval)
-        console.log(newval)
       },
       people: function (newval, oldval) {
         this.$emit('joinPeople', newval)

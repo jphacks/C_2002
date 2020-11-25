@@ -5,6 +5,7 @@
       <MailEditer
         v-if="draftID"
         :draftID="draftID"
+        :replace="replace"
         @updateBody="mailData.body = $event"
         @updateSubject="mailData.subject = $event"
         @proofread="proofreadMode = $event"
@@ -30,6 +31,7 @@
         :people="people"
         :companies="companies"
         :files="attachmentFile"
+        @replaceText="replace = $event"
       ></Option>
     </div>
   </div>
@@ -62,6 +64,7 @@
           body: '',
           subject: ''
         },
+        replace: {},
         people: [],
         companies: [],
         attachmentFile: {}

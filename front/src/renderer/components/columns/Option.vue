@@ -15,6 +15,7 @@
       <ul>
         <li
           v-for="person in people"
+          @click="replaceSet(person)"
           :key="person">
           {{ person }}
         </li>
@@ -31,6 +32,7 @@
       <ul>
         <li
           v-for="company in companies"
+          @click="replaceSet(company)"
           :key="company">
           {{ company }}
         </li>
@@ -52,6 +54,14 @@
         </li>
       </ul>
     </div>
+
+    <div
+      id="replace_area"
+      v-if="optionColumn.mode === 'wide'">
+      <input type="text" v-model="replace.target" placeholder="">
+      <input type="text" v-model="replace.update" placeholder="">
+      <button @click="replaceExe">置換</button>
+    </div>
   </div>
 </template>
 
@@ -68,6 +78,10 @@
         optionColumn: {
           width: 60,
           mode: 'narrow'
+        },
+        replace: {
+          target: '',
+          update: ''
         }
       }
     },
@@ -79,6 +93,17 @@
       optionMouseLeave () {
         this.optionColumn.width = 60
         this.optionColumn.mode = 'narrow'
+      },
+      replaceSet (targetText) {
+        this.replace.target = targetText
+      },
+      replaceExe () {
+        // 置換
+        this.$emit('replaceText', {
+          target: this.replace.target,
+          update: this.replace.update,
+          timestamp: new Date()
+        })
       }
     }
   }
@@ -122,6 +147,60 @@
       word-break: break-all;
       background: #777777;
       border-radius: 10px;
+      cursor: pointer;
+
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all  0.3s ease;
+
+      &:hover{
+        opacity: .7;
+      }
+    }
+  }
+
+  // 置換部分
+  #replace_area{
+    position: absolute;
+    width: 100%;
+    right: 0;
+    bottom: 0;
+
+    input[type="text"]{
+      display: block;
+      width: 86%;
+      height: 30px;
+      margin: 4px 5%;
+      padding: 0 2%;
+      background: #444444;
+      outline: none;
+      border: solid 1px #aaaaaa;
+      border-radius: 3px;
+      color: #ffffff;
+      font-size: 15px;
+    }
+
+    button{
+      display: block;
+      width: 80px;
+      height: 30px;
+      margin: 2px calc(200px - 80px);
+      background: #ff4441;
+      border-radius: 30px;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all  0.3s ease;
+
+      &:hover{
+        opacity: .7;
+      }
     }
   }
 </style>
