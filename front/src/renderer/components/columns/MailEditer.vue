@@ -139,7 +139,7 @@
         return diffObj
       },
       async convertHonorific (commitID, sentence, key) { // 校正処理
-        const API = 'http://54.64.167.36:5000/postdata'
+        const API = 'http://54.64.167.36:5000/postchange'
         // 送信用のJSONの作成
         const sendJSON = {'commit_id': commitID, 'sentence': sentence}
         const self = this
@@ -157,7 +157,7 @@
               HOMEDIR + self.draft.directory + self.draftID + self.draft.delimiter + self.draft.resultName,
               Number(key),
               res.data['change_sentence']
-            )
+            ).then(self.updatePreview)
           })
           .catch(err => {
             console.log(err)
@@ -197,9 +197,6 @@
           }
         })
 
-        // 人物一覧の取得
-        this.updateNumbers(diffObj['commit_id'], this.mailData.body)
-
         // プレビューの更新
         this.updatePreview()
       },
@@ -223,9 +220,6 @@
                 self.convertHonorific(diffObj['commit_id'], diffObj.add[key], key)
               }
             })
-
-            // 人物一覧の取得
-            this.updateNumbers(diffObj['commit_id'], this.mailData.body)
           }
         } else {
           // 作業ディレクトリの定義
@@ -283,9 +277,6 @@
               self.convertHonorific(diffObj['commit_id'], diffObj.add[key], key)
             }
           })
-
-          // 人物一覧の取得
-          this.updateNumbers(diffObj['commit_id'], this.mailData.body)
         }
 
         // プレビューの更新
@@ -293,6 +284,8 @@
       },
       updatePreview () {
         const self = this
+
+        // 校正結果の取得と反映
         fs.readFile(HOMEDIR + this.draft.directory + this.draftID + this.draft.delimiter + this.draft.resultName, 'utf8', function (err, data) {
           // エラー処理
           if (err) {
@@ -305,11 +298,15 @@
           // 親コンポーネントへ渡す
           self.$emit('updateBody', self.mailData.resultBody)
         })
+
+        // 人物一覧の取得
+        console.log('1')
+        this.updateNumbers(this.mailData.body)
       },
-      updateNumbers (commitID, mailBody) { // 数値データのアップデート
+      updateNumbers (mailBody) { // 数値データのアップデート
         const API = 'http://54.64.167.36:5000/postnames'
         // 送信用のJSONの作成
-        const sendJSON = {'commit_id': commitID, 'sentence': mailBody}
+        const sendJSON = {'sentence': mailBody}
         const self = this
         // APIへPOST
         axios.post(API, sendJSON, {
@@ -437,7 +434,7 @@
     watch: {
       'mailData.subject': function (val, oldVal) {
         // APIのURL
-        const API = 'http://54.64.167.36:5000/postdata'
+        const API = 'http://54.64.167.36:5000/postchange'
         const self = this
 
         // 件名が短いときはAPIを通さない
