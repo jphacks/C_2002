@@ -61,17 +61,26 @@
       </div>
     </div>
     <div class="mail_cliant_frame" v-else>
-      <h2>認証情報</h2>
-      <h3>メールアドレス</h3>
-      <input type="email" v-model="userObj['auth'].user">
-      <h3>パスワード</h3>
-      <input type="password" v-model="userObj['auth'].pass">
-
-      <h2>連絡先情報</h2>
-      <h3>氏 名</h3>
-      <input type="text" v-model="userObj['user'].name">
-      <h3>所属（学校 / 会社）</h3>
-      <input type="text" v-model="userObj['user'].affiliation">
+      <div id="info_frame">
+        <div id="auth_info">
+          <h2>認証情報</h2>
+          <h3>メールアドレス</h3>
+          <input type="email" v-model="userObj['auth'].user" required>
+          <h3>パスワード</h3>
+          <input type="password" v-model="userObj['auth'].pass" required>
+        </div>
+        <div id="contact_info">
+          <h2>連絡先情報</h2>
+          <h3>氏 名</h3>
+          <input type="text" v-model="userObj['user'].name" required>
+          <h3>所属（学校 / 会社）</h3>
+          <input type="text" v-model="userObj['user'].affiliation">
+          <h3>電話番号</h3>
+          <input type="tel" v-model="userObj['user'].telephone">
+          <h3>共有URL</h3>
+          <input type="url" v-model="userObj['user'].url">
+        </div>
+      </div>
       <div class="btn" @click="updateUser">
         登録
       </div>
@@ -118,7 +127,9 @@
           },
           user: {
             name: '',
-            affiliation: ''
+            affiliation: '',
+            telephone: '',
+            url: ''
           },
           auth: {
             user: '',
@@ -245,7 +256,14 @@
     width: 100%;
     height: 100vh;
     overflow-y: scroll;
-
+    #info_frame{
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: center;
+      width: 100%;
+      height: 80%;
+    }
     h2{
       text-align: center;
       color: #ffffff;
@@ -284,7 +302,7 @@
     }
 
     // 入力フォームスタイル
-    input[type="text"], input[type="email"], input[type="password"]{
+    input[type="text"], input[type="email"], input[type="password"], input[type="tel"], input[type="url"]{
       // リセット
       background: none;
       outline: none;
