@@ -32,6 +32,7 @@
 
     <div id="editor__body">
       <VueComplete
+        :inputValue="mailData.body"
         @bodyEnterAction="bodyEnterAction"
         @bodyDeleteAction="bodyDeleteAction"
         @sendMail="sendMail"

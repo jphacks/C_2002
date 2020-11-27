@@ -39,11 +39,11 @@
 
   export default {
     name: 'Test',
+    props: {
+      inputValue: ''
+    },
     data () {
       return {
-        id: 'input-' + parseInt(Math.random() * 1000),
-        // 現時点では使用していない👆
-        inputValue: '',
         searchMatch: [],
         selectedIndex: 0,
         clickedChooseItem: false,
@@ -73,7 +73,7 @@
       currentWord () {
         let segmenter = new TinySegmenter.TinySegmenter()
         // this.inputValue:textareaに入ってる文字全て（全角英字も）
-        let morphList = segmenter.segment(this.inputValue.replace(/[Ａ-ｚ]/gm, '').split(/[。]/gm)[this.wordIndex])
+        let morphList = segmenter.segment(this.inputValue.substr(0, this.$refs.input.selectionStart).replace(/[Ａ-ｚ]/gm, '').split(/[。]/gm)[this.wordIndex])
         // wordIndex:句読点で区切った中で、一番後ろの要素
         let wordBeforeConversion = morphList.slice(-1)[0]
         // wordBeforeConversion:"おせ"
@@ -84,7 +84,7 @@
       }
     },
     watch: {
-      inputValue () { // 入力内容が変化した場合
+      'inputValue': function () { // 入力内容が変化した場合
         // 親コンポーネントに内容を渡す
         this.$emit('value', this.inputValue)
         this.focus()
@@ -136,15 +136,30 @@
         this.chooseItem()
       },
       chooseItem (e) {
+        let caretPosition = this.$refs.input.selectionStart
+        const prevInputValue = this.inputValue.length
         this.clickedChooseItem = true
         if (this.selectedIndex !== -1 && this.searchMatch.length > 0) {
           // 選択された候補を反映
           this.setWord(this.searchMatch[this.selectedIndex])
           this.selectedIndex = -1
-        } else if (e.key === 'Enter') {
-          const caretPosition = this.$refs.input.selectionStart
+          const inputValue = this.inputValue
+          caretPosition += (inputValue.length - prevInputValue - 1)
+        } else if (e.key === 'Enter') { // エンターキーが押されたものの選択されていなかった時
           this.inputValue = this.inputValue.substr(0, caretPosition) + '\n' + this.inputValue.substr(caretPosition)
         }
+
+        console.log('caretPosition + 1 : ')
+        console.log(caretPosition + 1)
+
+        // キャレットを改行後の位置へ移動
+        const self = this
+        setTimeout(
+          function () {
+            self.$refs.input.setSelectionRange(caretPosition + 1, caretPosition + 1)
+          },
+          4
+        )
       },
       focusout (e) {
         setTimeout(() => {
@@ -172,26 +187,21 @@
       },
       getCaret () {
         const input = this.$refs.input
+        const inputValueSlice = this.inputValue(0, input.selectionStart)
 
         // 2行以上の場合
-        if (this.inputValue.indexOf('\n') > -1) {
+        if (inputValueSlice.indexOf('\n') > -1) {
           let prevPosition = 0
           let cnt
           // 改行数を求める
           for (cnt = 0; ; cnt++) {
-            const position = this.inputValue.indexOf('\n', prevPosition + 1)
-            console.log('position :')
-            console.log(position)
-            if (position > input.selectionStart) {
-              this.caretPosition.x = (input.selectionStart - prevPosition - 1) * this.font.size + this.font.size
-              this.caretPosition.y = cnt * this.font.lineheight
-              break
-            } else if (position === -1) {
+            const position = inputValueSlice.indexOf('\n', prevPosition + 1)
+            if (position + prevPosition >= input.selectionStart || position === -1) { // キャレットの行に到着したときの処理 || 改行文字がもう存在しないとき（末尾行）
               this.caretPosition.x = (input.selectionStart - prevPosition - 1) * this.font.size + this.font.size
               this.caretPosition.y = cnt * this.font.lineheight
               break
             }
-            // else if (position === this.inputValue.length) { break }
+            // 基準となる位置を変更
             prevPosition += position
           }
         } else {
