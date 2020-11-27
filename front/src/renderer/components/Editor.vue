@@ -7,6 +7,7 @@
         :draftID="draftID"
         :replace="replace"
         :initParam="initParam"
+        :header="header"
         :attachFileUpdate="attachmentFile"
         @updateBody="mailData.body = $event"
         @updateSubject="mailData.subject = $event"
@@ -71,7 +72,15 @@
         people: [],
         companies: [],
         attachmentFile: {},
-        initParam: {}
+        initParam: {},
+        header: {
+          subject: {
+            original: '',
+            result: ''
+          },
+          destination: '',
+          attachmentFile: {}
+        }
       }
     },
     methods: {
@@ -83,6 +92,7 @@
         // 各ファイルの命名
         const draftFile = 'draft.txt'
         const resultFile = 'result.txt'
+        const headerFile = 'header.txt'
         console.log('draftID' + this.draftID)
 
         // 下書きごとのIDはUNIX時間を指定
@@ -98,14 +108,19 @@
 
         const initText = '\n\n' + await this.createSign()
 
+        const ignoreTarget = resultFile + '\n' + headerFile
+
         // ファイルの作成
         fs.writeFile(targetDirectory + draftFile, initText, function (err) { // 下書き管理ファイル
           if (err) { throw err }
         })
-        fs.writeFile(targetDirectory + '.gitignore', resultFile, function (err) { // gitignore
+        fs.writeFile(targetDirectory + '.gitignore', ignoreTarget, function (err) { // gitignore
           if (err) { throw err }
         })
         fs.writeFile(targetDirectory + resultFile, initText, function (err) { // 結果保存ファイル
+          if (err) { throw err }
+        })
+        fs.writeFile(targetDirectory + headerFile, JSON.stringify(this.header), function (err) { // 結果保存ファイル
           if (err) { throw err }
         })
 

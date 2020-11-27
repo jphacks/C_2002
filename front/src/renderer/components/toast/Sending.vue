@@ -56,6 +56,10 @@
     },
     mounted () {
       const self = this
+
+      // draftIDの上書き
+      this.draftID = this.sendParam.draftID
+
       // 500mSecごとの処理を追加
       this.intervalInstance = setInterval(
         function () {

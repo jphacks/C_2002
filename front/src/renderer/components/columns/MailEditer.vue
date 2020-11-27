@@ -403,7 +403,8 @@
               userData: self.addressList[self.mailData.destination],
               mailData: mailData,
               authData: authData['smtp'],
-              timestamp: new Date()
+              timestamp: new Date(),
+              draftID: self.draftID
             }})
         })
       },
@@ -442,14 +443,61 @@
           // 代入
           self.mailData.body = draftText
         })
+
+        // 下書きヘッダファイルの取得
+        fs.readFile(draftDirectory + OS.delimiterChar() + 'header.txt', 'utf8', function (err, headerJSON) {
+          if (err) {
+            console.log(err)
+            setTimeout(
+              self.getDraft,
+              200
+            )
+          }
+
+          // JSONからオブジェクトへ変換
+          const headerObj = JSON.parse(headerJSON)
+
+          // 値を設定
+          self.mailData.subject = headerObj.subject.original
+          self.mailData.resultSubject = headerObj.subject.result
+          self.attachmentFile = headerObj.attachmentFile
+          self.mailData.destination = headerObj.destination
+          self.$emit('updateSubject', self.mailData.resultSubject)
+        })
+      },
+      updateHeader () {
+        // 下書きのディレクトリを定義
+        const draftDirectory = HOMEDIR + this.draft.directory + this.draftID
+
+        // オブジェクトに格納
+        const headerObj = {
+          subject: {
+            original: this.mailData.subject,
+            result: this.mailData.resultSubject
+          },
+          attachmentFile: this.attachmentFile,
+          destination: this.mailData.destination
+        }
+
+        // オブジェクトからJSONへ変更
+        const headerJSON = JSON.stringify(headerObj)
+
+        // ファイルの上書
+        const optionJson = { flag: 'w' }
+        fs.writeFile(draftDirectory + OS.delimiterChar() + 'header.txt', headerJSON, optionJson, function (err) {
+          if (err) {
+            console.log(err)
+          }
+        })
       }
     },
     watch: {
-      'mailData.subject': function (val, oldVal) {
+      'mailData.subject': function (newval, oldval) {
         // 初期パラメータが存在する場合タイトルの校正はしない
         if ('subject' in this.initParam) {
           this.mailData.resultSubject = this.mailData.subject
           this.$emit('updateSubject', this.mailData.subject)
+          this.updateHeader()
           return
         }
 
@@ -473,6 +521,7 @@
               console.log(res)
               self.mailData.resultSubject = res.data['change_sentence']
               self.$emit('updateSubject', res.data['change_sentence'])
+              self.updateHeader()
             })
             .catch(err => {
               console.log(err)
@@ -482,7 +531,10 @@
             })
         }
       },
-      'mailData.body': function (val, oldval) {
+      'mailData.destination': function (newval, oldval) {
+        this.updateHeader()
+      },
+      'mailData.body': function (newval, oldval) {
         // タイムアウトの停止
         clearTimeout(this.userCtrCheck.ID)
 
@@ -496,9 +548,8 @@
         )
       },
       'attachmentFile.count': function (newval, oldval) {
-        console.log('FILE DATA')
-        console.log(this.attachmentFile)
         this.$emit('attachFile', this.attachmentFile)
+        this.updateHeader()
       },
       'replace.timestamp': function (newval, oldval) {
         while (this.mailData.body.indexOf(this.replace.target) !== -1) {
@@ -507,6 +558,7 @@
       },
       'attachFileUpdate.count': function (newval, oldval) {
         this.attachmentFile = this.attachFileUpdate
+        this.updateHeader()
       },
       proofread: function (newval, oldval) {
         this.$emit('proofread', newval)
