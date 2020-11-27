@@ -12,8 +12,7 @@
         @updateBody="mailData.body = $event"
         @updateSubject="mailData.subject = $event"
         @proofread="proofreadMode = $event"
-        @joinPeople="people = $event"
-        @joinCompanies="companies = $event"
+        @updateNounList="nounList = $event"
         @attachFile="attachmentFile = $event"/>
     </div>
     <!-- リサイズバー -->
@@ -31,8 +30,7 @@
     </div>
     <div id="editor_option_bar">
       <Option
-        :people="people"
-        :companies="companies"
+        :nounList="nounList"
         :files="attachmentFile"
         @replaceText="replace = $event"
         @fileUpdate="attachmentFile = $event"
@@ -69,9 +67,14 @@
           subject: ''
         },
         replace: {},
-        people: [],
-        companies: [],
-        attachmentFile: {},
+        nounList: {
+          people: [],
+          companies: []
+        },
+        attachmentFile: {
+          data: {},
+          count: 0
+        },
         initParam: {},
         header: {
           subject: {
@@ -79,7 +82,10 @@
             result: ''
           },
           destination: '',
-          attachmentFile: {}
+          attachmentFile: {
+            data: {},
+            count: 0
+          }
         }
       }
     },

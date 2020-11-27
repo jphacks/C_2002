@@ -114,8 +114,10 @@
           ID: '',
           time: 4000
         },
-        people: [],
-        companies: []
+        nounList: {
+          people: [],
+          companies: []
+        }
       }
     },
     methods: {
@@ -325,14 +327,12 @@
             console.log(res)
             // 人物が返ってきた場合
             if (res.data['people_name_list'].length) {
-              // 上書き
-              self.people = res.data['people_name_list']
+              self.nounList.people = res.data['people_name_list']
             }
 
             // 会社・団体名が返ってきた場合
             if (res.data['companies_name_list'].length) {
-              // 上書き
-              self.companies = res.data['companies_name_list']
+              self.nounList.companies = res.data['companies_name_list']
             }
           })
           .catch(err => {
@@ -353,7 +353,7 @@
           }
           const userData = JSON.parse(data)
 
-          // 公正を渡すか分岐
+          // 校正を渡すか分岐
           let sendText = ''
           let sendSubject = ''
           if (self.proofread) {
@@ -409,9 +409,14 @@
         })
       },
       addFile (event) {
+        console.log('File Event')
+        console.log(event)
         // 添付ファイル追加処理
         const files = event.target.files || event.dataTransfer.files
 
+        console.log(files)
+        console.log('this.attachmentFile')
+        console.log(this.attachmentFile)
         // ファイル情報を格納
         this.attachmentFile.data[this.attachmentFile.count] = {
           name: files[0].name,
@@ -422,6 +427,7 @@
 
         // ファイル数をカウント
         this.attachmentFile.count++
+        console.log(this.attachmentFile)
 
         // デバッグ用出力
         console.log(files)
@@ -548,6 +554,7 @@
         )
       },
       'attachmentFile.count': function (newval, oldval) {
+        console.log(this.attachmentFile)
         this.$emit('attachFile', this.attachmentFile)
         this.updateHeader()
       },
@@ -563,11 +570,11 @@
       proofread: function (newval, oldval) {
         this.$emit('proofread', newval)
       },
-      people: function (newval, oldval) {
-        this.$emit('joinPeople', newval)
+      'nounList.people': function (newval, oldval) {
+        this.$emit('updateNounList', this.nounList)
       },
-      companies: function (newval, oldval) {
-        this.$emit('joinCompanies', newval)
+      'nounList.companies': function (newval, oldval) {
+        this.$emit('updateNounList', this.nounList)
       }
     },
     mounted () {

@@ -145,6 +145,10 @@
     mounted () {
       const self = this
 
+      const testArray = ['test1', 'test2']
+      console.log('testArray')
+      console.log(testArray)
+
       console.log('mounted')
       // ユーザ認証情報が存在しない場合は setting.vue へ遷移
       if (AuthFile.checkAuthJSON()) {

@@ -6,7 +6,7 @@
     :style="'width: ' + optionColumn.width + 'px'">
 
     <div class="number_sign" style="color: #ff3c41">
-      <h2>{{ people.length }}</h2>
+      <h2>{{ nounList.people.length }}</h2>
       people
     </div>
     <div
@@ -14,7 +14,7 @@
       v-if="optionColumn.mode === 'wide'">
       <ul>
         <li
-          v-for="person in people"
+          v-for="person in nounList.people"
           @click="replaceSet(person)"
           :key="person">
           {{ person }}
@@ -23,7 +23,7 @@
     </div>
 
     <div class="number_sign" style="color: #0080ff">
-      <h2>{{ companies.length }}</h2>
+      <h2>{{ nounList.companies.length }}</h2>
       companies
     </div>
     <div
@@ -31,7 +31,7 @@
       v-if="optionColumn.mode === 'wide'">
       <ul>
         <li
-          v-for="company in companies"
+          v-for="company in nounList.companies"
           @click="replaceSet(company)"
           :key="company">
           {{ company }}
@@ -39,8 +39,12 @@
       </ul>
     </div>
 
-    <div class="number_sign" style="color: #ff7100">
+    <div class="number_sign" style="color: #ff7100" v-if="'data' in files">
       <h2>{{ Object.keys(files.data).length }}</h2>
+      files
+    </div>
+    <div class="number_sign" style="color: #ff7100" v-else>
+      <h2>0</h2>
       files
     </div>
     <div
@@ -79,9 +83,14 @@
   export default {
     name: 'Option',
     props: {
-      people: [],
-      companies: [],
-      files: {}
+      nounList: {
+        people: [],
+        companies: []
+      },
+      files: {
+        data: {},
+        count: 0
+      }
     },
     data () {
       return {
