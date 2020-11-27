@@ -10,6 +10,7 @@ import re
 from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
 import operator
+import datetime
 
 
 app = Flask(__name__)
@@ -38,10 +39,17 @@ gooAPI = GoolabsAPI(Goo_API_APPLICATION_ID)
 ## 辞書データ取得
 json_open = open(APP_ROOT + '/dict.json', 'r')
 HumbleLangDict = json.load(json_open)
+json_open.close()
 
 ## 名詞用辞書データ取得
 json_open = open(APP_ROOT + '/noun.json', 'r')
 HumbleNounDict = json.load(json_open)
+json_open.close()
+
+# 時候の挨拶データ取得
+json_open = open(APP_ROOT + '/seasonTemplate.json', 'r')
+SeasonTemplate = json.load(json_open)
+json_open.close()
 
 # 探索の省略が可能な品詞（Part of speech to omit）
 Posto = ['句点', '読点', '空白', '格助詞', '終助詞', '括弧', '助数詞', '助助数詞', '冠数詞']
@@ -288,6 +296,17 @@ def get_data():
         }
     f.close()
     return result
+
+@app.route('/getseason')
+def get_season():
+    # 現在日時を取得
+    dt_now = datetime.datetime.now()
+    
+    # 結果をJSON形式にまとめる
+    result_season = {
+        'greeting': SeasonTemplate[str(dt_now.month)]
+    }
+    return result_season
 
 @app.route('/postpeople', methods=['POST'])
 def post_persons():
