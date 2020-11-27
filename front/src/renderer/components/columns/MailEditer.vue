@@ -20,6 +20,7 @@
       v-model="mailData.subject"
       placeholder="件名">
 
+    <!--
     <textarea
       id="editor__body"
       v-model="mailData.body"
@@ -27,7 +28,16 @@
       @keyup.enter.exact="bodyEnterAction"
       @keyup.delete.exact="bodyDeleteAction"
       @keydown.ctrl.enter="sendMail">
-    </textarea>
+    </textarea> -->
+
+    <div id="editor__body">
+      <VueComplete
+        @bodyEnterAction="bodyEnterAction"
+        @bodyDeleteAction="bodyDeleteAction"
+        @sendMail="sendMail"
+        @value="mailData.body = $event">
+      </VueComplete>
+    </div>
 
     <div id="editor__contents">
       <button @click="sendMail">送信</button>
@@ -62,6 +72,7 @@
   import axios from 'axios'
   import DiffParser from '../../utils/DiffParser'
   import OS from '../../utils/OS'
+  import VueComplete from '../module/TextArea'
   import ContactsList from '../../utils/ContactsList'
 
   const fs = require('fs')
@@ -75,6 +86,9 @@
   // Vue.js
   export default {
     name: 'MailEditer',
+    components: {
+      VueComplete
+    },
     props: {
       draftID: '',
       replace: {
@@ -635,11 +649,13 @@
     width: 94%;
     height: calc(100vh - 10px - 140px);
     margin: 5px 0 0 3%;
+    /*
     font-size: 17px;
     line-height: 26px;
     overflow-y: scroll;
     background: none;
     color: #ffffff;
+     */
     &:focus{
       outline: none;
     }
