@@ -19,7 +19,9 @@
       @keydown.enter="chooseItem"
       @keydown.tab="chooseItem"
       @keydown.right="nextWord"
-      @click="selectItem(index)"
+      @keydown.8.exact.prevent
+      @keydown.8="completeCancel"
+      @click="selectItem(selectWord)"
       @compositionend="update"
       @keyup.enter.exact="$emit('bodyEnterAction')"
       @keyup.delete.exact="$emit('bodyDeleteAction')"
@@ -104,6 +106,33 @@
           }
         }
       },
+      completeCancel () {
+        // 選択をキャンセルする
+        if (this.searchMatch.length > 0) {
+          // 候補を初期化
+          this.searchMatch = []
+        } else {
+          // 1文字削除処理
+          let caretPosition = this.$refs.input.selectionStart
+
+          // 最初の位置であれば何もしない
+          if (caretPosition === 0) {
+            return
+          }
+
+          // 1文字削除
+          this.inputValue = this.inputValue.substr(0, caretPosition - 1) + this.inputValue.substr(caretPosition)
+
+          // キャレットを削除後の位置へ移動
+          const self = this
+          setTimeout(
+            function () {
+              self.$refs.input.setSelectionRange(caretPosition - 1, caretPosition - 1)
+            },
+            1
+          )
+        }
+      },
       update (e) {
         this.inputValue = e.target.value
         // e.target:autocompleteのhtmlタグ
@@ -145,7 +174,7 @@
         // 選択肢が存在する場合
         if (this.selectedIndex !== -1 && this.searchMatch.length > 0) {
           // 選択された候補を反映
-          this.setWord(this.searchMatch[this.selectedIndex])
+          this.setWord(this.searchMatch[this.selectWord])
           this.selectedIndex = -1
 
           // キャレットの位置を増えた文字数分移動
