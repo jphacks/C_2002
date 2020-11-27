@@ -97,7 +97,6 @@
         update: '',
         timestamp: 0
       },
-      initParam: {},
       attachFileUpdate: {}
     },
     data () {
@@ -515,7 +514,8 @@
     watch: {
       'mailData.subject': function (newval, oldval) {
         // 初期パラメータが存在する場合タイトルの校正はしない
-        if ('subject' in this.initParam) {
+        console.log('this.mailData.subject.indexOf(\'Re: \') : ' + this.mailData.subject.indexOf('Re: '))
+        if (this.mailData.subject.indexOf('Re: ') === 0) {
           this.mailData.resultSubject = this.mailData.subject
           this.$emit('updateSubject', this.mailData.subject)
           this.updateHeader()
@@ -598,12 +598,6 @@
 
       // 下書きの取得
       this.getDraft()
-
-      // 初期パラメータが存在する場合は設定
-      if ('subject' in this.initParam) {
-        this.mailData.subject = this.initParam.subject
-        this.mailData.destination = this.initParam.address
-      }
 
       // 連絡先の取得
       const self = this

@@ -6,7 +6,6 @@
         v-if="draftID"
         :draftID="draftID"
         :replace="replace"
-        :initParam="initParam"
         :header="header"
         :attachFileUpdate="attachmentFile"
         @updateBody="mailData.body = $event"
@@ -75,7 +74,6 @@
           data: {},
           count: 0
         },
-        initParam: {},
         header: {
           subject: {
             original: '',
@@ -185,8 +183,12 @@
     mounted () {
       // クエリパラメータの有無を確認（リプライメール判別）
       if ('subject' in this.$route.query) {
-        console.log(this.$route.query)
-        this.initParam = this.$route.query
+        this.header.subject.original = this.$route.query.subject
+      }
+
+      // クエリパラメータの有無を確認（リプライメール判別）
+      if ('address' in this.$route.query) {
+        this.header.destination = this.$route.query.address
       }
 
       // クエリパラメータの有無を確認（既存下書き判別）
