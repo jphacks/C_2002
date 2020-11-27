@@ -7,6 +7,7 @@
         :draftID="draftID"
         :replace="replace"
         :initParam="initParam"
+        :attachFileUpdate="attachmentFile"
         @updateBody="mailData.body = $event"
         @updateSubject="mailData.subject = $event"
         @proofread="proofreadMode = $event"
@@ -33,6 +34,7 @@
         :companies="companies"
         :files="attachmentFile"
         @replaceText="replace = $event"
+        @fileUpdate="attachmentFile = $event"
       ></Option>
     </div>
   </div>
@@ -121,13 +123,33 @@
         // 敬語変換プレビューへ署名の追加
         this.mailData.body = initText
       },
+      async draftOpen (draftID) {
+        // OS依存文字列を取得
+        const delimiter = OS.delimiterChar()
+        const draftDirectory = OS.homeDirectory() + delimiter + 'frankfrut' + delimiter + 'draft' + delimiter
+
+        // 下書きファイルを指定
+        const resultFile = 'result.txt'
+        const targetDirectory = draftDirectory + draftID + delimiter
+
+        // 下書きのIDを保存
+        this.draftID = draftID
+
+        // 下書きファイルの読み込み
+        fs.readFile(targetDirectory + resultFile, 'utf8', function (err, data) {
+          // エラー処理
+          if (err) {
+            throw err
+          }
+          // 敬語変換プレビューへ署名の追加
+          this.mailData.body = data
+        })
+      },
       async createSign () {
         // 認証情報を取得
         const userInfo = await AuthFile.getAuth()
 
-        console.log('Auth')
-        console.log(userInfo)
-
+        // ユーザ一署名の作成
         const sign =
           '-----------------------------------------' + '\n' +
           userInfo['user']['affiliation'] + '\n' +
@@ -135,17 +157,25 @@
           'Mail：' + userInfo['auth']['user'] + '\n' +
           '-----------------------------------------' + '\n'
 
+        // 署名を返す
         return sign
       }
     },
     mounted () {
-      // クエリパラメータの有無を確認
+      // クエリパラメータの有無を確認（リプライメール判別）
       if ('subject' in this.$route.query) {
         console.log(this.$route.query)
         this.initParam = this.$route.query
       }
-      // 新規下書きの作成
-      this.draftInit()
+
+      // クエリパラメータの有無を確認（既存下書き判別）
+      if ('draftID' in this.$route.query) {
+        // 下書きを開く
+        this.draftOpen(this.$route.query.draftID)
+      } else {
+        // 新規下書きの作成
+        this.draftInit()
+      }
     }
   }
 </script>

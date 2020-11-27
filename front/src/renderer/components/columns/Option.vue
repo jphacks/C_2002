@@ -40,7 +40,7 @@
     </div>
 
     <div class="number_sign" style="color: #ff7100">
-      <h2>{{ Object.keys(files).length }}</h2>
+      <h2>{{ Object.keys(files.data).length }}</h2>
       files
     </div>
     <div
@@ -48,7 +48,7 @@
       v-if="optionColumn.mode === 'wide'">
       <ul>
         <li
-          v-for="(file, index) in files"
+          v-for="(file, index) in files.data"
           :key="index"
           title="ファイルを開く"
           @click="openFile(file['path'])">
@@ -65,8 +65,8 @@
     <div
       id="replace_area"
       v-if="optionColumn.mode === 'wide'">
-      <input type="text" v-model="replace.target" placeholder="">
-      <input type="text" v-model="replace.update" placeholder="">
+      <input type="text" v-model="replace.target" placeholder="置換対象文字列">
+      <input type="text" v-model="replace.update" placeholder="置換後文字列">
       <button @click="replaceExe">置換</button>
     </div>
   </div>
@@ -125,8 +125,10 @@
       },
       removeFile (fileKey) {
         // 添付ファイルの削除
-        delete this.files[fileKey]
-        console.log(this.files)
+        delete this.files.data[fileKey]
+        this.files.count--
+        // 変更を反映
+        this.$emit('fileUpdate', this.files)
       },
       exe (command, pwd = OS.homeDirectory()) { // コマンド実行関数
         console.log('実行コマンド：' + command)

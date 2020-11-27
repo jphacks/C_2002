@@ -42,6 +42,10 @@
       </div>
     </div>
     <router-view/>
+    <Sending
+      v-if="sending.flg"
+      :sendParam="sending.param"
+      @finishProgress="sending.flg = false"/>
   </div>
 </template>
 
@@ -52,12 +56,14 @@
   import MailReciver from './utils/MailReceive'
   import ContactsList from './utils/ContactsList'
   import AuthFile from './utils/AuthFile'
+  import Sending from './components/toast/Sending'
 
   export default {
     name: 'c_2002',
     components: {
       SettingIcon,
-      PlusIcon
+      PlusIcon,
+      Sending
     },
     data () {
       return {
@@ -79,7 +85,12 @@
           interval: 60000,
           newestMsg: ''
         },
-        authData: {}
+        authData: {},
+        sending: {
+          flg: false,
+          param: {},
+          prevTimestamp: 0
+        }
       }
     },
     methods: {
@@ -174,6 +185,19 @@
           },
           this.mailCheck.interval
         )
+      }
+    },
+    updated () {
+      console.log('update!')
+      console.log(this.$route.query)
+      // 送信メールの有無を確認
+      if ('mailData' in this.$route.query && this.sending.prevTimestamp !== this.$route.query['timestamp']) {
+        // 送信用パラメータの設定
+        this.sending.param = this.$route.query
+        // 送信中の開始
+        this.sending.flg = true
+        // タイムスタンプの上書き
+        this.sending.prevTimestamp = this.$route.query['timestamp']
       }
     },
     beforeDestroy () {

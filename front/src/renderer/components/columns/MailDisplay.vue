@@ -45,10 +45,11 @@
 
         console.log('replySubject.indexOf(\'Re:\')')
         console.log(replySubject.indexOf('Re:'))
-        if (replySubject.indexOf('Re:') !== 0) {
-          replySubject = 'Re:' + replySubject
+        if (replySubject.indexOf('Re: ') !== 0) {
+          replySubject = 'Re: ' + replySubject
         }
 
+        // 返信用にメール作成画面へ遷移
         this.$router.push({
           name: 'editor',
           query: {

@@ -59,7 +59,6 @@
   // for Vue
   import GitCommand from '../../utils/NodeGit'
   import FileAction from '../../utils/FileAction'
-  import MailSend from '../../utils/MailSend'
   import axios from 'axios'
   import DiffParser from '../../utils/DiffParser'
   import OS from '../../utils/OS'
@@ -83,7 +82,8 @@
         update: '',
         timestamp: 0
       },
-      initParam: {}
+      initParam: {},
+      attachFileUpdate: {}
     },
     data () {
       return {
@@ -396,9 +396,16 @@
             }
           }
 
-          MailSend.sendMail(authData['smtp'], mailData)
+          // メールデータを渡す
+          self.$router.push({
+            name: 'tray',
+            query: {
+              userData: self.addressList[self.mailData.destination],
+              mailData: mailData,
+              authData: authData['smtp'],
+              timestamp: new Date()
+            }})
         })
-        this.$router.push({name: 'tray', query: { userData: this.addressList[this.mailData.destination] }})
       },
       addFile (event) {
         // 添付ファイル追加処理
@@ -490,13 +497,16 @@
       },
       'attachmentFile.count': function (newval, oldval) {
         console.log('FILE DATA')
-        console.log(this.attachmentFile.data)
-        this.$emit('attachFile', this.attachmentFile.data)
+        console.log(this.attachmentFile)
+        this.$emit('attachFile', this.attachmentFile)
       },
       'replace.timestamp': function (newval, oldval) {
         while (this.mailData.body.indexOf(this.replace.target) !== -1) {
           this.mailData.body = this.mailData.body.replace(this.replace.target, this.replace.update)
         }
+      },
+      'attachFileUpdate.count': function (newval, oldval) {
+        this.attachmentFile = this.attachFileUpdate
       },
       proofread: function (newval, oldval) {
         this.$emit('proofread', newval)
@@ -600,10 +610,11 @@
       transition: all  0.3s ease;
 
       &:hover{
-        opacity: .9;
+        opacity: .7;
       }
     }
 
+    // ファイル添付ボタン
     .attach_file{
       display: inline-block;
       width: $ui-size;
@@ -615,6 +626,14 @@
       background-repeat: no-repeat;
       background-size: $ui-size;
       cursor: pointer;
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all  0.3s ease;
+
+      &:hover{
+        opacity: .7;
+      }
 
       input[type="file"]{
         opacity: 0;
