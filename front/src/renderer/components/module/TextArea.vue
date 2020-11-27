@@ -15,6 +15,7 @@
       @focusout="focusout"
       @focus="focus"
       @keyup="update"
+      @keydown.enter.exact.prevent
       @keydown.enter="chooseItem"
       @keydown.tab="chooseItem"
       @keydown.right="nextWord"
@@ -136,8 +137,12 @@
       chooseItem (e) {
         this.clickedChooseItem = true
         if (this.selectedIndex !== -1 && this.searchMatch.length > 0) {
+          // 選択された候補を反映
           this.setWord(this.searchMatch[this.selectedIndex])
           this.selectedIndex = -1
+        } else if (e.key === 'Enter') {
+          const caretPosition = this.$refs.input.selectionStart
+          this.inputValue = this.inputValue.substr(0, caretPosition) + '\n' + this.inputValue.substr(caretPosition)
         }
       },
       focusout (e) {
