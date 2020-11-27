@@ -127,7 +127,8 @@
         this.wordIndex += 1
         this.inputValue = currentWords.join('。')
         document.getElementById('autocomplete-input').focus()
-        // 文章リストを句読点で句切る
+        // 選択した番号をリセット
+        this.selectWord = 0
       },
       selectItem (index) {
         // 上と同様
@@ -189,9 +190,8 @@
               this.caretPosition.x = (input.selectionStart - prevPosition - 1) * this.font.size + this.font.size
               this.caretPosition.y = cnt * this.font.lineheight
               break
-            } else if (position === this.inputValue.length) {
-              break
             }
+            // else if (position === this.inputValue.length) { break }
             prevPosition += position
           }
         } else {
