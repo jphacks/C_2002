@@ -15,10 +15,8 @@
       @focusout="focusout"
       @focus="focus"
       @keyup="update"
-      @keydown.13="chooseItem"
+      @keydown.enter="chooseItem"
       @keydown.tab="chooseItem"
-      @keydown.40="moveDown"
-      @keydown.38="moveUp"
       @keydown.right="nextWord"
       @click="selectItem(index)"
       @compositionend="update"
@@ -35,22 +33,8 @@
 
 <script>
   import TinySegmenter from '../../utils/TinySegmenter'
-  const yomikataDict = {
-    'ありがとうございました': '有難うございました',
-    'おせわになっております': 'お世話になっております',
-    'いつもおせわになっております': 'いつもお世話になっております',
-    'おせわになります': 'お世話になります',
-    'さっそくのおへんじありがとうございました': '早速のお返事ありがとうございました',
-    'よろしくおねがいいたします': 'よろしくお願いいたします',
-    'おへんじおまちしております': 'お返事お待ちしております',
-    'おてすうをおかけしますが': 'お手数をおかけしますが',
-    'ひきつづきよろしくおねがいいいたします': '引き続きよろしくお願いいたします',
-    'ますますのごかつやくをおいのりもうしあげます': 'ますますのご活躍をお祈り申し上げます',
-    'もうしわけございません': '申し訳ございません',
-    'こんごともよろしくおねがいもうしあげます': '今後ともよろしくお願い申し上げます',
-    'ごぶさたしております': 'ご無沙汰しております',
-    'ひきつづき、どうぞよろしくおねがいいたします': '引き続き、どうぞよろしくお願いいたします'
-  }
+  import YomikataDict from '../../utils/YomikataDict'
+  const yomikataDict = YomikataDict.YomikataDict()
 
   export default {
     name: 'Test',
@@ -99,21 +83,16 @@
       }
     },
     watch: {
-      inputValue () {
+      inputValue () { // 入力内容が変化した場合
         // 親コンポーネントに内容を渡す
         this.$emit('value', this.inputValue)
-
-        const input = this.$refs.input
-        console.log('passed')
-        console.log('selectionStart : ' + input.selectionStart)
-        console.log('selectionEnd : ' + input.selectionEnd)
         this.focus()
+        // 現在のキャレットの位置を更新
         this.getCaret()
       }
     },
     methods: {
       nextWord () {
-        console.log('right!')
         if (this.searchMatch.length > 0) {
           if (this.searchMatch.length === this.selectWord + 1) {
             this.selectWord = 0
@@ -149,24 +128,12 @@
         document.getElementById('autocomplete-input').focus()
         // 文章リストを句読点で句切る
       },
-      moveDown () {
-        // IMEとかのもとからあるサジェストがカーソルキーで動くので、キー動作なしで選択する方がよさそう
-        // if (this.selectedIndex < this.searchMatch.length - 1) {
-        //   this.selectedIndex++
-        // }
-      },
-      moveUp () {
-        // 上と同様
-        // if (this.selectedIndex !== -1) {
-        //   this.selectedIndex--
-        // }
-      },
       selectItem (index) {
         // 上と同様
         this.selectedIndex = index
         this.chooseItem()
       },
-      chooseItem () {
+      chooseItem (e) {
         this.clickedChooseItem = true
         if (this.selectedIndex !== -1 && this.searchMatch.length > 0) {
           this.setWord(this.searchMatch[this.selectedIndex])
@@ -186,7 +153,7 @@
         this.searchMatch = []
         if (this.currentWord.length > 1) {
           // this.currentWord:変換前の文字
-          let regexp = new RegExp('^.*' + this.currentWord + '.*$')
+          let regexp = new RegExp('^' + this.currentWord + '.*$')
           // this.listToSearch:よみがな全リスト
           this.searchMatchHiragana = this.listToSearch.filter(hiragana => hiragana.match(regexp))
           // this.searchMatch:よみがなを漢字入りに戻す
