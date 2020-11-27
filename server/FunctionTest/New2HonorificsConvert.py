@@ -3,37 +3,52 @@ import CaboCha
 import re
 from goolabs import GoolabsAPI
 import configparser
+import os
 
-## api取得
-app_id = "9707a9ca41154956524fe5ef01ba774b4305ccc701adfb6be574a87ba4a5687b"
-api = GoolabsAPI(app_id)
+# ソースファイルの場所取得
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+# 設定ファイルの読み込み
+config = configparser.ConfigParser()
+config.read(APP_ROOT + '/config_local.ini')
+# 設定ファイルからgooラボAPIに関する情報を取得
+Goo_API_APPLICATION_ID = config.get("Goo_API", "ApplicationId")
+
+# gooラボAPIのAPIクライアント設定
+gooAPI = GoolabsAPI(Goo_API_APPLICATION_ID)
 
 ## 元のテキストデータ
-f = open('before.txt', 'r', encoding='UTF-8')
+f = open(APP_ROOT + '/before.txt', 'r', encoding='UTF-8')
 
 ## 辞書データ取得
-json_open = open('dict.json', 'r', encoding='UTF-8')
+json_open = open(APP_ROOT + '/dict.json', 'r', encoding='UTF-8')
 HumbleLangDict = json.load(json_open)
+json_open.close()
 
 ## 名詞用辞書データ取得
-json_open = open('noun.json', 'r', encoding='UTF-8')
+json_open = open(APP_ROOT + '/noun.json', 'r', encoding='UTF-8')
 HumbleNounDict = json.load(json_open)
+json_open.close()
 
 #------------------------
-json_open = open('AttributeDict.json', 'r', encoding='UTF-8')
+json_open = open(APP_ROOT + '/AttributeDict.json', 'r', encoding='UTF-8')
 AttributeDict = json.load(json_open)
+json_open.close()
 
-json_open = open('kana.json', 'r', encoding='UTF-8')
+json_open = open(APP_ROOT + '/kana.json', 'r', encoding='UTF-8')
 kana = json.load(json_open)
+json_open.close()
 
-json_open = open('InflectedForm.json', 'r', encoding='UTF-8')
+json_open = open(APP_ROOT + '/InflectedForm.json', 'r', encoding='UTF-8')
 InflectedForm = json.load(json_open)
+json_open.close()
 
-json_open = open('HumbleLanguage.json', 'r', encoding='UTF-8')
+json_open = open(APP_ROOT + '/HumbleLanguage.json', 'r', encoding='UTF-8')
 HumbleLanguage = json.load(json_open)
+json_open.close()
 
-json_open = open('RespectedWords.json', 'r', encoding='UTF-8')
+json_open = open(APP_ROOT + '/RespectedWords.json', 'r', encoding='UTF-8')
 RespectedWords = json.load(json_open)
+json_open.close()
 
 # ## 活用形判断関数
 def SV(source):
@@ -188,7 +203,7 @@ def ChangeToHonorific(original):
     original = ForVerb(original)
 
     # See sample response below.
-    response = api.morph(sentence=original)
+    response = gooAPI.morph(sentence=original)
 
     # 形態素解析のデータの抽出
     originalData = response['word_list'][0]
