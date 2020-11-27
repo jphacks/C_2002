@@ -26,5 +26,5 @@ def sort_name(list):
     name_sort_list = sorted(name_list, key=operator.itemgetter('converted'))
     return name_sort_list
 
-arr = [ '高尾', '大羽', '岡崎', '近藤', '石倉' ];
+arr = [ '高尾', '大羽', '岡崎', '近藤', '石倉' ]
 print(sort_name(arr))

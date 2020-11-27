@@ -105,3 +105,4 @@ venv.bak/
 
 .vscode
 config_local.ini
+.DS_Store
