@@ -95,6 +95,8 @@
     methods: {
       nextWord () {
         if (this.searchMatch.length > 0) {
+          let caretPosition = this.$refs.input.selectionStart
+          this.$refs.input.setSelectionRange(caretPosition - 1, caretPosition - 1)
           if (this.searchMatch.length === this.selectWord + 1) {
             this.selectWord = 0
           } else {
@@ -139,18 +141,19 @@
         let caretPosition = this.$refs.input.selectionStart
         const prevInputValue = this.inputValue.length
         this.clickedChooseItem = true
+
+        // 選択肢が存在する場合
         if (this.selectedIndex !== -1 && this.searchMatch.length > 0) {
           // 選択された候補を反映
           this.setWord(this.searchMatch[this.selectedIndex])
           this.selectedIndex = -1
-          const inputValue = this.inputValue
-          caretPosition += (inputValue.length - prevInputValue - 1)
-        } else if (e.key === 'Enter') { // エンターキーが押されたものの選択されていなかった時
+
+          // キャレットの位置を増えた文字数分移動
+          caretPosition += (this.inputValue.length - prevInputValue - 1)
+        } else if (e.key === 'Enter') {
+          // エンターキーが押されたものの選択肢が存在しない
           this.inputValue = this.inputValue.substr(0, caretPosition) + '\n' + this.inputValue.substr(caretPosition)
         }
-
-        console.log('caretPosition + 1 : ')
-        console.log(caretPosition + 1)
 
         // キャレットを改行後の位置へ移動
         const self = this
@@ -158,7 +161,7 @@
           function () {
             self.$refs.input.setSelectionRange(caretPosition + 1, caretPosition + 1)
           },
-          4
+          1
         )
       },
       focusout (e) {
@@ -185,9 +188,9 @@
         }
         console.log(this.searchMatch)
       },
-      getCaret () {
+      getCaret () { // キャレットの位置を取得
         const input = this.$refs.input
-        const inputValueSlice = this.inputValue(0, input.selectionStart)
+        const inputValueSlice = this.inputValue.slice(0, input.selectionStart)
 
         // 2行以上の場合
         if (inputValueSlice.indexOf('\n') > -1) {
@@ -197,6 +200,9 @@
           for (cnt = 0; ; cnt++) {
             const position = inputValueSlice.indexOf('\n', prevPosition + 1)
             if (position + prevPosition >= input.selectionStart || position === -1) { // キャレットの行に到着したときの処理 || 改行文字がもう存在しないとき（末尾行）
+              console.log('input.selectionStart : ' + input.selectionStart)
+              console.log('prevPosition : ' + prevPosition)
+              console.log('this.font.size : ' + this.font.size)
               this.caretPosition.x = (input.selectionStart - prevPosition - 1) * this.font.size + this.font.size
               this.caretPosition.y = cnt * this.font.lineheight
               break
