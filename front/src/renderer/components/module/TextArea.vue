@@ -17,14 +17,13 @@
       @keyup="update"
       @keydown.enter.exact.prevent
       @keydown.enter="chooseItem"
+      @keyup.delete="$emit('bodyDeleteAction')"
       @keydown.tab="chooseItem"
       @keydown.right="nextWord"
       @keydown.8.exact.prevent
       @keydown.8="completeCancel"
       @click="selectItem(selectWord)"
       @compositionend="update"
-      @keyup.enter.exact="$emit('bodyEnterAction')"
-      @keyup.delete.exact="$emit('bodyDeleteAction')"
       @keydown.ctrl.enter="$emit('sendMail')"
       ref="input"
       v-model="inputValue"></textarea>
@@ -42,10 +41,11 @@
   export default {
     name: 'Test',
     props: {
-      inputValue: ''
+      mailBody: ''
     },
     data () {
       return {
+        inputValue: '',
         searchMatch: [],
         selectedIndex: 0,
         clickedChooseItem: false,
@@ -62,6 +62,9 @@
       }
     },
     mounted () {
+      console.log('this.mailBody in TextArea : ')
+      console.log(this.mailBody)
+      this.inputValue = this.mailBody
     },
     computed: {
       listToSearch () {
@@ -86,12 +89,19 @@
       }
     },
     watch: {
-      'inputValue': function () { // 入力内容が変化した場合
+      inputValue: function (newval, oldval) { // 入力内容が変化した場合
         // 親コンポーネントに内容を渡す
+        console.log('inputValue new')
+        console.log(newval)
         this.$emit('value', this.inputValue)
         this.focus()
         // 現在のキャレットの位置を更新
         this.getCaret()
+      },
+      mailBody: function () {
+        if (this.inputValue !== '') {
+          this.inputValue = this.mailBody
+        }
       }
     },
     methods: {
@@ -183,6 +193,9 @@
           // エンターキーが押されたものの選択肢が存在しない
           this.inputValue = this.inputValue.substr(0, caretPosition) + '\n' + this.inputValue.substr(caretPosition)
         }
+
+        // Enter時の親コンポーネントの処理を発火
+        this.$emit('bodyEnterAction')
 
         // キャレットを改行後の位置へ移動
         const self = this

@@ -20,19 +20,10 @@
       v-model="mailData.subject"
       placeholder="件名">
 
-    <!--
-    <textarea
-      id="editor__body"
-      v-model="mailData.body"
-      placeholder="本文を入力"
-      @keyup.enter.exact="bodyEnterAction"
-      @keyup.delete.exact="bodyDeleteAction"
-      @keydown.ctrl.enter="sendMail">
-    </textarea> -->
-
     <div id="editor__body">
       <VueComplete
-        :inputValue="mailData.body"
+        v-if="mailBodyInitFlg"
+        :mailBody="mailBodyInit"
         @bodyEnterAction="bodyEnterAction"
         @bodyDeleteAction="bodyDeleteAction"
         @sendMail="sendMail"
@@ -131,7 +122,9 @@
         nounList: {
           people: [],
           companies: []
-        }
+        },
+        mailBodyInit: '',
+        mailBodyInitFlg: false
       }
     },
     methods: {
@@ -461,7 +454,11 @@
             )
           }
           // 代入
+          console.log('draftText')
+          console.log(draftText)
+          self.mailBodyInit = draftText
           self.mailData.body = draftText
+          self.mailBodyInitFlg = true
         })
 
         // 下書きヘッダファイルの取得
@@ -575,7 +572,7 @@
       },
       'replace.timestamp': function (newval, oldval) {
         while (this.mailData.body.indexOf(this.replace.target) !== -1) {
-          this.mailData.body = this.mailData.body.replace(this.replace.target, this.replace.update)
+          this.mailBodyInit = this.mailData.body.replace(this.replace.target, this.replace.update)
         }
       },
       'attachFileUpdate.count': function (newval, oldval) {
