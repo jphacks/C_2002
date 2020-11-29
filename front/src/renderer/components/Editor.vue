@@ -65,7 +65,11 @@
           body: '',
           subject: ''
         },
-        replace: {},
+        replace: {
+          target: '',
+          update: '',
+          timestamp: 0
+        },
         nounList: {
           people: [],
           companies: []

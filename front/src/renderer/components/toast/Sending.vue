@@ -85,6 +85,7 @@
 
   #sending{
     position: fixed;
+    z-index: 300;
     right: 20px;
     bottom: 20px;
     display: inline-block;
